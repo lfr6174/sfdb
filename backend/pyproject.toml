@@ -1,0 +1,33 @@
+[tool.ruff]
+# Set line length to 119 (Django's default recommendation) or 88 (Black's default)
+line-length = 119
+
+# Exclude commonly ignored directories and Django migrations
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+    "*/migrations/*",  # Ignore Django auto-generated migrations
+]
+
+[tool.ruff.lint]
+# E: pycodestyle errors, F: pyflakes, I: isort, W: pycodestyle warnings
+select = ["E", "F", "I", "W"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore star imports (F403) and undefined variables from star imports (F405) in settings files
+"config/settings/*.py" = ["F403", "F405"]
+
+# Allow autofix for all enabled rules (when `--fix` is used)
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+indent-style = "space"
