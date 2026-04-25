@@ -45,9 +45,11 @@ class WorkMinimalSerializer(serializers.ModelSerializer):
 
 
 class SeriesSerializer(serializers.ModelSerializer):
+    works_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Series
-        fields = ["id", "title", "note", "created_at", "updated_at"]
+        fields = ["id", "title", "note", "works_count", "created_at", "updated_at"]
 
 
 class WorkCreditSerializer(serializers.ModelSerializer):
@@ -73,9 +75,11 @@ class WorkConceptSerializer(serializers.ModelSerializer):
 
 
 class PublisherSerializer(serializers.ModelSerializer):
+    works_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Publisher
-        fields = ["id", "name", "description", "created_at", "updated_at"]
+        fields = ["id", "name", "description", "works_count", "created_at", "updated_at"]
 
 
 class PublicationCreditSerializer(serializers.ModelSerializer):
@@ -165,6 +169,7 @@ class CatalogueEntrySerializer(serializers.ModelSerializer):
 class CatalogueSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
     curator_detail = PersonMinimalSerializer(source="curator", read_only=True)
+    works_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Catalogue
@@ -177,6 +182,7 @@ class CatalogueSerializer(serializers.ModelSerializer):
             "curator_detail",
             "year",
             "note",
+            "works_count",
             "created_at",
             "updated_at",
         ]
