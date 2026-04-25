@@ -33,7 +33,7 @@ class PublicationInline(admin.TabularInline):
     model = Publication
     extra = 1
     autocomplete_fields = ("publisher",)
-    show_change_link = True  # 提供跳轉連結，方便快速前往該出版品頁面新增譯者或繪師
+    show_change_link = True  # Provide a link to navigate to the publication page for adding contributors
 
 
 class PublicationCreditInline(admin.TabularInline):

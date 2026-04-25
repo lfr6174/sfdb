@@ -40,7 +40,7 @@ class WorkMinimalSerializer(serializers.ModelSerializer):
 
 
 # ============================================================================
-# WORK ECOSYSTEM SERIALIZERS
+# WORK SERIALIZERS
 # ============================================================================
 
 
@@ -68,7 +68,7 @@ class WorkConceptSerializer(serializers.ModelSerializer):
 
 
 # ============================================================================
-# PUBLICATION ECOSYSTEM SERIALIZERS
+# PUBLICATION SERIALIZERS
 # ============================================================================
 
 
