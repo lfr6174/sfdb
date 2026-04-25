@@ -18,7 +18,7 @@ class SeriesViewSet(viewsets.ModelViewSet):
     serializer_class = SeriesSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["title"]
-    ordering_fields = ["title", "works_count", "created_at", "updated_at"]
+    ordering_fields = ["title", "created_at", "updated_at", "works_count"]
 
 
 class WorkViewSet(viewsets.ModelViewSet):
@@ -51,7 +51,7 @@ class PublisherViewSet(viewsets.ModelViewSet):
     serializer_class = PublisherSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name"]
-    ordering_fields = ["name", "works_count", "created_at", "updated_at"]
+    ordering_fields = ["name", "created_at", "updated_at", "works_count"]
 
 
 class PublicationViewSet(viewsets.ModelViewSet):
@@ -78,4 +78,4 @@ class CatalogueViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["catalogue_type", "year"]
     search_fields = ["title"]
-    ordering_fields = ["year", "title", "created_at", "updated_at"]
+    ordering_fields = ["year", "title", "created_at", "updated_at", "works_count"]

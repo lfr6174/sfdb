@@ -27,7 +27,8 @@ class PersonSerializer(serializers.ModelSerializer):
 
     aliases = PersonAliasSerializer(many=True, read_only=True)
     links = PersonLinkSerializer(many=True, read_only=True)
+    works_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Person
-        fields = ["id", "name", "bio", "aliases", "links", "created_at", "updated_at"]
+        fields = ["id", "name", "bio", "aliases", "links", "works_count", "created_at", "updated_at"]

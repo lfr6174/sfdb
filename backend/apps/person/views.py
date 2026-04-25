@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
@@ -16,12 +17,12 @@ class PersonViewSet(viewsets.ModelViewSet):
       Prefix with a minus sign (-) for descending order.
     """
 
-    queryset = Person.objects.all().order_by("-created_at")
+    queryset = Person.objects.annotate(works_count=Count("works", distinct=True)).order_by("-created_at")
     serializer_class = PersonSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "aliases__name"]
-    ordering_fields = ["name", "created_at", "updated_at"]
+    ordering_fields = ["name", "created_at", "updated_at", "works_count"]
     filterset_fields = ["name"]
 
 
