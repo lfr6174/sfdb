@@ -137,8 +137,8 @@ STATIC_URL = "static/"
 
 # API Spectacular settings
 SPECTACULAR_SETTINGS = {
-    "TITLE": "台灣科幻概念資料庫 API",
-    "DESCRIPTION": "台灣科幻概念資料庫 API 文件",
+    "TITLE": "Taiwan SF Concept Database API",
+    "DESCRIPTION": "API documentation for the Taiwan SF Concept Database",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
