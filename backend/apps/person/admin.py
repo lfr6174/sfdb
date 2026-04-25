@@ -54,6 +54,17 @@ class PersonAdmin(admin.ModelAdmin):
     # Display TimeStamped fields in the detail view as read-only
     readonly_fields = ("created_at", "updated_at")
 
+    fieldsets = (
+        ("基本資訊 (Basic Info)", {"fields": ("name", "bio")}),
+        (
+            "系統資訊 (System Info)",
+            {
+                "fields": ("created_at", "updated_at"),
+                "classes": ("collapse",),  # 預設折疊
+            },
+        ),
+    )
+
     @admin.display(description="簡歷 (Bio)", ordering="bio")
     def short_bio(self, obj):
         """Truncate the bio to 50 characters for the list view."""
