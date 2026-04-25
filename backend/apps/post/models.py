@@ -1,0 +1,30 @@
+from django.core.exceptions import ValidationError
+from django.db import models
+
+from apps.core.models import TimeStampedModel
+
+
+class PostType(models.TextChoices):
+    ANNOUNCEMENT = "announcement", "公告"
+    ARTICLE = "article", "文章"
+    NEWS = "news", "消息"
+
+
+class Post(TimeStampedModel):
+    post_type = models.CharField(max_length=20, choices=PostType.choices, verbose_name="類型")
+    title = models.CharField(max_length=300, verbose_name="標題")
+    body = models.TextField(verbose_name="內文", help_text="支援 Markdown。")
+
+    is_pinned = models.BooleanField(default=False, verbose_name="置頂", help_text="僅對公告有效，需手動取消。")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "文章"
+        verbose_name_plural = "文章"
+
+    def __str__(self):
+        return f"[{self.get_post_type_display()}] {self.title}"
+
+    def clean(self):
+        if self.is_pinned and self.post_type != PostType.ANNOUNCEMENT:
+            raise ValidationError({"is_pinned": "只有「公告」類型可以設定置頂。"})
