@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "rest_framework",  # DRF
     "django_filters",  # django-filter
     "corsheaders",  # django-cors-headers
+    "drf_spectacular",  # API schema generator
     # Local apps
     "apps.core",
     "apps.work",
@@ -117,9 +118,19 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+
+# API Spectacular settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "台灣科幻概念資料庫 API",
+    "DESCRIPTION": "台灣科幻概念資料庫 API 文件",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
