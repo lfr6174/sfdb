@@ -116,14 +116,14 @@ onMounted(async () => {
         <div v-if="isLoading" class="text-[#2d2016]/50 py-4">讀取作品中...</div>
         <div v-else-if="works.length > 0" class="space-y-1">
           <!-- Works List -->
-          <div v-for="work in works" :key="work.id" class="group flex flex-col py-2.5 border-b border-[#2d2016]/5 last:border-0 hover:bg-[#ede8dc] px-2 -mx-2 rounded transition-colors cursor-pointer">
+          <router-link v-for="work in works" :key="work.id" :to="`/works/${work.id}`" class="group flex flex-col py-2.5 border-b border-[#2d2016]/5 last:border-0 hover:bg-[#ede8dc] px-2 -mx-2 rounded transition-colors cursor-pointer">
             <h3 class="text-lg font-medium text-[#2d2016] group-hover:text-[#ae5630] transition-colors">
-              {{ work.title }}<span v-if="work.title_en" class="text-base text-[#2d2016]/50 ml-2 font-normal">({{ work.title_en }})</span>
+              {{ work.title }}
             </h3>
             <p class="text-sm md:text-base text-[#2d2016]/60 mt-0.5">
               {{ work.byline }} · {{ work.year || '未知年份' }} · {{ work.media_type_display || '未知媒體' }} · {{ work.work_length_display || '未知篇幅' }}
             </p>
-          </div>
+          </router-link>
         </div>
         <div v-else class="text-[#2d2016]/50 py-4">
           目前該概念下暫無作品。

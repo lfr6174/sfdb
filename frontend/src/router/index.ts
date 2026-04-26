@@ -4,6 +4,7 @@ import ConceptsView from '../views/ConceptsView.vue'
 import PersonsView from '../views/PersonsView.vue'
 import PersonDetailView from '../views/PersonDetailView.vue'
 import ConceptDetailView from '../views/ConceptDetailView.vue'
+import WorkDetailView from '../views/WorkDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,12 @@ const router = createRouter({
       path: '/persons/:id',
       name: 'person-detail',
       component: PersonDetailView,
+      props: true
+    },
+    {
+      path: '/works/:id',
+      name: 'work-detail',
+      component: WorkDetailView,
       props: true
     }
   ]
