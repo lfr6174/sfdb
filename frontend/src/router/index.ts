@@ -4,6 +4,7 @@ import ConceptsView from '../views/ConceptsView.vue'
 import PersonsView from '../views/PersonsView.vue'
 import PersonDetailView from '../views/PersonDetailView.vue'
 import ConceptDetailView from '../views/ConceptDetailView.vue'
+import WorksView from '../views/WorksView.vue'
 import WorkDetailView from '../views/WorkDetailView.vue'
 
 const router = createRouter({
@@ -35,6 +36,11 @@ const router = createRouter({
       name: 'person-detail',
       component: PersonDetailView,
       props: true
+    },
+    {
+      path: '/works',
+      name: 'works',
+      component: WorksView
     },
     {
       path: '/works/:id',

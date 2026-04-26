@@ -150,7 +150,7 @@ onUnmounted(() => {
       </section>
 
       <div class="pt-4 pb-12 text-left">
-        <router-link :to="`/works?concept=${concept.slug}`" class="inline-flex items-center text-base font-medium text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
+        <router-link :to="{ path: '/works', query: { concept: concept.slug } }" class="inline-flex items-center text-base font-medium text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
           瀏覽所有與「{{ concept.name }}」相關的作品（共 {{ concept.works_count }} 部） ↗
         </router-link>
       </div>
