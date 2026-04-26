@@ -133,7 +133,7 @@ onUnmounted(() => {
                   <span
                     v-if="isSpoilerProtected && !revealedSpoilers.has(item.id)"
                     @click="revealSpoiler(item.id)"
-                    class="cursor-pointer text-[#2d2016]/5 hover:text-[#2d2016]/60 transition-all duration-300 rounded px-1 select-none block"
+                    class="cursor-pointer text-[#2d2016]/5 hover:text-[#2d2016]/60 transition-all duration-300 select-none block"
                     title="點擊顯示劇透內容"
                   >
                     {{ item.description }}
