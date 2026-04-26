@@ -1,0 +1,160 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import api from '../api/axios'
+
+const works = ref<any[]>([])
+const isLoading = ref(true)
+
+const stats = ref({ works: 0, concepts: 0 })
+const currentConcept = ref<any>({})
+const recentConcepts = ref<Record<string, string[]>>({})
+const announcements = ref<any[]>([])
+
+const refreshRandomConcept = async () => {
+  isLoading.value = true
+  try {
+    // Call the backend random-spotlight API
+    const response = await api.get('/concepts/random-spotlight/')
+    if (response.status === 200 && response.data) {
+      currentConcept.value = response.data
+      works.value = response.data.spotlight_works || []
+    }
+  } catch (error) {
+    console.error('Failed to fetch random spotlight concept:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(async () => {
+  try {
+    // Send four independent RESTful requests in parallel
+    const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.all([
+      api.get('/works/'),
+      api.get('/concepts/', { params: { ordering: '-updated_at' } }), // Fetch genuinely "recently added" concepts by sorting
+      api.get('/posts/', { params: { post_type: 'announcement' } }),
+      api.get('/concepts/random-spotlight/') // Fetch a random concept on initial load
+    ])
+
+    // 1. Statistics: directly use the count provided by DRF paginator
+    stats.value = {
+      works: worksRes.data.count || 0,
+      concepts: conceptsRes.data.count || 0
+    }
+
+    // 2. Concept processing
+    const allConcepts = conceptsRes.data.results || []
+
+    // Group recent concepts by category
+    const recent: Record<string, string[]> = {}
+    allConcepts.forEach((c: any) => {
+      const catName = c.category || '未分類' // If DRF returns category_display, consider using c.category_display instead
+      if (!recent[catName]) recent[catName] = []
+      if (recent[catName].length < 5) recent[catName].push(c.name)
+    })
+    recentConcepts.value = recent
+
+    // 3. Announcement processing
+    const fetchedPosts = postsRes.data.results || []
+    announcements.value = fetchedPosts.slice(0, 5).map((p: any) => ({
+      id: p.id,
+      date: p.created_at ? p.created_at.split('T')[0].replace(/-/g, '/') : '',
+      text: p.title
+    }))
+
+    // 4. Set initial random concept
+    if (randomRes.status === 200 && randomRes.data) {
+      currentConcept.value = randomRes.data
+      works.value = randomRes.data.spotlight_works || []
+      isLoading.value = false
+    }
+  } catch (error) {
+    console.error('RESTful API fetch failed:', error)
+  }
+})
+</script>
+
+<template>
+  <div class="max-w-5xl mx-auto space-y-4">
+
+    <!-- Hero Section (Statement & Statistics) - Left Aligned -->
+    <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
+      <div class="max-w-4xl">
+        <p class="text-xl md:text-2xl font-medium text-[#2d2016] mb-1 tracking-tight leading-relaxed">
+          以「概念」為核心的科幻作品資料庫
+        </p>
+        <p class="text-xl md:text-2xl font-medium text-[#2d2016] mb-6 tracking-tight leading-relaxed">
+          目前共收錄 <span class="font-semibold text-[#ae5630]">{{ stats.works }}</span> 件台灣原創科幻作品與 <span class="font-semibold text-[#ae5630]">{{ stats.concepts }}</span> 個核心概念。
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <router-link to="/works" class="px-6 py-2 bg-[#ae5630] text-[#ffffff] text-base font-medium rounded hover:bg-[#ae5630]/90 transition-colors shadow-sm">
+            瀏覽作品
+          </router-link>
+          <router-link to="/concepts" class="px-6 py-2 bg-[#ffffff] text-[#2d2016]/80 border border-[#2d2016]/20 text-base font-medium rounded hover:bg-[#ede8dc] hover:text-[#2d2016] transition-colors shadow-sm">
+            探索概念
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two Column Layout: 5/12 for Works, 7/12 for Concepts -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-5">
+
+      <!-- Left Column: Random Concept Works (Narrower) -->
+      <section class="lg:col-span-5 bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight">
+            與 <span class="text-[#ae5630] underline decoration-[#ae5630]/40 underline-offset-4 cursor-pointer hover:text-[#ae5630]/80">{{ currentConcept.name }}</span> 相關的作品
+          </h2>
+          <button @click="refreshRandomConcept" class="text-sm md:text-base px-2.5 py-1 text-[#2d2016]/70 border border-[#2d2016]/20 rounded hover:bg-[#ede8dc] hover:text-[#2d2016] transition-colors">
+            換一個
+          </button>
+        </div>
+
+        <div v-if="isLoading" class="text-[#2d2016]/50 py-4">讀取作品中...</div>
+        <div v-else-if="works.length > 0" class="space-y-1">
+          <!-- Works List -->
+          <div v-for="work in works" :key="work.id" class="group flex flex-col py-2.5 border-b border-[#2d2016]/5 last:border-0 hover:bg-[#ede8dc] px-2 -mx-2 rounded transition-colors cursor-pointer">
+            <h3 class="text-lg font-medium text-[#2d2016] group-hover:text-[#ae5630] transition-colors">
+              {{ work.title }}<span v-if="work.title_en" class="text-base text-[#2d2016]/50 ml-2 font-normal">({{ work.title_en }})</span>
+            </h3>
+            <p class="text-sm md:text-base text-[#2d2016]/60 mt-0.5">
+              {{ work.byline }} · {{ work.year || '未知年份' }} · {{ work.media_type_display || '未知媒體' }} · {{ work.work_length_display || '未知篇幅' }}
+            </p>
+          </div>
+        </div>
+        <div v-else class="text-[#2d2016]/50 py-4">
+          目前該概念下暫無作品。
+        </div>
+      </section>
+
+      <!-- Right Column: Recent Concepts (Wider) -->
+      <section class="lg:col-span-7 bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
+        <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight mb-4">近期新增概念</h2>
+
+        <div class="space-y-3">
+          <div v-for="(tags, category) in recentConcepts" :key="category">
+            <h3 class="text-sm font-bold tracking-widest text-[#2d2016]/50 uppercase mb-2">{{ category }}</h3>
+            <div class="flex flex-wrap gap-2">
+              <span v-for="tag in tags" :key="tag" class="px-2.5 py-1 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium rounded-md cursor-pointer hover:bg-[#ae5630]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer Section: Announcements -->
+    <section class="bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
+      <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight mb-3">公告與更新日誌</h2>
+      <ul class="space-y-2">
+        <li v-for="ann in announcements" :key="ann.id" class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-1 border-b border-[#2d2016]/5 last:border-0">
+          <span class="text-base font-mono text-[#2d2016]/50 min-w-[110px]">{{ ann.date }}</span>
+          <span class="text-base text-[#2d2016]/80 leading-relaxed">{{ ann.text }}</span>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</template>
