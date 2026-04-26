@@ -59,6 +59,16 @@ class ConceptViewSet(viewsets.ModelViewSet):
 
         return Response(data)
 
+    @action(detail=False, methods=["get"], url_path="all")
+    def all(self, request):
+        """
+        Retrieve all concepts without pagination.
+        Useful for the frontend Concept Hub.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class ConceptLinkViewSet(viewsets.ModelViewSet):
     """
