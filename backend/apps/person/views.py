@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
 from .models import Person, PersonAlias, PersonLink
-from .serializers import PersonAliasSerializer, PersonLinkSerializer, PersonSerializer
+from .serializers import PersonAliasSerializer, PersonDetailSerializer, PersonLinkSerializer, PersonSerializer
 
 
 class PersonViewSet(viewsets.ModelViewSet):
@@ -17,13 +17,28 @@ class PersonViewSet(viewsets.ModelViewSet):
       Prefix with a minus sign (-) for descending order.
     """
 
-    queryset = Person.objects.annotate(works_count=Count("works", distinct=True)).order_by("-created_at")
+    queryset = (
+        Person.objects.annotate(works_count=Count("works", distinct=True))
+        .prefetch_related(
+            "work_credits",
+            "publication_credits",
+            "work_credits__work__concepts",
+            "publication_credits__publication__work__concepts",
+        )
+        .order_by("-created_at")
+    )
     serializer_class = PersonSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "aliases__name"]
     ordering_fields = ["name", "created_at", "updated_at", "works_count"]
     filterset_fields = ["name"]
+
+    def get_serializer_class(self):
+        # Use detailed serializer with works list for single person retrieve actions
+        if self.action == "retrieve":
+            return PersonDetailSerializer
+        return super().get_serializer_class()
 
 
 class PersonAliasViewSet(viewsets.ModelViewSet):
