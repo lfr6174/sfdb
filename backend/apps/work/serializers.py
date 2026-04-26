@@ -32,11 +32,34 @@ class PersonMinimalSerializer(serializers.ModelSerializer):
 
 
 class WorkMinimalSerializer(serializers.ModelSerializer):
-    """Lightweight Work serializer for Catalogue entries or related list views."""
+    """Absolute minimal serializer, useful for dropdowns and option lists."""
 
     class Meta:
         model = Work
-        fields = ["id", "title", "year"]
+        fields = ["id", "title"]
+
+
+class WorkBriefSerializer(serializers.ModelSerializer):
+    """Brief Work serializer for cards, lists, and homepage spotlights."""
+
+    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
+    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    byline = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Work
+        fields = ["id", "title", "year", "media_type_display", "work_length_display", "byline"]
+
+    def get_byline(self, obj):
+        credits = obj.credits.all()
+        if not credits:
+            return "作者未知"
+
+        names = [c.person.name for c in credits[:2] if c.role == "author"]
+        display = "、".join(names)
+        if len(credits) > 2:
+            display += " 等"
+        return display
 
 
 # ============================================================================
@@ -159,7 +182,7 @@ class WorkSerializer(serializers.ModelSerializer):
 
 
 class CatalogueEntrySerializer(serializers.ModelSerializer):
-    work_detail = WorkMinimalSerializer(source="work", read_only=True)
+    work_detail = WorkBriefSerializer(source="work", read_only=True)
 
     class Meta:
         model = CatalogueEntry

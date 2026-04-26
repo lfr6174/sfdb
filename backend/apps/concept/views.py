@@ -39,7 +39,7 @@ class ConceptViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="random-spotlight")
     def random_spotlight(self, request):
         """
-        Retrieve a random concept that has at least one associated work.
+        Retrieve works for a random concept that has at least one associated work.
         Useful for the homepage spotlight section.
         """
         # Filter out concepts with no works (works_count > 0) and order randomly ("?")
@@ -48,8 +48,16 @@ class ConceptViewSet(viewsets.ModelViewSet):
         if not concept:
             return Response({"detail": "No concepts available with associated works."}, status=404)
 
-        serializer = self.get_serializer(concept)
-        return Response(serializer.data)
+        data = self.get_serializer(concept).data
+
+        # Imported here to avoid circular imports with apps.work
+        # TODO: support specifing extract work count
+        from apps.work.serializers import WorkBriefSerializer
+
+        works = concept.works.prefetch_related("credits__person").order_by("-year", "title")[:4]
+        data["spotlight_works"] = WorkBriefSerializer(works, many=True).data
+
+        return Response(data)
 
 
 class ConceptLinkViewSet(viewsets.ModelViewSet):
