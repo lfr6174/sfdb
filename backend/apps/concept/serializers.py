@@ -40,6 +40,7 @@ class ConceptSerializer(serializers.ModelSerializer):
     group_detail = ConceptGroupSerializer(source="group", read_only=True)
     related_concepts_detail = ConceptMinimalSerializer(source="related_concepts", many=True, read_only=True)
     works_count = serializers.IntegerField(read_only=True)
+    work_concepts = serializers.SerializerMethodField()
 
     class Meta:
         model = Concept
@@ -53,8 +54,24 @@ class ConceptSerializer(serializers.ModelSerializer):
             "description",
             "related_concepts",
             "related_concepts_detail",
+            "work_concepts",
             "links",
             "works_count",
             "created_at",
             "updated_at",
+        ]
+
+    def get_work_concepts(self, obj):
+        """
+        Dynamically construct reverse-related work concepts via QuerySet.
+        This decouples the concept app by avoiding imports of work Models or Serializers.
+        """
+        return [
+            {
+                "id": wc.id,
+                "work": wc.work_id,
+                "work_title": wc.work.title,
+                "description": wc.description,
+            }
+            for wc in obj.work_concepts.select_related("work").all()
         ]

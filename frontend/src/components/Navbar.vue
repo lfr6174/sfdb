@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// Control spoiler protection mode
-const isSpoilerProtected = ref(false)
+// Initialize spoiler protection from localStorage (default: true)
+const isSpoilerProtected = ref(localStorage.getItem('spoiler') !== 'false')
 const toggleSpoiler = () => {
   isSpoilerProtected.value = !isSpoilerProtected.value
+  localStorage.setItem('spoiler', String(isSpoilerProtected.value))
+  // Dispatch global event to sync state across other components
+  window.dispatchEvent(new CustomEvent('spoiler-toggle', { detail: isSpoilerProtected.value }))
 }
 </script>
 
@@ -12,7 +15,6 @@ const toggleSpoiler = () => {
   <header class="sticky top-0 z-50 bg-[#ffffff]/90 backdrop-blur-md border-b border-[#2d2016]/10 shadow-sm">
     <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
 
-      <!-- Left: Site Name & Navigation Links -->
       <div class="flex items-center gap-8 h-full">
         <router-link to="/" class="text-lg font-bold text-[#2d2016] hover:text-[#ae5630] transition-colors">
           臺灣科幻概念資料庫
@@ -26,7 +28,6 @@ const toggleSpoiler = () => {
         </nav>
       </div>
 
-      <!-- Right: Spoiler Toggle & Login -->
       <div class="flex items-center gap-5">
         <button
           @click="toggleSpoiler"

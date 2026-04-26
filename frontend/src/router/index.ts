@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ConceptsView from '../views/ConceptsView.vue'
 import PersonsView from '../views/PersonsView.vue'
 import PersonDetailView from '../views/PersonDetailView.vue'
+import ConceptDetailView from '../views/ConceptDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,12 @@ const router = createRouter({
       path: '/concepts',
       name: 'concepts',
       component: ConceptsView
+    },
+    {
+      path: '/concepts/:slug',
+      name: 'concept-detail',
+      component: ConceptDetailView,
+      props: true
     },
     {
       path: '/persons',
