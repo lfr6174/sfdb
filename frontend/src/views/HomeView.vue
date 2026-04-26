@@ -7,7 +7,7 @@ const isLoading = ref(true)
 
 const stats = ref({ works: 0, concepts: 0 })
 const currentConcept = ref<any>({})
-const recentConcepts = ref<Record<string, string[]>>({})
+const recentConcepts = ref<Record<string, {name: string, slug: string}[]>>({})
 const announcements = ref<any[]>([])
 
 const refreshRandomConcept = async () => {
@@ -46,11 +46,11 @@ onMounted(async () => {
     const allConcepts = conceptsRes.data.results || []
 
     // Group recent concepts by category
-    const recent: Record<string, string[]> = {}
+    const recent: Record<string, {name: string, slug: string}[]> = {}
     allConcepts.forEach((c: any) => {
       const catName = c.category || '未分類' // If DRF returns category_display, consider using c.category_display instead
       if (!recent[catName]) recent[catName] = []
-      if (recent[catName].length < 5) recent[catName].push(c.name)
+      if (recent[catName].length < 5) recent[catName].push({ name: c.name, slug: c.slug })
     })
     recentConcepts.value = recent
 
@@ -104,7 +104,9 @@ onMounted(async () => {
       <section class="lg:col-span-5 bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight">
-            與 <span class="text-[#ae5630] underline decoration-[#ae5630]/40 underline-offset-4 cursor-pointer hover:text-[#ae5630]/80">{{ currentConcept.name }}</span> 相關的作品
+            與 <router-link :to="`/concepts/${currentConcept.slug}`" class="text-[#ae5630] underline decoration-[#ae5630]/40 underline-offset-4 cursor-pointer hover:text-[#ae5630]/80">
+              {{ currentConcept.name }}
+            </router-link> 相關的作品
           </h2>
           <button @click="refreshRandomConcept" class="text-sm md:text-base px-2.5 py-1 text-[#2d2016]/70 border border-[#2d2016]/20 rounded hover:bg-[#ede8dc] hover:text-[#2d2016] transition-colors">
             換一個
@@ -136,9 +138,9 @@ onMounted(async () => {
           <div v-for="(tags, category) in recentConcepts" :key="category">
             <h3 class="text-sm font-bold tracking-widest text-[#2d2016]/50 uppercase mb-2">{{ category }}</h3>
             <div class="flex flex-wrap gap-2">
-              <span v-for="tag in tags" :key="tag" class="px-2.5 py-1 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium rounded-md cursor-pointer hover:bg-[#ae5630]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200">
-                {{ tag }}
-              </span>
+              <router-link v-for="tag in tags" :key="tag.slug" :to="`/concepts/${tag.slug}`" class="px-2.5 py-1 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium rounded-md cursor-pointer hover:bg-[#ae5630]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200">
+                {{ tag.name }}
+              </router-link>
             </div>
           </div>
         </div>
