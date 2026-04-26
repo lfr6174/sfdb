@@ -136,6 +136,28 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 
 # ============================================================================
+# CATALOGUE ENTRY FOR WORK SERIALIZER
+# ============================================================================
+
+
+class CatalogueBriefSerializer(serializers.ModelSerializer):
+    catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
+    curator_detail = PersonMinimalSerializer(source="curator", read_only=True)
+
+    class Meta:
+        model = Catalogue
+        fields = ["id", "title", "catalogue_type_display", "year", "curator_detail"]
+
+
+class WorkCatalogueEntrySerializer(serializers.ModelSerializer):
+    catalogue_detail = CatalogueBriefSerializer(source="catalogue", read_only=True)
+
+    class Meta:
+        model = CatalogueEntry
+        fields = ["id", "catalogue_detail", "order", "note"]
+
+
+# ============================================================================
 # MAIN WORK SERIALIZER (The Aggregator)
 # ============================================================================
 
@@ -153,6 +175,7 @@ class WorkSerializer(serializers.ModelSerializer):
     credits = WorkCreditSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
     publications = PublicationSerializer(many=True, read_only=True)
+    catalogue_entries = WorkCatalogueEntrySerializer(many=True, read_only=True)
 
     class Meta:
         model = Work
@@ -171,6 +194,7 @@ class WorkSerializer(serializers.ModelSerializer):
             "credits",
             "work_concepts",
             "publications",
+            "catalogue_entries",
             "created_at",
             "updated_at",
         ]

@@ -35,6 +35,7 @@ class WorkViewSet(viewsets.ModelViewSet):
             "work_concepts__concept",
             "publications__publisher",
             "publications__credits__person",
+            "catalogue_entries__catalogue__curator",
         )
         .order_by("-year", "title")
     )
