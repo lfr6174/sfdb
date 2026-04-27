@@ -39,6 +39,7 @@ class PublicationInline(admin.TabularInline):
 class PublicationCreditInline(admin.TabularInline):
     model = PublicationCredit
     extra = 1
+    fields = ("person", "display_name", "role", "order")
     autocomplete_fields = ("person",)
 
 
@@ -66,15 +67,18 @@ class SeriesAdmin(admin.ModelAdmin):
 
 @admin.register(Work)
 class WorkAdmin(admin.ModelAdmin):
-    list_display = ("title", "media_type", "work_length", "year", "series")
-    list_filter = ("media_type", "work_length", "year")
+    list_display = ("title", "media_type", "work_length", "language", "year", "series")
+    list_filter = ("media_type", "work_length", "language", "year")
     search_fields = ("title", "description")
     autocomplete_fields = ("series",)
     inlines = [WorkCreditInline, WorkConceptInline, PublicationInline]
     readonly_fields = ("created_at", "updated_at")
 
     fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("title", "media_type", "work_length", "year", "description")}),
+        (
+            "基本資訊 (Basic Info)",
+            {"fields": ("title", "media_type", "work_length", "language", "year", "description")},
+        ),
         ("系列資訊 (Series Info)", {"fields": ("series", "series_order")}),
         ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
     )
@@ -98,15 +102,15 @@ class PublisherAdmin(admin.ModelAdmin):
 
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ("title", "work", "publisher", "year", "isbn")
-    list_filter = ("year", "publisher")
+    list_display = ("title", "work", "publisher", "language", "year", "isbn")
+    list_filter = ("language", "year", "publisher")
     search_fields = ("title", "isbn", "work__title")
     autocomplete_fields = ("work", "publisher")
     inlines = [PublicationCreditInline]
     readonly_fields = ("created_at", "updated_at")
 
     fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("work", "publisher", "title", "year", "isbn", "note")}),
+        ("基本資訊 (Basic Info)", {"fields": ("work", "publisher", "title", "language", "year", "isbn", "note")}),
         ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
     )
 

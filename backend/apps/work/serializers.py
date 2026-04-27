@@ -111,10 +111,11 @@ class PublicationCreditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PublicationCredit
-        fields = ["id", "person", "person_detail", "role", "role_display", "order"]
+        fields = ["id", "person", "person_detail", "display_name", "role", "role_display", "order"]
 
 
 class PublicationSerializer(serializers.ModelSerializer):
+    language_display = serializers.CharField(source="get_language_display", read_only=True)
     publisher_detail = PublisherSerializer(source="publisher", read_only=True)
     credits = PublicationCreditSerializer(many=True, read_only=True)
 
@@ -126,6 +127,8 @@ class PublicationSerializer(serializers.ModelSerializer):
             "publisher",
             "publisher_detail",
             "title",
+            "language",
+            "language_display",
             "year",
             "isbn",
             "note",
@@ -169,6 +172,7 @@ class WorkSerializer(serializers.ModelSerializer):
     """
 
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
+    language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
 
     series_detail = SeriesSerializer(source="series", read_only=True)
@@ -182,6 +186,8 @@ class WorkSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+            "language",
+            "language_display",
             "media_type",
             "media_type_display",
             "work_length",

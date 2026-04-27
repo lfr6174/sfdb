@@ -25,6 +25,16 @@ class Series(TimeStampedModel):
         return self.title
 
 
+class Language(models.TextChoices):
+    """Language categories for works and publications."""
+
+    ZH_HANT = "zh-hant", "繁體中文"
+    ZH_HANS = "zh-hans", "簡體中文"
+    EN = "en", "英文"
+    JA = "ja", "日文"
+    OTHER = "other", "其他"
+
+
 class MediaType(models.TextChoices):
     """Media types for a work."""
 
@@ -49,6 +59,9 @@ class Work(TimeStampedModel):
     title = models.CharField(max_length=300, verbose_name="標題")
     media_type = models.CharField(max_length=20, choices=MediaType.choices, verbose_name="媒體類型")
     work_length = models.CharField(max_length=20, choices=WorkLength.choices, verbose_name="篇幅")
+    language = models.CharField(
+        max_length=20, choices=Language.choices, default=Language.ZH_HANT, verbose_name="原始語言"
+    )
     year = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="發表年份")
     description = models.TextField(blank=True, verbose_name="無劇透概述 (Synopsis)")
 
@@ -179,6 +192,9 @@ class Publication(TimeStampedModel):
     )
 
     title = models.CharField(max_length=300, verbose_name="名稱")
+    language = models.CharField(
+        max_length=20, choices=Language.choices, default=Language.ZH_HANT, verbose_name="出版品語言"
+    )
     year = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="發行年份")
     isbn = models.CharField(max_length=50, blank=True, verbose_name="ISBN")
     note = models.CharField(max_length=200, blank=True, verbose_name="備註")
@@ -214,6 +230,12 @@ class PublicationCredit(models.Model):
         related_name="publication_credits",
         verbose_name="人物",
     )
+    display_name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="顯示名稱",
+        help_text="若此處留空，將會使用人物的本名。用於翻譯名稱或特定筆名。",
+    )
     role = models.CharField(max_length=20, choices=PublicationRole.choices, verbose_name="角色")
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
@@ -224,7 +246,8 @@ class PublicationCredit(models.Model):
         verbose_name_plural = "出版品人物關聯"
 
     def __str__(self):
-        return f"{self.publication.title} - {self.person.name} ({self.get_role_display()})"
+        name_to_display = self.display_name or self.person.name
+        return f"{self.publication.title} - {name_to_display} ({self.get_role_display()})"
 
 
 # ============================================================================
