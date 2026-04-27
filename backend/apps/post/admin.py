@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post
+from .models import Page, Post
 
 
 @admin.register(Post)
@@ -25,3 +25,10 @@ class PostAdmin(admin.ModelAdmin):
         if not obj.author_id:
             obj.author = request.user
         super().save_model(request, obj, form, change)
+
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    list_display = ("title", "slug", "updated_at")
+    search_fields = ("title", "slug", "body")
+    readonly_fields = ("created_at", "updated_at")

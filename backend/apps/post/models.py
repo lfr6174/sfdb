@@ -37,3 +37,16 @@ class Post(TimeStampedModel):
     def clean(self):
         if self.is_pinned and self.post_type != PostType.ANNOUNCEMENT:
             raise ValidationError({"is_pinned": "只有「公告」類型可以設定置頂。"})
+
+
+class Page(TimeStampedModel):
+    slug = models.SlugField(max_length=50, unique=True, verbose_name="網址代稱", help_text="例如: about, faq, terms")
+    title = models.CharField(max_length=300, verbose_name="標題")
+    body = models.TextField(verbose_name="內文", help_text="支援 Markdown。")
+
+    class Meta:
+        verbose_name = "靜態頁面"
+        verbose_name_plural = "靜態頁面"
+
+    def __str__(self):
+        return f"{self.title} ({self.slug})"

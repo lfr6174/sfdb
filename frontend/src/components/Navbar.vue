@@ -24,7 +24,7 @@ const toggleSpoiler = () => {
           <router-link to="/concepts" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-[#2d2016]/60 hover:text-[#2d2016]" active-class="!border-[#ae5630] !text-[#ae5630]">概念</router-link>
           <router-link to="/works" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-[#2d2016]/60 hover:text-[#2d2016]" active-class="!border-[#ae5630] !text-[#ae5630]">作品</router-link>
           <router-link to="/persons" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-[#2d2016]/60 hover:text-[#2d2016]" active-class="!border-[#ae5630] !text-[#ae5630]">人物</router-link>
-          <router-link to="/about" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-[#2d2016]/60 hover:text-[#2d2016]" active-class="!border-[#ae5630] !text-[#ae5630]">關於</router-link>
+          <router-link to="/pages/about" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-[#2d2016]/60 hover:text-[#2d2016]" active-class="!border-[#ae5630] !text-[#ae5630]">關於</router-link>
         </nav>
       </div>
 

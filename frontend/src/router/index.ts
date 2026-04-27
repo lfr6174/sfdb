@@ -8,6 +8,7 @@ import WorksView from '../views/WorksView.vue'
 import WorkDetailView from '../views/WorkDetailView.vue'
 import PostsView from '../views/PostsView.vue'
 import PostDetailView from '../views/PostDetailView.vue'
+import PageDetailView from '../views/PageDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,6 +62,12 @@ const router = createRouter({
       component: PostDetailView,
       props: true
     },
+    {
+      path: '/pages/:slug',
+      name: 'page-detail',
+      component: PageDetailView,
+      props: true
+    }
   ]
 })
 

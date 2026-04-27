@@ -3,8 +3,8 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Post, PostType
-from .serializers import PostDetailSerializer, PostListSerializer
+from .models import Page, Post, PostType
+from .serializers import PageSerializer, PostDetailSerializer, PostListSerializer
 
 
 class PostViewSet(viewsets.ReadOnlyModelViewSet):
@@ -31,3 +31,13 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
         if not post:
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         return Response(PostDetailSerializer(post).data)
+
+
+class PageViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Public read-only API for static pages.
+    """
+
+    queryset = Page.objects.all()
+    serializer_class = PageSerializer
+    lookup_field = "slug"

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Post
+from .models import Page, Post
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -29,3 +29,9 @@ class PostDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+
+class PageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ["id", "slug", "title", "body", "created_at", "updated_at"]
