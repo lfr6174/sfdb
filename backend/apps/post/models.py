@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -11,6 +12,14 @@ class PostType(models.TextChoices):
 
 
 class Post(TimeStampedModel):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="作者",
+        related_name="posts",
+    )
     post_type = models.CharField(max_length=20, choices=PostType.choices, verbose_name="類型")
     title = models.CharField(max_length=300, verbose_name="標題")
     body = models.TextField(verbose_name="內文", help_text="支援 Markdown。")

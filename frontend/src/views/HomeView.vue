@@ -10,6 +10,12 @@ const currentConcept = ref<any>({})
 const recentConcepts = ref<Record<string, {name: string, slug: string}[]>>({})
 const announcements = ref<any[]>([])
 
+// 共用的日期格式化函式
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '-'
+  return dateStr.split('T')[0].replace(/-/g, '/')
+}
+
 const refreshRandomConcept = async () => {
   isLoading.value = true
   try {
@@ -32,7 +38,7 @@ onMounted(async () => {
     const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.all([
       api.get('/works/'),
       api.get('/concepts/', { params: { ordering: '-updated_at' } }), // Fetch genuinely "recently added" concepts by sorting
-      api.get('/posts/', { params: { post_type: 'announcement' } }),
+      api.get('/posts/'),
       api.get('/concepts/random-spotlight/') // Fetch a random concept on initial load
     ])
 
@@ -56,11 +62,7 @@ onMounted(async () => {
 
     // 3. Announcement processing
     const fetchedPosts = postsRes.data.results || []
-    announcements.value = fetchedPosts.slice(0, 5).map((p: any) => ({
-      id: p.id,
-      date: p.created_at ? p.created_at.split('T')[0].replace(/-/g, '/') : '',
-      text: p.title
-    }))
+    announcements.value = fetchedPosts.slice(0, 5) // 統一：直接儲存原始資料
 
     // 4. Set initial random concept
     if (randomRes.status === 200 && randomRes.data) {
@@ -149,11 +151,18 @@ onMounted(async () => {
 
     <!-- Footer Section: Announcements -->
     <section class="bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
-      <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight mb-3">公告與更新日誌</h2>
+      <div class="flex items-center justify-between mb-3 border-b border-[#2d2016]/5 pb-2">
+        <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight">最新資訊</h2>
+        <router-link to="/posts" class="text-sm font-medium text-[#ae5630] hover:underline underline-offset-4 transition-colors">
+          查看全部
+        </router-link>
+      </div>
       <ul class="space-y-2">
-        <li v-for="ann in announcements" :key="ann.id" class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-1 border-b border-[#2d2016]/5 last:border-0">
-          <span class="text-base font-mono text-[#2d2016]/50 min-w-[110px]">{{ ann.date }}</span>
-          <span class="text-base text-[#2d2016]/80 leading-relaxed">{{ ann.text }}</span>
+        <li v-for="ann in announcements" :key="ann.id" class="border-b border-[#2d2016]/5 last:border-0">
+          <router-link :to="`/posts/${ann.id}`" class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-1.5 group cursor-pointer w-full">
+            <span class="text-base font-mono text-[#2d2016]/50 min-w-[110px] group-hover:text-[#ae5630]/70 transition-colors">{{ formatDate(ann.created_at) }}</span>
+            <span class="text-base text-[#2d2016]/80 group-hover:text-[#ae5630] transition-colors leading-relaxed">{{ ann.title }}</span>
+          </router-link>
         </li>
       </ul>
     </section>
