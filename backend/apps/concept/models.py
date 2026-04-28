@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.core.models import TimeStampedModel
@@ -12,26 +11,6 @@ class ConceptCategory(models.TextChoices):
     NOVUM = "novum", "新異 (Novum)"
     NARRATIVE = "narrative", "敘事 (Narrative)"
     THEME = "theme", "主題 (Theme)"
-
-
-class ConceptGroup(TimeStampedModel):
-    """
-    Sub-categories used to group concepts together in the Concept Hub.
-    Example: 'Time Manipulation' under the 'Novum' category.
-    """
-
-    name = models.CharField(max_length=100, verbose_name="子分類名稱")
-    category = models.CharField(max_length=20, choices=ConceptCategory.choices, verbose_name="所屬大類")
-    description = models.TextField(blank=True, verbose_name="群組概述")
-
-    class Meta:
-        ordering = ["category", "name"]
-        verbose_name = "概念子分類"
-        verbose_name_plural = "概念子分類"
-        unique_together = [["name", "category"]]
-
-    def __str__(self):
-        return f"{self.get_category_display()} - {self.name}"
 
 
 class Concept(TimeStampedModel):
@@ -48,16 +27,6 @@ class Concept(TimeStampedModel):
         verbose_name="URL 識別符",
     )
     category = models.CharField(max_length=20, choices=ConceptCategory.choices, verbose_name="分類")
-
-    group = models.ForeignKey(
-        ConceptGroup,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="concepts",
-        verbose_name="子分類",
-        help_text="Optional grouping for the Concept Hub UI.",
-    )
 
     description = models.TextField(
         blank=True,
@@ -82,14 +51,6 @@ class Concept(TimeStampedModel):
 
     def __str__(self):
         return f"[{self.get_category_display()}] {self.name}"
-
-    def clean(self):
-        """
-        Ensure the concept's category matches its group's category.
-        """
-        super().clean()
-        if self.group and self.group.category != self.category:
-            raise ValidationError({"group": "子分類的所屬大類必須與概念的大類一致！"})
 
 
 class ConceptLink(models.Model):

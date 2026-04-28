@@ -1,14 +1,6 @@
 from rest_framework import serializers
 
-from .models import Concept, ConceptGroup, ConceptLink
-
-
-class ConceptGroupSerializer(serializers.ModelSerializer):
-    """Serializer for ConceptGroup."""
-
-    class Meta:
-        model = ConceptGroup
-        fields = ["id", "name", "category", "description", "created_at", "updated_at"]
+from .models import Concept, ConceptLink
 
 
 class ConceptLinkSerializer(serializers.ModelSerializer):
@@ -37,7 +29,6 @@ class ConceptSerializer(serializers.ModelSerializer):
     """
 
     links = ConceptLinkSerializer(many=True, read_only=True)
-    group_detail = ConceptGroupSerializer(source="group", read_only=True)
     related_concepts_detail = ConceptMinimalSerializer(source="related_concepts", many=True, read_only=True)
     works_count = serializers.IntegerField(read_only=True)
     work_concepts = serializers.SerializerMethodField()
@@ -49,8 +40,6 @@ class ConceptSerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "category",
-            "group",
-            "group_detail",
             "description",
             "related_concepts",
             "related_concepts_detail",

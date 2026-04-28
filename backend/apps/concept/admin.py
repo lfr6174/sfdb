@@ -1,7 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import Concept, ConceptGroup, ConceptLink
+from .models import Concept, ConceptLink
 
 
 class ConceptLinkInline(admin.TabularInline):
@@ -13,43 +13,17 @@ class ConceptLinkInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(ConceptGroup)
-class ConceptGroupAdmin(ModelAdmin):
-    list_display = ("name", "category", "created_at", "updated_at")
-    list_filter = ("category",)
-    search_fields = ("name",)
-    readonly_fields = ("created_at", "updated_at")
-
-    fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("name", "category")}),
-        (
-            "進階資訊 (Advanced Info)",
-            {
-                "fields": ("description",),
-                "classes": ("collapse",),  # 預設折疊，保持介面乾淨
-            },
-        ),
-        (
-            "系統資訊 (System Info)",
-            {
-                "fields": ("created_at", "updated_at"),
-                "classes": ("collapse",),
-            },
-        ),
-    )
-
-
 @admin.register(Concept)
 class ConceptAdmin(ModelAdmin):
-    list_display = ("name", "category", "group", "created_at", "updated_at")
-    list_filter = ("category", "group")
+    list_display = ("name", "category", "created_at", "updated_at")
+    list_filter = ("category",)
     search_fields = ("name", "slug")
-    autocomplete_fields = ("group", "related_concepts")
+    autocomplete_fields = ("related_concepts",)
     inlines = [ConceptLinkInline]
     readonly_fields = ("created_at", "updated_at")
 
     fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("name", "slug", "category", "group", "description")}),
+        ("基本資訊 (Basic Info)", {"fields": ("name", "slug", "category", "description")}),
         (
             "關聯 (Relations)",
             {

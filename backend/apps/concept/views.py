@@ -4,21 +4,8 @@ from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Concept, ConceptGroup, ConceptLink
-from .serializers import ConceptGroupSerializer, ConceptLinkSerializer, ConceptSerializer
-
-
-class ConceptGroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for Concept Groups.
-    """
-
-    queryset = ConceptGroup.objects.all().order_by("category", "name")
-    serializer_class = ConceptGroupSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["category"]
-    search_fields = ["name"]
-    ordering_fields = ["name", "category", "created_at", "updated_at"]
+from .models import Concept, ConceptLink
+from .serializers import ConceptLinkSerializer, ConceptSerializer
 
 
 class ConceptViewSet(viewsets.ModelViewSet):
@@ -32,7 +19,7 @@ class ConceptViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"  # Change the default /id/ URL to /slug/
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["category", "group"]
+    filterset_fields = ["category"]
     search_fields = ["name", "slug"]
     ordering_fields = ["name", "created_at", "updated_at", "works_count"]
 
