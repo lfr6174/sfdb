@@ -1,5 +1,5 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import (
     Catalogue,
@@ -18,33 +18,33 @@ from .models import (
 # ============================================================================
 
 
-class WorkCreditInline(admin.TabularInline):
+class WorkCreditInline(TabularInline):
     model = WorkCredit
     extra = 1
     autocomplete_fields = ("person",)
 
 
-class WorkConceptInline(admin.TabularInline):
+class WorkConceptInline(TabularInline):
     model = WorkConcept
     extra = 1
     autocomplete_fields = ("concept",)
 
 
-class PublicationInline(admin.TabularInline):
+class PublicationInline(TabularInline):
     model = Publication
     extra = 1
     autocomplete_fields = ("publisher",)
     show_change_link = True  # Provide a link to navigate to the publication page for adding contributors
 
 
-class PublicationCreditInline(admin.TabularInline):
+class PublicationCreditInline(TabularInline):
     model = PublicationCredit
     extra = 1
     fields = ("person", "display_name", "role", "order")
     autocomplete_fields = ("person",)
 
 
-class CatalogueEntryInline(admin.TabularInline):
+class CatalogueEntryInline(TabularInline):
     model = CatalogueEntry
     extra = 1
     autocomplete_fields = ("work",)
@@ -103,15 +103,18 @@ class PublisherAdmin(ModelAdmin):
 
 @admin.register(Publication)
 class PublicationAdmin(ModelAdmin):
-    list_display = ("title", "work", "publisher", "language", "year", "isbn")
-    list_filter = ("language", "year", "publisher")
+    list_display = ("title", "media", "work", "publisher", "language", "year", "isbn")
+    list_filter = ("language", "media", "year", "publisher")
     search_fields = ("title", "isbn", "work__title")
     autocomplete_fields = ("work", "publisher")
     inlines = [PublicationCreditInline]
     readonly_fields = ("created_at", "updated_at")
 
     fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("work", "publisher", "title", "language", "year", "isbn", "note")}),
+        (
+            "基本資訊 (Basic Info)",
+            {"fields": ("work", "media", "publisher", "title", "language", "year", "isbn", "note")},
+        ),
         ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
     )
 

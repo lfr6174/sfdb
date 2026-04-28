@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import Person, PersonAlias, PersonLink
 
@@ -27,7 +27,7 @@ class BioEmptyFilter(admin.SimpleListFilter):
         return queryset
 
 
-class PersonAliasInline(admin.TabularInline):
+class PersonAliasInline(TabularInline):
     """
     Allows editing Person aliases horizontally on the Person edit page.
     """
@@ -36,7 +36,7 @@ class PersonAliasInline(admin.TabularInline):
     extra = 1
 
 
-class PersonLinkInline(admin.TabularInline):
+class PersonLinkInline(TabularInline):
     """
     Allows editing Person links horizontally on the Person edit page.
     """

@@ -1,10 +1,10 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import Concept, ConceptLink
 
 
-class ConceptLinkInline(admin.TabularInline):
+class ConceptLinkInline(TabularInline):
     """
     Allows editing Concept links horizontally on the Concept edit page.
     """
