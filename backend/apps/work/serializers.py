@@ -53,13 +53,16 @@ class WorkBriefSerializer(serializers.ModelSerializer):
     def get_byline(self, obj):
         credits = obj.credits.all()
         if not credits:
-            return "作者未知"
+            return "佚名"
 
-        names = [c.person.name for c in credits[:2] if c.role == "author"]
-        display = "、".join(names)
-        if len(credits) > 2:
-            display += " 等"
-        return display
+        seen = set()
+        names = []
+        for c in credits:
+            if c.person.name not in seen:
+                seen.add(c.person.name)
+                names.append(c.person.name)
+
+        return "、".join(names)
 
 
 # ============================================================================

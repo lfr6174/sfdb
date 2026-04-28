@@ -57,6 +57,52 @@ const conceptDescriptions = computed(() => {
   if (!work.value?.work_concepts) return []
   return work.value.work_concepts.filter((wc: any) => !!wc.description)
 })
+
+const groupedWorkCredits = computed(() => {
+  if (!work.value?.credits) return []
+  const groups: Record<string, any[]> = {}
+  work.value.credits.forEach((c: any) => {
+    if (!groups[c.role]) groups[c.role] = []
+    groups[c.role].push(c)
+  })
+
+  const result = []
+  const authors = [...(groups['author'] || []), ...(groups['co_author'] || [])]
+  if (authors.length) result.push({ label: '', credits: authors })
+  if (groups['story']) result.push({ label: '原作', credits: groups['story'] })
+  if (groups['art']) result.push({ label: '作畫', credits: groups['art'] })
+  return result
+})
+
+const getGroupedPubCredits = (credits: any[]) => {
+  if (!credits || !credits.length) return []
+
+  const filteredCredits = credits.filter((c: any) => {
+    // 核心作者群如果沒有填寫專屬的 display_name，就不要顯示在出版品列表上
+    if (['author', 'co_author', 'story', 'art'].includes(c.role)) {
+      return !!c.display_name
+    }
+    return true // 譯者、繪者、編輯則一律顯示
+  })
+
+  const groups: Record<string, any[]> = {}
+  filteredCredits.forEach((c: any) => {
+    if (!groups[c.role]) groups[c.role] = []
+    groups[c.role].push(c)
+  })
+
+  const result = []
+  const authors = [...(groups['author'] || []), ...(groups['co_author'] || [])]
+
+  if (authors.length) result.push({ label: '著', credits: authors })
+  if (groups['story']) result.push({ label: '原作', credits: groups['story'] })
+  if (groups['art']) result.push({ label: '作畫', credits: groups['art'] })
+
+  if (groups['translator']) result.push({ label: '譯', credits: groups['translator'] })
+  if (groups['illustrator']) result.push({ label: '繪', credits: groups['illustrator'] })
+  if (groups['editor']) result.push({ label: '編', credits: groups['editor'] })
+  return result
+}
 </script>
 
 <template>
@@ -83,15 +129,19 @@ const conceptDescriptions = computed(() => {
 
         <!-- Metadata List -->
         <div class="flex flex-wrap items-center gap-2 text-base text-[#2d2016]/70 mb-6 font-medium">
-          <span v-if="work.credits && work.credits.length > 0" class="flex flex-wrap items-center">
-            <span v-for="(credit, idx) in work.credits" :key="credit.id">
-              <router-link :to="`/persons/${credit.person_detail.id}`" class="text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
-                {{ credit.person_detail.name }}
-              </router-link>
-              <span v-if="idx < work.credits.length - 1" class="text-[#2d2016]/80 mx-0.5">、</span>
+          <span v-if="groupedWorkCredits.length > 0" class="flex flex-wrap items-center">
+            <span v-for="(group, gIdx) in groupedWorkCredits" :key="gIdx" class="flex flex-wrap items-center">
+              <span v-for="(credit, cIdx) in group.credits" :key="credit.id">
+                <router-link :to="`/persons/${credit.person_detail.id}`" class="text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
+                  {{ credit.person_detail.name }}
+                </router-link>
+                <span v-if="cIdx < group.credits.length - 1" class="text-[#2d2016]/80 mx-0.5">、</span>
+              </span>
+              <span v-if="group.label" class="text-[#2d2016]/80 ml-1">({{ group.label }})</span>
+              <span v-if="gIdx < groupedWorkCredits.length - 1" class="text-[#2d2016]/80 mx-1">，</span>
             </span>
           </span>
-          <span v-else>未知作者</span>
+          <span v-else>佚名</span>
           <span class="text-[#2d2016]/30">·</span>
           <span>{{ work.year || '未知年份' }}</span>
           <span class="text-[#2d2016]/30">·</span>
@@ -185,7 +235,18 @@ const conceptDescriptions = computed(() => {
                 <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ pub.year || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top">{{ pub.publisher_detail?.name || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top text-sm">
-                  {{ pub.credits.length > 0 ? pub.credits.map((c: any) => `${c.person_detail.name} (${c.role_display})`).join('、') : '-' }}
+                  <template v-if="pub.credits.length > 0">
+                    <span v-for="(group, gIdx) in getGroupedPubCredits(pub.credits)" :key="gIdx">
+                      <span v-for="(c, cIdx) in group.credits" :key="c.id">
+                        <router-link :to="`/persons/${c.person_detail.id}`" class="hover:text-[#ae5630] transition-colors">
+                          {{ c.display_name || c.person_detail.name }}
+                        </router-link><span v-if="cIdx < group.credits.length - 1">、</span>
+                      </span>
+                      <span class="text-[#2d2016]/60 ml-0.5">{{ group.label }}</span>
+                      <span v-if="gIdx < getGroupedPubCredits(pub.credits).length - 1">；</span>
+                    </span>
+                  </template>
+                  <span v-else>-</span>
                 </td>
                 <td class="py-3.5 pr-4 align-top font-mono text-sm text-[#2d2016]/60">{{ pub.isbn || '-' }}</td>
                 <td class="py-3.5 align-top text-[#2d2016]/60">{{ pub.note || '-' }}</td>

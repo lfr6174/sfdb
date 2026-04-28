@@ -217,6 +217,10 @@ class Publication(TimeStampedModel):
     isbn = models.CharField(max_length=50, blank=True, verbose_name="ISBN")
     note = models.CharField(max_length=200, blank=True, verbose_name="備註")
 
+    persons = models.ManyToManyField(
+        "person.Person", through="PublicationCredit", related_name="publications", verbose_name="相關人物"
+    )
+
     class Meta:
         ordering = ["year", "title"]
         verbose_name = "出版品"
@@ -229,6 +233,10 @@ class Publication(TimeStampedModel):
 class PublicationRole(models.TextChoices):
     """Contribution roles of a person at the 'Publication' level."""
 
+    AUTHOR = "author", "作者"
+    CO_AUTHOR = "co_author", "合著"
+    STORY = "story", "原作"
+    ART = "art", "作畫"
     TRANSLATOR = "translator", "譯者"
     EDITOR = "editor", "編輯"
     ILLUSTRATOR = "illustrator", "插畫"

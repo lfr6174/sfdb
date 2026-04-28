@@ -43,7 +43,14 @@ class WorkViewSet(viewsets.ModelViewSet):
     serializer_class = WorkSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = WorkFilter
-    search_fields = ["title", "publications__title", "credits__person__name", "credits__person__aliases__name"]
+    search_fields = [
+        "title",
+        "publications__title",
+        "credits__person__name",
+        "credits__person__aliases__name",
+        "publications__credits__person__name",
+        "publications__credits__person__aliases__name",
+    ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
 
@@ -64,14 +71,19 @@ class PublicationViewSet(viewsets.ModelViewSet):
     serializer_class = PublicationSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["year", "publisher", "work"]
-    search_fields = ["title", "isbn"]
+    search_fields = [
+        "title",
+        "isbn",
+        "credits__person__name",
+        "credits__person__aliases__name",
+    ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
 
 class CatalogueViewSet(viewsets.ModelViewSet):
     queryset = (
         Catalogue.objects.select_related("curator")
-        .prefetch_related("entries__work")
+        .prefetch_related("entries__work", "entries__work__credits__person")
         .annotate(works_count=Count("entries", distinct=True))
         .order_by("-year", "title")
     )
