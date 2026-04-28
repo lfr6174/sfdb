@@ -1,4 +1,5 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import Concept, ConceptGroup, ConceptLink
 
@@ -13,7 +14,7 @@ class ConceptLinkInline(admin.TabularInline):
 
 
 @admin.register(ConceptGroup)
-class ConceptGroupAdmin(admin.ModelAdmin):
+class ConceptGroupAdmin(ModelAdmin):
     list_display = ("name", "category", "created_at", "updated_at")
     list_filter = ("category",)
     search_fields = ("name",)
@@ -39,7 +40,7 @@ class ConceptGroupAdmin(admin.ModelAdmin):
 
 
 @admin.register(Concept)
-class ConceptAdmin(admin.ModelAdmin):
+class ConceptAdmin(ModelAdmin):
     list_display = ("name", "category", "group", "created_at", "updated_at")
     list_filter = ("category", "group")
     search_fields = ("name", "slug")
@@ -67,7 +68,7 @@ class ConceptAdmin(admin.ModelAdmin):
 
 
 @admin.register(ConceptLink)
-class ConceptLinkAdmin(admin.ModelAdmin):
+class ConceptLinkAdmin(ModelAdmin):
     list_display = ("title", "concept", "url", "order")
     search_fields = ("title", "concept__name", "url")
     autocomplete_fields = ("concept",)

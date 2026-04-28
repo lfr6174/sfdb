@@ -4,3 +4,4 @@ django-cors-headers
 django-filter
 drf-spectacular
 python-decouple
+unfold

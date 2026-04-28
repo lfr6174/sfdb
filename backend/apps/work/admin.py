@@ -1,4 +1,5 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import (
     Catalogue,
@@ -55,7 +56,7 @@ class CatalogueEntryInline(admin.TabularInline):
 
 
 @admin.register(Series)
-class SeriesAdmin(admin.ModelAdmin):
+class SeriesAdmin(ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
@@ -66,7 +67,7 @@ class SeriesAdmin(admin.ModelAdmin):
 
 
 @admin.register(Work)
-class WorkAdmin(admin.ModelAdmin):
+class WorkAdmin(ModelAdmin):
     list_display = ("title", "media_type", "work_length", "language", "year", "series")
     list_filter = ("media_type", "work_length", "language", "year")
     search_fields = ("title", "description")
@@ -90,7 +91,7 @@ class WorkAdmin(admin.ModelAdmin):
 
 
 @admin.register(Publisher)
-class PublisherAdmin(admin.ModelAdmin):
+class PublisherAdmin(ModelAdmin):
     list_display = ("name", "created_at", "updated_at")
     search_fields = ("name",)
     readonly_fields = ("created_at", "updated_at")
@@ -101,7 +102,7 @@ class PublisherAdmin(admin.ModelAdmin):
 
 
 @admin.register(Publication)
-class PublicationAdmin(admin.ModelAdmin):
+class PublicationAdmin(ModelAdmin):
     list_display = ("title", "work", "publisher", "language", "year", "isbn")
     list_filter = ("language", "year", "publisher")
     search_fields = ("title", "isbn", "work__title")
@@ -121,7 +122,7 @@ class PublicationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Catalogue)
-class CatalogueAdmin(admin.ModelAdmin):
+class CatalogueAdmin(ModelAdmin):
     list_display = ("title", "catalogue_type", "curator", "year")
     list_filter = ("catalogue_type", "year")
     search_fields = ("title", "curator__name")

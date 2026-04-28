@@ -1,10 +1,11 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import Page, Post
 
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(ModelAdmin):
     list_display = ("title", "post_type", "author", "is_pinned", "created_at")
     list_filter = ("post_type", "is_pinned")
     search_fields = ("title", "body", "author__username")
@@ -28,7 +29,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Page)
-class PageAdmin(admin.ModelAdmin):
+class PageAdmin(ModelAdmin):
     list_display = ("title", "slug", "updated_at")
     search_fields = ("title", "slug", "body")
     readonly_fields = ("created_at", "updated_at")

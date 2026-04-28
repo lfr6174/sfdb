@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from unfold.admin import ModelAdmin
 
 from .models import Person, PersonAlias, PersonLink
 
@@ -45,7 +46,7 @@ class PersonLinkInline(admin.TabularInline):
 
 
 @admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(ModelAdmin):
     list_display = ("name", "short_bio", "created_at", "updated_at")
     search_fields = ("name",)
     list_filter = (BioEmptyFilter, "created_at")
@@ -74,7 +75,7 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 @admin.register(PersonAlias)
-class PersonAliasAdmin(admin.ModelAdmin):
+class PersonAliasAdmin(ModelAdmin):
     list_display = ("name", "person")
     search_fields = ("name", "person__name")
     # Use an autocomplete dropdown instead of a heavy standard select box
@@ -82,7 +83,7 @@ class PersonAliasAdmin(admin.ModelAdmin):
 
 
 @admin.register(PersonLink)
-class PersonLinkAdmin(admin.ModelAdmin):
+class PersonLinkAdmin(ModelAdmin):
     list_display = ("title", "person", "url")
     search_fields = ("title", "person__name", "url")
     autocomplete_fields = ("person",)

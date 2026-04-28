@@ -16,6 +16,7 @@ SECRET_KEY = config("SECRET_KEY")
 # Application definition
 
 INSTALLED_APPS = [
+    "unfold",  # Alternative admin GUI
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
