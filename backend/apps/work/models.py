@@ -49,6 +49,13 @@ class WorkLength(models.TextChoices):
     SHORT = "short", "中短篇"
 
 
+class WorkProvenance(models.TextChoices):
+    """Provenance for a work"""
+
+    ORIGINAL = "original", "原創"
+    LICENSED = "licensed", "代理"
+
+
 class Work(TimeStampedModel):
     """
     Core entity: Work.
@@ -59,6 +66,7 @@ class Work(TimeStampedModel):
     title = models.CharField(max_length=300, verbose_name="標題")
     media_type = models.CharField(max_length=20, choices=MediaType.choices, verbose_name="媒體類型")
     work_length = models.CharField(max_length=20, choices=WorkLength.choices, verbose_name="篇幅")
+    provenance = models.CharField(max_length=20, choices=WorkProvenance.choices, verbose_name="作品來源")
     language = models.CharField(
         max_length=20, choices=Language.choices, default=Language.ZH_HANT, verbose_name="原始語言"
     )

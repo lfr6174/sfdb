@@ -68,8 +68,8 @@ class SeriesAdmin(ModelAdmin):
 
 @admin.register(Work)
 class WorkAdmin(ModelAdmin):
-    list_display = ("title", "media_type", "work_length", "language", "year", "series")
-    list_filter = ("media_type", "work_length", "language", "year")
+    list_display = ("title", "media_type", "work_length", "provenance", "language", "year", "series")
+    list_filter = ("media_type", "work_length", "provenance", "language", "year")
     search_fields = ("title", "description")
     autocomplete_fields = ("series",)
     inlines = [WorkCreditInline, WorkConceptInline, PublicationInline]
@@ -78,7 +78,7 @@ class WorkAdmin(ModelAdmin):
     fieldsets = (
         (
             "基本資訊 (Basic Info)",
-            {"fields": ("title", "media_type", "work_length", "language", "year", "description")},
+            {"fields": ("title", "media_type", "work_length", "provenance", "language", "year", "description")},
         ),
         ("系列資訊 (Series Info)", {"fields": ("series", "series_order")}),
         ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
