@@ -117,6 +117,7 @@ class PublicationCreditSerializer(serializers.ModelSerializer):
 class PublicationSerializer(serializers.ModelSerializer):
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     publisher_detail = PublisherSerializer(source="publisher", read_only=True)
+    media_display = serializers.CharField(source="get_media_display", read_only=True)
     credits = PublicationCreditSerializer(many=True, read_only=True)
 
     class Meta:
@@ -127,6 +128,8 @@ class PublicationSerializer(serializers.ModelSerializer):
             "publisher",
             "publisher_detail",
             "title",
+            "media",
+            "media_display",
             "language",
             "language_display",
             "year",

@@ -184,6 +184,16 @@ class Publisher(TimeStampedModel):
         return self.name
 
 
+class PublicationMedia(models.TextChoices):
+    """Publication medium."""
+
+    BOOK = "book", "書籍"
+    MAGAZINE = "magazine", "雜誌"
+    NEWSPAPER = "newspaper", "報紙"
+    WEBSITE = "website", "網站"
+    OTHER = "other", "其它"
+
+
 class Publication(TimeStampedModel):
     """
     Represents a specific physical or digital release of a Work.
@@ -198,11 +208,11 @@ class Publication(TimeStampedModel):
         related_name="publications",
         verbose_name="出版商",
     )
-
     title = models.CharField(max_length=300, verbose_name="名稱")
     language = models.CharField(
         max_length=20, choices=Language.choices, default=Language.ZH_HANT, verbose_name="出版品語言"
     )
+    media = models.CharField(max_length=20, choices=PublicationMedia.choices, verbose_name="出版品媒體")
     year = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="發行年份")
     isbn = models.CharField(max_length=50, blank=True, verbose_name="ISBN")
     note = models.CharField(max_length=200, blank=True, verbose_name="備註")

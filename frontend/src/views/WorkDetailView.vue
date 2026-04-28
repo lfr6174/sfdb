@@ -166,10 +166,11 @@ const conceptDescriptions = computed(() => {
       <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
         <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight mb-5 border-b border-[#2d2016]/5 pb-3">出版與發行</h2>
         <div v-if="work.publications && work.publications.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
-          <table class="w-full text-left border-collapse min-w-[800px]">
+          <table class="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
                 <th class="pb-3 pr-4 font-normal w-48">名稱</th>
+                <th class="pb-3 pr-4 font-normal w-24">形式</th>
                 <th class="pb-3 pr-4 font-normal w-20">年份</th>
                 <th class="pb-3 pr-4 font-normal w-32">出版商</th>
                 <th class="pb-3 pr-4 font-normal w-40">參與</th>
@@ -180,6 +181,7 @@ const conceptDescriptions = computed(() => {
             <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[16px]">
               <tr v-for="pub in work.publications" :key="pub.id" class="hover:bg-[#f5f0e8]/30 transition-colors">
                 <td class="py-3.5 pr-4 align-top font-medium">{{ pub.title }}</td>
+                <td class="py-3.5 pr-4 align-top"><span class="px-2 py-0.5 rounded bg-[#2d2016]/5 text-sm">{{ pub.media_display || '-' }}</span></td>
                 <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ pub.year || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top">{{ pub.publisher_detail?.name || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top text-sm">
