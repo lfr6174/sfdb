@@ -3,8 +3,9 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Page, Post, PostType
+from .models import Page, Post
 from .serializers import PageSerializer, PostDetailSerializer, PostListSerializer
+from .services import get_active_pinned_post
 
 
 class PostViewSet(viewsets.ReadOnlyModelViewSet):
@@ -26,7 +27,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["get"], url_path="active-pinned")
     def active_pinned(self, request):
-        post = self.get_queryset().filter(post_type=PostType.ANNOUNCEMENT, is_pinned=True).first()
+        post = get_active_pinned_post()
 
         if not post:
             return Response(None, status=status.HTTP_204_NO_CONTENT)

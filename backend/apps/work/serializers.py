@@ -14,6 +14,7 @@ from .models import (
     WorkConcept,
     WorkCredit,
 )
+from .services import build_work_byline
 
 # ============================================================================
 # MINIMAL / UTILITY SERIALIZERS
@@ -51,18 +52,7 @@ class WorkBriefSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "year", "media_type_display", "work_length_display", "byline"]
 
     def get_byline(self, obj):
-        credits = obj.credits.all()
-        if not credits:
-            return "佚名"
-
-        seen = set()
-        names = []
-        for c in credits:
-            if c.person.name not in seen:
-                seen.add(c.person.name)
-                names.append(c.person.name)
-
-        return "、".join(names)
+        return build_work_byline(obj)
 
 
 # ============================================================================
