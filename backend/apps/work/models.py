@@ -91,6 +91,9 @@ class Work(TimeStampedModel):
     concepts = models.ManyToManyField(
         "concept.Concept", through="WorkConcept", related_name="works", verbose_name="相關概念"
     )
+    publications = models.ManyToManyField(
+        "Publication", through="WorkPublication", related_name="works", verbose_name="收錄於出版品"
+    )
 
     class Meta:
         ordering = ["-year", "title"]
@@ -161,6 +164,25 @@ class WorkConcept(models.Model):
         return f"{self.work.title} ✕ {self.concept.name}"
 
 
+class WorkPublication(models.Model):
+    """
+    Intermediate table mapping Works to Publications (e.g., short stories in an anthology).
+    """
+
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="work_publications", verbose_name="作品")
+    publication = models.ForeignKey(
+        "Publication", on_delete=models.CASCADE, related_name="work_publications", verbose_name="出版品"
+    )
+
+    class Meta:
+        unique_together = [("work", "publication")]
+        verbose_name = "收錄作品紀錄"
+        verbose_name_plural = "收錄作品紀錄"
+
+    def __str__(self):
+        return f"{self.publication.title} - {self.work.title}"
+
+
 # ============================================================================
 # PUBLICATION
 # Represents physical or digital releases and their specific contributors.
@@ -199,7 +221,6 @@ class Publication(TimeStampedModel):
     Represents a specific physical or digital release of a Work.
     """
 
-    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="publications", verbose_name="所屬作品")
     publisher = models.ForeignKey(
         Publisher,
         on_delete=models.SET_NULL,

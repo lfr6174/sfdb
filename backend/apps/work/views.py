@@ -33,6 +33,8 @@ class WorkViewSet(viewsets.ModelViewSet):
         .prefetch_related(
             "credits__person",
             "work_concepts__concept",
+            "publications",
+            "publications__works",
             "publications__publisher",
             "publications__credits__person",
             "catalogue_entries__catalogue__curator",
@@ -55,7 +57,7 @@ class WorkViewSet(viewsets.ModelViewSet):
 
 
 class PublisherViewSet(viewsets.ModelViewSet):
-    queryset = Publisher.objects.annotate(works_count=Count("publications__work", distinct=True)).order_by("name")
+    queryset = Publisher.objects.annotate(works_count=Count("publications__works", distinct=True)).order_by("name")
     serializer_class = PublisherSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name"]
@@ -64,13 +66,13 @@ class PublisherViewSet(viewsets.ModelViewSet):
 
 class PublicationViewSet(viewsets.ModelViewSet):
     queryset = (
-        Publication.objects.select_related("work", "publisher")
-        .prefetch_related("credits__person")
+        Publication.objects.select_related("publisher")
+        .prefetch_related("credits__person", "works")
         .order_by("year", "title")
     )
     serializer_class = PublicationSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["year", "publisher", "work"]
+    filterset_fields = ["year", "publisher", "works"]
     search_fields = [
         "title",
         "isbn",

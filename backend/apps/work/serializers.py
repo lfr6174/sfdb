@@ -122,12 +122,13 @@ class PublicationSerializer(serializers.ModelSerializer):
     publisher_detail = PublisherSerializer(source="publisher", read_only=True)
     media_display = serializers.CharField(source="get_media_display", read_only=True)
     credits = PublicationCreditSerializer(many=True, read_only=True)
+    works = WorkMinimalSerializer(many=True, read_only=True)
 
     class Meta:
         model = Publication
         fields = [
             "id",
-            "work",
+            "works",
             "publisher",
             "publisher_detail",
             "title",

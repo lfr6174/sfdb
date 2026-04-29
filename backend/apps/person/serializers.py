@@ -66,15 +66,6 @@ class PersonSerializer(serializers.ModelSerializer):
                 for concept in work.concepts.all():
                     concept_counter[(concept.name, concept.slug)] += 1
 
-        # 2. Summarize from publications
-        for credit in obj.publication_credits.all():
-            if credit.publication and credit.publication.work:
-                work = credit.publication.work
-                if work.id not in counted_work_ids:
-                    counted_work_ids.add(work.id)
-                    for concept in work.concepts.all():
-                        concept_counter[(concept.name, concept.slug)] += 1
-
         # Return all associated concepts sorted by frequency (descending)
         return [{"name": name, "slug": slug, "count": count} for (name, slug), count in concept_counter.most_common()]
 
@@ -82,13 +73,14 @@ class PersonSerializer(serializers.ModelSerializer):
 class PersonDetailSerializer(PersonSerializer):
     """
     Serializer for Person detail view.
-    Includes a comprehensive list of all participated works.
+    Includes a comprehensive list of all participated works and publications.
     """
 
     participated_works = serializers.SerializerMethodField()
+    participated_publications = serializers.SerializerMethodField()
 
     class Meta(PersonSerializer.Meta):
-        fields = PersonSerializer.Meta.fields + ["participated_works"]
+        fields = PersonSerializer.Meta.fields + ["participated_works", "participated_publications"]
 
     def get_participated_works(self, obj):
         works_dict = {}
@@ -111,11 +103,6 @@ class PersonDetailSerializer(PersonSerializer):
         for credit in obj.work_credits.all():
             add_work_to_dict(credit.work, credit.get_role_display())
 
-        # 2. Process works from publication credits
-        for credit in obj.publication_credits.all():
-            if credit.publication and credit.publication.work:
-                add_work_to_dict(credit.publication.work, credit.get_role_display())
-
         # Convert dictionary to list
         result = list(works_dict.values())
 
@@ -124,5 +111,33 @@ class PersonDetailSerializer(PersonSerializer):
             w["roles"] = sorted(list(w["roles"]))
 
         # Sort works by year (descending), fallback to 0 if year is None
+        result.sort(key=lambda x: x["year"] if x["year"] is not None else 0, reverse=True)
+        return result
+
+    def get_participated_publications(self, obj):
+        pubs_dict = {}
+
+        def add_pub_to_dict(publication, role_display):
+            if publication.id not in pubs_dict:
+                pubs_dict[publication.id] = {
+                    "id": publication.id,
+                    "title": publication.title,
+                    "year": publication.year,
+                    "media": publication.get_media_display() if hasattr(publication, "get_media_display") else "",
+                    "publisher": publication.publisher.name if publication.publisher else "",
+                    "isbn": publication.isbn,
+                    "note": publication.note,
+                    "roles": set(),
+                }
+            pubs_dict[publication.id]["roles"].add(role_display)
+
+        for credit in obj.publication_credits.all():
+            if credit.publication:
+                add_pub_to_dict(credit.publication, credit.get_role_display())
+
+        result = list(pubs_dict.values())
+        for p in result:
+            p["roles"] = sorted(list(p["roles"]))
+
         result.sort(key=lambda x: x["year"] if x["year"] is not None else 0, reverse=True)
         return result

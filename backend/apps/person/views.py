@@ -23,7 +23,7 @@ class PersonViewSet(viewsets.ModelViewSet):
             "work_credits",
             "publication_credits",
             "work_credits__work__concepts",
-            "publication_credits__publication__work__concepts",
+            "publication_credits__publication__publisher",
         )
         .order_by("-created_at")
     )
