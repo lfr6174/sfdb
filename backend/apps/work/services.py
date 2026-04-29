@@ -7,11 +7,5 @@ def build_work_byline(work) -> str:
     if not credits:
         return "佚名"
 
-    seen = set()
-    names = []
-    for c in credits:
-        if c.person.name not in seen:
-            seen.add(c.person.name)
-            names.append(c.person.name)
-
-    return "、".join(names)
+    # 利用 dict 鍵值不重複且保留插入順序的特性
+    return "、".join(dict.fromkeys(c.person.name for c in credits))

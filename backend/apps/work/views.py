@@ -9,6 +9,7 @@ from .serializers import (
     PublicationSerializer,
     PublisherSerializer,
     SeriesSerializer,
+    WorkBriefSerializer,
     WorkSerializer,
 )
 
@@ -28,20 +29,6 @@ class WorkViewSet(viewsets.ModelViewSet):
     preventing the N+1 problem when fetching nested relationships.
     """
 
-    queryset = (
-        Work.objects.select_related("series")
-        .prefetch_related(
-            "credits__person",
-            "work_concepts__concept",
-            "publications",
-            "publications__works",
-            "publications__publisher",
-            "publications__credits__person",
-            "catalogue_entries__catalogue__curator",
-        )
-        .order_by("-year", "title")
-    )
-
     serializer_class = WorkSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = WorkFilter
@@ -54,6 +41,29 @@ class WorkViewSet(viewsets.ModelViewSet):
         "publications__credits__person__aliases__name",
     ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
+
+    def get_queryset(self):
+        qs = Work.objects.select_related("series").order_by("-year", "title")
+
+        if self.action == "list":
+            # 列表頁只需要參與人員來組成 byline，避免抓取過多無用資料
+            return qs.prefetch_related("credits__person")
+
+        # Detail 頁面才抓取所有的深層巢狀關聯
+        return qs.prefetch_related(
+            "credits__person",
+            "work_concepts__concept",
+            "publications",
+            "publications__works",
+            "publications__publisher",
+            "publications__credits__person",
+            "catalogue_entries__catalogue__curator",
+        )
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return WorkBriefSerializer
+        return super().get_serializer_class()
 
 
 class PublisherViewSet(viewsets.ModelViewSet):
