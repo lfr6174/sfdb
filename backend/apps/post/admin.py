@@ -1,5 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
+from unfold.contrib.filters.admin import ChoicesDropdownFilter
 
 from .models import Page, Post
 
@@ -7,7 +8,7 @@ from .models import Page, Post
 @admin.register(Post)
 class PostAdmin(ModelAdmin):
     list_display = ("title", "post_type", "author", "is_pinned", "created_at")
-    list_filter = ("post_type", "is_pinned")
+    list_filter = (("post_type", ChoicesDropdownFilter), "is_pinned")
     search_fields = ("title", "body", "author__username")
     readonly_fields = ("created_at", "updated_at")
 

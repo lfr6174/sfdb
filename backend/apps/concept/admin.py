@@ -1,5 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
+from unfold.contrib.filters.admin import ChoicesDropdownFilter
 
 from .models import Concept, ConceptLink
 
@@ -16,7 +17,7 @@ class ConceptLinkInline(TabularInline):
 @admin.register(Concept)
 class ConceptAdmin(ModelAdmin):
     list_display = ("name", "category", "created_at", "updated_at")
-    list_filter = ("category",)
+    list_filter = (("category", ChoicesDropdownFilter),)
     search_fields = ("name", "slug")
     autocomplete_fields = ("related_concepts",)
     inlines = [ConceptLinkInline]
@@ -46,4 +47,4 @@ class ConceptLinkAdmin(ModelAdmin):
     list_display = ("title", "concept", "url", "order")
     search_fields = ("title", "concept__name", "url")
     autocomplete_fields = ("concept",)
-    list_filter = ("concept__category",)
+    list_filter = (("concept__category", ChoicesDropdownFilter),)

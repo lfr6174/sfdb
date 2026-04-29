@@ -1,5 +1,6 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, TabularInline
+from unfold.admin import ModelAdmin, StackedInline, TabularInline
+from unfold.contrib.filters.admin import ChoicesDropdownFilter, RangeNumericFilter, RelatedDropdownFilter
 
 from .models import (
     Catalogue,
@@ -25,7 +26,7 @@ class WorkCreditInline(TabularInline):
     autocomplete_fields = ("person",)
 
 
-class WorkConceptInline(TabularInline):
+class WorkConceptInline(StackedInline):
     model = WorkConcept
     extra = 1
     autocomplete_fields = ("concept",)
@@ -84,7 +85,13 @@ class WorkAdmin(ModelAdmin):
         "year",
         "series",
     )
-    list_filter = ("media_type", "work_length", "provenance", "language", "year")
+    list_filter = (
+        ("media_type", ChoicesDropdownFilter),
+        ("work_length", ChoicesDropdownFilter),
+        ("provenance", ChoicesDropdownFilter),
+        ("language", ChoicesDropdownFilter),
+        ("year", RangeNumericFilter),
+    )
     search_fields = ("title", "description", "credits__person__name", "credits__person__aliases__name")
     autocomplete_fields = ("series",)
     inlines = [WorkCreditInline, WorkConceptInline, WorkPublicationInlineForWork]
@@ -93,7 +100,10 @@ class WorkAdmin(ModelAdmin):
     fieldsets = (
         (
             "基本資訊 (Basic Info)",
-            {"fields": ("title", "media_type", "work_length", "provenance", "language", "year", "description")},
+            {
+                "fields": ("title", "media_type", "work_length", "provenance", "language", "year", "description"),
+                "description": "填寫作品的客觀資訊。",
+            },
         ),
         ("系列資訊 (Series Info)", {"fields": ("series", "series_order")}),
         ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
@@ -140,7 +150,12 @@ class PublicationAdmin(ModelAdmin):
         "year",
         "isbn",
     )
-    list_filter = ("language", "media", "year", "publisher")
+    list_filter = (
+        ("language", ChoicesDropdownFilter),
+        ("media", ChoicesDropdownFilter),
+        ("year", RangeNumericFilter),
+        ("publisher", RelatedDropdownFilter),
+    )
     search_fields = ("title", "isbn", "works__title", "credits__person__name", "credits__person__aliases__name")
     autocomplete_fields = ("publisher",)
     inlines = [WorkPublicationInlineForPublication, PublicationCreditInline]
@@ -191,7 +206,10 @@ class PublicationAdmin(ModelAdmin):
 @admin.register(Catalogue)
 class CatalogueAdmin(ModelAdmin):
     list_display = ("title", "catalogue_type", "curator", "year")
-    list_filter = ("catalogue_type", "year")
+    list_filter = (
+        ("catalogue_type", ChoicesDropdownFilter),
+        ("year", RangeNumericFilter),
+    )
     search_fields = ("title", "curator__name")
     autocomplete_fields = ("curator",)
     inlines = [CatalogueEntryInline]
