@@ -7,7 +7,6 @@ from .models import (
     CatalogueEntry,
     Publication,
     PublicationCredit,
-    Publisher,
     Series,
     Work,
     WorkConcept,
@@ -29,7 +28,7 @@ class WorkCreditInline(TabularInline):
 
 class WorkConceptInline(StackedInline):
     model = WorkConcept
-    extra = 1
+    extra = 0
     autocomplete_fields = ("concept",)
     classes = ["collapse"]
 
@@ -46,17 +45,19 @@ class WorkPublicationInlineForWork(TabularInline):
     model = WorkPublication
     extra = 0
     autocomplete_fields = ("publication",)
+    classes = ["collapse"]
 
 
 class WorkPublicationInlineForPublication(TabularInline):
     model = WorkPublication
-    extra = 1
+    extra = 0
     autocomplete_fields = ("work",)
+    classes = ["collapse"]
 
 
 class CatalogueEntryInline(TabularInline):
     model = CatalogueEntry
-    extra = 1
+    extra = 0
     autocomplete_fields = ("work",)
 
 
@@ -113,22 +114,6 @@ class WorkAdmin(ModelAdmin):
     get_credits_display.short_description = "參與人員"
 
 
-# ============================================================================
-# PUBLICATION ADMINS
-# ============================================================================
-
-
-@admin.register(Publisher)
-class PublisherAdmin(ModelAdmin):
-    list_display = ("name", "created_at", "updated_at")
-    search_fields = ("name",)
-    readonly_fields = ("created_at", "updated_at")
-    fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("name", "description")}),
-        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
-    )
-
-
 @admin.register(Publication)
 class PublicationAdmin(ModelAdmin):
     list_display = (
@@ -151,14 +136,6 @@ class PublicationAdmin(ModelAdmin):
     autocomplete_fields = ("publisher",)
     inlines = [WorkPublicationInlineForPublication, PublicationCreditInline]
     readonly_fields = ("created_at", "updated_at")
-
-    fieldsets = (
-        (
-            "基本資訊 (Basic Info)",
-            {"fields": ("media", "publisher", "title", "language", "year", "isbn", "note")},
-        ),
-        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
-    )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -205,8 +182,3 @@ class CatalogueAdmin(ModelAdmin):
     autocomplete_fields = ("agent_curator",)
     inlines = [CatalogueEntryInline]
     readonly_fields = ("created_at", "updated_at")
-
-    fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("title", "catalogue_type", "agent_curator", "year", "note")}),
-        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
-    )

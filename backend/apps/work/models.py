@@ -193,23 +193,6 @@ class WorkPublication(models.Model):
 # ============================================================================
 
 
-class Publisher(TimeStampedModel):
-    """
-    Represents a publishing or distributing company.
-    """
-
-    name = models.CharField(max_length=200, verbose_name="出版/發行商名稱")
-    description = models.TextField(blank=True, verbose_name="概述")
-
-    class Meta:
-        verbose_name = "出版商"
-        verbose_name_plural = "出版商"
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
 class PublicationMedia(models.TextChoices):
     """Publication medium."""
 
@@ -226,11 +209,11 @@ class Publication(TimeStampedModel):
     """
 
     publisher = models.ForeignKey(
-        Publisher,
+        "agent.Agent",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="publications",
+        related_name="published_publications",
         verbose_name="出版商",
     )
     title = models.CharField(max_length=300, verbose_name="名稱")

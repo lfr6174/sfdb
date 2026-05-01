@@ -3,11 +3,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
 from .filters import WorkFilter
-from .models import Catalogue, Publication, Publisher, Series, Work
+from .models import Catalogue, Publication, Series, Work
 from .serializers import (
     CatalogueSerializer,
     PublicationSerializer,
-    PublisherSerializer,
     SeriesSerializer,
     WorkBriefSerializer,
     WorkSerializer,
@@ -62,14 +61,6 @@ class WorkViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             return WorkBriefSerializer
         return super().get_serializer_class()
-
-
-class PublisherViewSet(viewsets.ModelViewSet):
-    queryset = Publisher.objects.annotate(works_count=Count("publications__works", distinct=True)).order_by("name")
-    serializer_class = PublisherSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ["name"]
-    ordering_fields = ["name", "created_at", "updated_at", "works_count"]
 
 
 class PublicationViewSet(viewsets.ModelViewSet):

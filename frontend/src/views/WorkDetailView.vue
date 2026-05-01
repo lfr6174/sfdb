@@ -233,7 +233,7 @@ const getGroupedPubCredits = (credits: any[]) => {
                 <td class="py-3.5 pr-4 align-top font-medium">{{ pub.title }}</td>
                 <td class="py-3.5 pr-4 align-top"><span class="px-2 py-0.5 rounded bg-[#2d2016]/5 text-sm">{{ pub.media_display || '-' }}</span></td>
                 <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ pub.year || '-' }}</td>
-                <td class="py-3.5 pr-4 align-top">{{ pub.publisher_detail?.name || '-' }}</td>
+                <td class="py-3.5 pr-4 align-top">{{ pub.publisher.name || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top text-sm">
                   <template v-if="pub.credits.length > 0">
                     <span v-for="(group, gIdx) in getGroupedPubCredits(pub.credits)" :key="gIdx">

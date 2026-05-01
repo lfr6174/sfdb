@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.agent.models import Agent
+from apps.agent.serializers import AgentSerializer
 from apps.concept.serializers import ConceptMinimalSerializer
 
 from .models import (
@@ -8,7 +9,6 @@ from .models import (
     CatalogueEntry,
     Publication,
     PublicationCredit,
-    Publisher,
     Series,
     Work,
     WorkConcept,
@@ -101,14 +101,6 @@ class WorkBriefSerializer(serializers.ModelSerializer):
 # ============================================================================
 
 
-class PublisherSerializer(serializers.ModelSerializer):
-    works_count = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Publisher
-        fields = ["id", "name", "description", "works_count", "created_at", "updated_at"]
-
-
 class PublicationCreditSerializer(serializers.ModelSerializer):
     agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
     role_display = serializers.CharField(source="get_role_display", read_only=True)
@@ -120,7 +112,7 @@ class PublicationCreditSerializer(serializers.ModelSerializer):
 
 class PublicationSerializer(serializers.ModelSerializer):
     language_display = serializers.CharField(source="get_language_display", read_only=True)
-    publisher_detail = PublisherSerializer(source="publisher", read_only=True)
+    publisher = AgentSerializer(read_only=True)
     media_display = serializers.CharField(source="get_media_display", read_only=True)
     credits = PublicationCreditSerializer(many=True, read_only=True)
     works = WorkMinimalSerializer(many=True, read_only=True)
@@ -131,7 +123,6 @@ class PublicationSerializer(serializers.ModelSerializer):
             "id",
             "works",
             "publisher",
-            "publisher_detail",
             "title",
             "media",
             "media_display",
