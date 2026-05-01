@@ -5,37 +5,37 @@ import api from '../api/axios'
 
 const route = useRoute()
 
-const person = ref<any>(null)
+const agent = ref<any>(null)
 const isLoading = ref(true)
 const isConceptsExpanded = ref(false)
 
-const fetchPersonDetail = async () => {
+const fetchAgentDetail = async () => {
   isLoading.value = true
   try {
-    const response = await api.get(`/persons/${route.params.id}/`)
-    person.value = response.data
+    const response = await api.get(`/agents/${route.params.id}/`)
+    agent.value = response.data
   } catch (error) {
-    console.error('Failed to fetch person details:', error)
+    console.error('Failed to fetch agent details:', error)
   } finally {
     isLoading.value = false
   }
 }
 
 onMounted(() => {
-  fetchPersonDetail()
+  fetchAgentDetail()
 })
 
 // Manage displayed concepts for the "show more" functionality
 const DISPLAY_LIMIT = 10
 const displayedConcepts = computed(() => {
-  if (!person.value?.concept_stats) return []
-  if (isConceptsExpanded.value) return person.value.concept_stats
-  return person.value.concept_stats.slice(0, DISPLAY_LIMIT)
+  if (!agent.value?.concept_stats) return []
+  if (isConceptsExpanded.value) return agent.value.concept_stats
+  return agent.value.concept_stats.slice(0, DISPLAY_LIMIT)
 })
 
 const hiddenConceptsCount = computed(() => {
-  if (!person.value?.concept_stats) return 0
-  return Math.max(0, person.value.concept_stats.length - DISPLAY_LIMIT)
+  if (!agent.value?.concept_stats) return 0
+  return Math.max(0, agent.value.concept_stats.length - DISPLAY_LIMIT)
 })
 </script>
 
@@ -46,9 +46,9 @@ const hiddenConceptsCount = computed(() => {
       正在讀取人物資料...
     </div>
 
-    <template v-else-if="person">
+    <template v-else-if="agent">
       <!-- Back Link -->
-      <router-link to="/persons" class="inline-flex items-center text-sm font-medium text-[#2d2016]/50 hover:text-[#ae5630] transition-colors mb-2">
+      <router-link to="/agents" class="inline-flex items-center text-sm font-medium text-[#2d2016]/50 hover:text-[#ae5630] transition-colors mb-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
@@ -58,18 +58,18 @@ const hiddenConceptsCount = computed(() => {
       <!-- Header Info Section -->
       <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 relative">
         <h1 class="text-3xl md:text-4xl font-bold text-[#2d2016] tracking-tight mb-4 flex items-baseline gap-3 flex-wrap">
-          <span>{{ person.name }}</span>
-          <span v-if="person.aliases && person.aliases.length > 0" class="text-sm md:text-2xl font-normal text-[#2d2016]/40">
-            {{ person.aliases.map((a: any) => a.name).join(' 、 ') }}
+          <span>{{ agent.name }}</span>
+          <span v-if="agent.aliases && agent.aliases.length > 0" class="text-sm md:text-2xl font-normal text-[#2d2016]/40">
+            {{ agent.aliases.map((a: any) => a.name).join(' 、 ') }}
           </span>
         </h1>
 
-        <p class="text-lg text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">{{ person.bio || '暫無簡歷提供。' }}</p>
+        <p class="text-lg text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">{{ agent.bio || '暫無簡歷提供。' }}</p>
 
         <!-- Links -->
-        <div v-if="person.links && person.links.length > 0" class="flex flex-wrap gap-4 mt-5">
+        <div v-if="agent.links && agent.links.length > 0" class="flex flex-wrap gap-4 mt-5">
           <a
-            v-for="link in person.links"
+            v-for="link in agent.links"
             :key="link.id"
             :href="link.url"
             target="_blank"
@@ -85,10 +85,10 @@ const hiddenConceptsCount = computed(() => {
       <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
         <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
           <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">作品概念</h2>
-          <span class="text-sm text-[#2d2016]/50 font-mono">{{ person.concept_stats?.length || 0 }}</span>
+          <span class="text-sm text-[#2d2016]/50 font-mono">{{ agent.concept_stats?.length || 0 }}</span>
         </div>
 
-        <div v-if="person.concept_stats && person.concept_stats.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
+        <div v-if="agent.concept_stats && agent.concept_stats.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
           <router-link
             v-for="concept in displayedConcepts"
             :key="concept.slug"
@@ -124,7 +124,7 @@ const hiddenConceptsCount = computed(() => {
           <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">歷年作品</h2>
         </div>
 
-        <div v-if="person.participated_works && person.participated_works.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
+        <div v-if="agent.participated_works && agent.participated_works.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
           <table class="w-full text-left border-collapse min-w-[700px]">
             <thead>
               <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
@@ -136,7 +136,7 @@ const hiddenConceptsCount = computed(() => {
               </tr>
             </thead>
             <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[17px]">
-              <tr v-for="work in person.participated_works" :key="work.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
+              <tr v-for="work in agent.participated_works" :key="work.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
                 <td class="py-4 pr-4 font-mono text-[#2d2016]/50 align-top">{{ work.year || '-' }}</td>
                 <td class="py-4 pr-4 align-top">
                   <router-link :to="`/works/${work.id}`" class="text-lg font-medium group-hover:text-[#ae5630] transition-colors block">{{ work.title }}</router-link>
@@ -159,7 +159,7 @@ const hiddenConceptsCount = computed(() => {
       </section>
 
       <!-- Participated Publications Section -->
-      <section v-if="person.participated_publications && person.participated_publications.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
+      <section v-if="agent.participated_publications && agent.participated_publications.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
         <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
           <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">出版與其他參與</h2>
         </div>
@@ -176,7 +176,7 @@ const hiddenConceptsCount = computed(() => {
               </tr>
             </thead>
             <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[17px]">
-              <tr v-for="pub in person.participated_publications" :key="pub.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
+              <tr v-for="pub in agent.participated_publications" :key="pub.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
                 <td class="py-4 pr-4 font-mono text-[#2d2016]/50 align-top">{{ pub.year || '-' }}</td>
                 <td class="py-4 pr-4 align-top">
                   <span class="text-lg font-medium text-[#2d2016] block">{{ pub.title }}</span>

@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import api from '../api/axios'
 
-const persons = ref<any[]>([])
+const agents = ref<any[]>([])
 const isLoading = ref(true)
 
 // Search, sort, and pagination states
@@ -12,10 +12,10 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const totalCount = ref(0)
 
-const fetchPersons = async () => {
+const fetchAgents = async () => {
   isLoading.value = true
   try {
-    const response = await api.get('/persons/', {
+    const response = await api.get('/agents/', {
       params: {
         page: currentPage.value,
         search: searchQuery.value,
@@ -23,7 +23,7 @@ const fetchPersons = async () => {
       }
     })
 
-    persons.value = response.data.results || []
+    agents.value = response.data.results || []
     totalCount.value = response.data.count || 0
 
     // Calculate total pages based on backend's default page size (e.g., 20)
@@ -31,7 +31,7 @@ const fetchPersons = async () => {
     totalPages.value = Math.ceil(totalCount.value / pageSize) || 1
 
   } catch (error) {
-    console.error('Failed to fetch persons:', error)
+    console.error('Failed to fetch agents:', error)
   } finally {
     isLoading.value = false
   }
@@ -43,21 +43,21 @@ const onSearchInput = () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     currentPage.value = 1
-    fetchPersons()
+    fetchAgents()
   }, 300)
 }
 
 // When sort order changes, reset to first page and refetch
 watch(sortBy, () => {
   currentPage.value = 1
-  fetchPersons()
+  fetchAgents()
 })
 
 // Pagination controls
 const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
-    fetchPersons()
+    fetchAgents()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
@@ -65,13 +65,13 @@ const prevPage = () => {
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++
-    fetchPersons()
+    fetchAgents()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
 onMounted(() => {
-  fetchPersons()
+  fetchAgents()
 })
 </script>
 
@@ -104,37 +104,37 @@ onMounted(() => {
       </div>
     </section>
 
-    <div v-if="isLoading && persons.length === 0" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+    <div v-if="isLoading && agents.length === 0" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
       正在讀取人物列表...
     </div>
 
-    <!-- Persons List -->
+    <!-- Agents List -->
     <div v-else class="space-y-4">
       <div v-if="totalCount > 0" class="text-sm text-[#2d2016]/50 font-medium px-1">
         共找到 {{ totalCount }} 位人物
       </div>
 
       <div
-        v-for="person in persons"
-        :key="person.id"
+        v-for="agent in agents"
+        :key="agent.id"
         class="bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10 hover:border-[#ae5630]/30 transition-colors group cursor-pointer"
-        @click="$router.push(`/persons/${person.id}`)"
+        @click="$router.push(`/agents/${agent.id}`)"
       >
         <!-- Name and Works Count -->
         <div class="flex items-baseline gap-3 mb-2">
-          <h2 class="text-xl font-bold text-[#2d2016] group-hover:text-[#ae5630] transition-colors">{{ person.name }}</h2>
-          <span class="text-sm text-[#2d2016]/50">{{ person.works_count || 0 }} 作品</span>
+          <h2 class="text-xl font-bold text-[#2d2016] group-hover:text-[#ae5630] transition-colors">{{ agent.name }}</h2>
+          <span class="text-sm text-[#2d2016]/50">{{ agent.works_count || 0 }} 作品</span>
         </div>
 
         <!-- Biography (truncated to 2 lines) -->
         <p class="text-base text-[#2d2016]/70 leading-relaxed mb-4 line-clamp-2">
-          {{ person.bio || '暫無簡歷提供。' }}
+          {{ agent.about || '暫無簡歷提供。' }}
         </p>
 
         <!-- Concept Tags -->
-        <div v-if="person.concept_stats && person.concept_stats.length > 0" class="flex flex-wrap items-center gap-2">
+        <div v-if="agent.concept_stats && agent.concept_stats.length > 0" class="flex flex-wrap items-center gap-2">
           <router-link
-            v-for="concept in person.concept_stats.slice(0, 5)"
+            v-for="concept in agent.concept_stats.slice(0, 5)"
             :key="concept.slug"
             :to="`/concepts/${concept.slug}`"
             class="px-2.5 py-1 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-xs font-medium rounded-lg hover:bg-[#f5f0e8]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"

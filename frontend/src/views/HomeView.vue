@@ -123,7 +123,7 @@ onMounted(async () => {
               {{ work.title }}
             </h3>
             <p class="text-sm md:text-base text-[#2d2016]/60 mt-0.5">
-              {{ work.byline }} · {{ work.year || '未知年份' }} · {{ work.media_type_display || '未知媒體' }} · {{ work.work_length_display || '未知篇幅' }}
+              {{ work.byline || '佚名' }} · {{ work.year || '未知年份' }} · {{ work.media_type_display || '未知媒體' }} · {{ work.work_length_display || '未知篇幅' }}
             </p>
           </router-link>
         </div>

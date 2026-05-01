@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PersonConfig(AppConfig):
+class AgentConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.person"
+    name = "apps.agent"

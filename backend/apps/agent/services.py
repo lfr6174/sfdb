@@ -1,12 +1,20 @@
+# file: apps/agent/services.py
+# description: These functions are migrated from the original 'person' app.
+# They now operate on the 'Agent' model instead of 'Person'.
+
 from collections import Counter
 
 
-def calculate_person_concept_stats(person) -> list[dict]:
-    """計算該人物參與過的所有作品中，各個概念出現的頻率。"""
+def calculate_agent_concept_stats(agent) -> list[dict]:
+    """
+    Calculate the frequency of each concept in all works the agent has participated in.
+    (Migrated from person.services.calculate_person_concept_stats)
+    """
     concept_counter = Counter()
     counted_work_ids = set()
 
-    for credit in person.work_credits.all():
+    # The related_name 'work_credits' is now available on the Agent model
+    for credit in agent.work_credits.all():
         work = credit.work
         if work.id not in counted_work_ids:
             counted_work_ids.add(work.id)
@@ -16,11 +24,15 @@ def calculate_person_concept_stats(person) -> list[dict]:
     return [{"name": name, "slug": slug, "count": count} for (name, slug), count in concept_counter.most_common()]
 
 
-def build_participated_works_list(person) -> list[dict]:
-    """彙整該人物參與過的作品列表，合併相同作品的不同角色。"""
+def build_participated_works_list(agent) -> list[dict]:
+    """
+    Compile a list of works the agent has participated in, merging different roles for the same work.
+    (Migrated from person.services.build_participated_works_list)
+    """
     works_dict = {}
 
-    for credit in person.work_credits.all():
+    # The related_name 'work_credits' is now available on the Agent model
+    for credit in agent.work_credits.all():
         work = credit.work
         if work.id not in works_dict:
             works_dict[work.id] = {
@@ -42,11 +54,15 @@ def build_participated_works_list(person) -> list[dict]:
     return result
 
 
-def build_participated_publications_list(person) -> list[dict]:
-    """彙整該人物參與過的出版品列表，合併相同出版品的不同角色。"""
+def build_participated_publications_list(agent) -> list[dict]:
+    """
+    Compile a list of publications the agent has participated in, merging different roles for the same publication.
+    (Migrated from person.services.build_participated_publications_list)
+    """
     pubs_dict = {}
 
-    for credit in person.publication_credits.all():
+    # The related_name 'publication_credits' is now available on the Agent model
+    for credit in agent.publication_credits.all():
         publication = credit.publication
         if publication and publication.id not in pubs_dict:
             pubs_dict[publication.id] = {

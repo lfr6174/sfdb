@@ -22,7 +22,7 @@ def get_random_spotlight_data() -> dict | None:
 
     # 2. 序列化 Concept 基本資料，並附加關聯作品
     data = ConceptSerializer(concept).data
-    works = concept.works.prefetch_related("credits__person").order_by("-year", "title")[:4]
+    works = concept.works.prefetch_related("credits__agent").order_by("-year", "title")[:4]
     data["spotlight_works"] = WorkBriefSerializer(works, many=True).data
 
     return data

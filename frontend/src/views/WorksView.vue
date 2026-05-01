@@ -212,8 +212,9 @@ const getUniqueCredits = (credits: any[]) => {
   if (!credits) return []
   const seen = new Set()
   return credits.filter(c => {
-    if (seen.has(c.person_detail.id)) return false
-    seen.add(c.person_detail.id)
+    if (!c.agent_detail) return false
+    if (seen.has(c.agent_detail.id)) return false
+    seen.add(c.agent_detail.id)
     return true
   })
 }
@@ -428,13 +429,13 @@ const changePage = (dir: number) => {
               </router-link>
               <!-- FIX: removed px padding from · separators to tighten spacing -->
               <div class="flex flex-wrap items-center gap-1 text-[15px] text-[#2d2016]/70 font-medium">
-                <span v-if="work.credits && work.credits.length > 0" class="flex flex-wrap items-center">
+                <span v-if="getUniqueCredits(work.credits).length > 0" class="flex flex-wrap items-center">
                   <span v-for="(credit, cIdx) in getUniqueCredits(work.credits)" :key="credit.id">
-                    <router-link :to="`/persons/${credit.person_detail.id}`" class="hover:text-[#ae5630] transition-colors">{{ credit.person_detail.name }}</router-link>
+                    <router-link :to="`/agents/${credit.agent_detail.id}`" class="hover:text-[#ae5630] transition-colors">{{ credit.display_name || credit.agent_detail.name }}</router-link>
                     <span v-if="cIdx < getUniqueCredits(work.credits).length - 1" class="mx-0.5">、</span>
                   </span>
                 </span>
-                <span v-else>佚名</span>
+                <span v-else>{{ work.byline || '佚名' }}</span>
 
                 <span class="text-[#2d2016]/30">·</span>
                 <span>{{ work.year || '未知年份' }}</span>

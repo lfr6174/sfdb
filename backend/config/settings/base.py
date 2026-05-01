@@ -31,8 +31,8 @@ INSTALLED_APPS = [
     "drf_spectacular",  # API schema generator
     # Local apps
     "apps.core",
+    "apps.agent",
     "apps.work",
-    "apps.person",
     "apps.concept",
     "apps.post",
 ]

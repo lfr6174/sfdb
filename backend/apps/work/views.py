@@ -35,10 +35,10 @@ class WorkViewSet(viewsets.ModelViewSet):
     search_fields = [
         "title",
         "publications__title",
-        "credits__person__name",
-        "credits__person__aliases__name",
-        "publications__credits__person__name",
-        "publications__credits__person__aliases__name",
+        "credits__agent__name",
+        "credits__agent__aliases__name",
+        "publications__credits__agent__name",
+        "publications__credits__agent__aliases__name",
     ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
@@ -46,18 +46,16 @@ class WorkViewSet(viewsets.ModelViewSet):
         qs = Work.objects.select_related("series").order_by("-year", "title")
 
         if self.action == "list":
-            # 列表頁只需要參與人員來組成 byline，避免抓取過多無用資料
-            return qs.prefetch_related("credits__person")
+            return qs.prefetch_related("credits__agent", "work_concepts__concept")
 
-        # Detail 頁面才抓取所有的深層巢狀關聯
         return qs.prefetch_related(
-            "credits__person",
+            "credits__agent",
             "work_concepts__concept",
             "publications",
             "publications__works",
             "publications__publisher",
-            "publications__credits__person",
-            "catalogue_entries__catalogue__curator",
+            "publications__credits__agent",
+            "catalogue_entries__catalogue__agent_curator",
         )
 
     def get_serializer_class(self):
@@ -77,7 +75,7 @@ class PublisherViewSet(viewsets.ModelViewSet):
 class PublicationViewSet(viewsets.ModelViewSet):
     queryset = (
         Publication.objects.select_related("publisher")
-        .prefetch_related("credits__person", "works")
+        .prefetch_related("credits__agent", "works")
         .order_by("year", "title")
     )
     serializer_class = PublicationSerializer
@@ -86,16 +84,16 @@ class PublicationViewSet(viewsets.ModelViewSet):
     search_fields = [
         "title",
         "isbn",
-        "credits__person__name",
-        "credits__person__aliases__name",
+        "credits__agent__name",
+        "credits__agent__aliases__name",
     ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
 
 class CatalogueViewSet(viewsets.ModelViewSet):
     queryset = (
-        Catalogue.objects.select_related("curator")
-        .prefetch_related("entries__work", "entries__work__credits__person")
+        Catalogue.objects.select_related("agent_curator")
+        .prefetch_related("entries__work", "entries__work__credits__agent")
         .annotate(works_count=Count("entries", distinct=True))
         .order_by("-year", "title")
     )

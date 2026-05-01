@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
+from apps.agent.models import Agent
 from apps.concept.serializers import ConceptMinimalSerializer
-from apps.person.models import Person
 
 from .models import (
     Catalogue,
@@ -21,14 +21,14 @@ from .services import build_work_byline
 # ============================================================================
 
 
-class PersonMinimalSerializer(serializers.ModelSerializer):
+class AgentMinimalSerializer(serializers.ModelSerializer):
     """
-    A lightweight serializer for Person to prevent circular imports
+    A lightweight serializer for Agent to prevent circular imports
     and overly bloated JSON payloads when serializing nested relationships.
     """
 
     class Meta:
-        model = Person
+        model = Agent
         fields = ["id", "name"]
 
 
@@ -38,21 +38,6 @@ class WorkMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Work
         fields = ["id", "title"]
-
-
-class WorkBriefSerializer(serializers.ModelSerializer):
-    """Brief Work serializer for cards, lists, and homepage spotlights."""
-
-    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
-    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
-    byline = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Work
-        fields = ["id", "title", "year", "media_type_display", "work_length_display", "byline"]
-
-    def get_byline(self, obj):
-        return build_work_byline(obj)
 
 
 # ============================================================================
@@ -69,12 +54,12 @@ class SeriesSerializer(serializers.ModelSerializer):
 
 
 class WorkCreditSerializer(serializers.ModelSerializer):
-    person_detail = PersonMinimalSerializer(source="person", read_only=True)
+    agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
     role_display = serializers.CharField(source="get_role_display", read_only=True)
 
     class Meta:
         model = WorkCredit
-        fields = ["id", "person", "person_detail", "role", "role_display", "order"]
+        fields = ["id", "agent", "agent_detail", "role", "role_display", "order"]
 
 
 class WorkConceptSerializer(serializers.ModelSerializer):
@@ -83,6 +68,32 @@ class WorkConceptSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkConcept
         fields = ["id", "concept", "concept_detail", "description"]
+
+
+class WorkBriefSerializer(serializers.ModelSerializer):
+    """Brief Work serializer for cards, lists, and homepage spotlights."""
+
+    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
+    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    byline = serializers.SerializerMethodField()
+    credits = WorkCreditSerializer(many=True, read_only=True)
+    work_concepts = WorkConceptSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Work
+        fields = [
+            "id",
+            "title",
+            "year",
+            "media_type_display",
+            "work_length_display",
+            "byline",
+            "credits",
+            "work_concepts",
+        ]
+
+    def get_byline(self, obj):
+        return build_work_byline(obj)
 
 
 # ============================================================================
@@ -99,12 +110,12 @@ class PublisherSerializer(serializers.ModelSerializer):
 
 
 class PublicationCreditSerializer(serializers.ModelSerializer):
-    person_detail = PersonMinimalSerializer(source="person", read_only=True)
+    agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
     role_display = serializers.CharField(source="get_role_display", read_only=True)
 
     class Meta:
         model = PublicationCredit
-        fields = ["id", "person", "person_detail", "display_name", "role", "role_display", "order"]
+        fields = ["id", "agent", "agent_detail", "display_name", "role", "role_display", "order"]
 
 
 class PublicationSerializer(serializers.ModelSerializer):
@@ -142,11 +153,11 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 class CatalogueBriefSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    curator_detail = PersonMinimalSerializer(source="curator", read_only=True)
+    agent_curator_detail = AgentMinimalSerializer(source="agent_curator", read_only=True)
 
     class Meta:
         model = Catalogue
-        fields = ["id", "title", "catalogue_type_display", "year", "curator_detail"]
+        fields = ["id", "title", "catalogue_type_display", "year", "agent_curator_detail"]
 
 
 class WorkCatalogueEntrySerializer(serializers.ModelSerializer):
@@ -218,7 +229,7 @@ class CatalogueEntrySerializer(serializers.ModelSerializer):
 
 class CatalogueSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    curator_detail = PersonMinimalSerializer(source="curator", read_only=True)
+    agent_curator_detail = AgentMinimalSerializer(source="agent_curator", read_only=True)
     works_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -228,8 +239,8 @@ class CatalogueSerializer(serializers.ModelSerializer):
             "title",
             "catalogue_type",
             "catalogue_type_display",
-            "curator",
-            "curator_detail",
+            "agent_curator",
+            "agent_curator_detail",
             "year",
             "note",
             "works_count",

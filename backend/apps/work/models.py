@@ -85,8 +85,12 @@ class Work(TimeStampedModel):
         max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="系列順序"
     )  # Use Decimal to support ordering like 1.5 for prequels or spin-offs
 
-    persons = models.ManyToManyField(
-        "person.Person", through="WorkCredit", related_name="works", verbose_name="相關人物"
+    agents = models.ManyToManyField(
+        "agent.Agent",
+        through="WorkCredit",
+        related_name="works",
+        verbose_name="相關主體",
+        blank=True,
     )
     concepts = models.ManyToManyField(
         "concept.Concept", through="WorkConcept", related_name="works", verbose_name="相關概念"
@@ -116,27 +120,27 @@ class WorkRole(models.TextChoices):
 
 class WorkCredit(models.Model):
     """
-    Intermediate table mapping Works to Persons (records who created the work).
+    Intermediate table mapping Works to Agents (records who created the work).
     """
 
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="credits", verbose_name="作品")
-    person = models.ForeignKey(
-        "person.Person",
+    agent = models.ForeignKey(
+        "agent.Agent",
         on_delete=models.CASCADE,
         related_name="work_credits",
-        verbose_name="人物",
+        verbose_name="主體",
     )
     role = models.CharField(max_length=20, choices=WorkRole.choices, verbose_name="角色")
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
     class Meta:
-        unique_together = [("work", "person", "role")]
+        unique_together = [("work", "agent", "role")]
         ordering = ["order"]
-        verbose_name = "作品人物關聯"
-        verbose_name_plural = "作品人物關聯"
+        verbose_name = "作品主體關聯"
+        verbose_name_plural = "作品主體關聯"
 
     def __str__(self):
-        return f"{self.work.title} - {self.person.name} ({self.get_role_display()})"
+        return f"{self.work.title} - {self.agent.name} ({self.get_role_display()})"
 
 
 class WorkConcept(models.Model):
@@ -238,8 +242,12 @@ class Publication(TimeStampedModel):
     isbn = models.CharField(max_length=50, blank=True, verbose_name="ISBN")
     note = models.CharField(max_length=200, blank=True, verbose_name="備註")
 
-    persons = models.ManyToManyField(
-        "person.Person", through="PublicationCredit", related_name="publications", verbose_name="相關人物"
+    agents = models.ManyToManyField(
+        "agent.Agent",
+        through="PublicationCredit",
+        related_name="publications",
+        verbose_name="相關主體",
+        blank=True,
     )
 
     class Meta:
@@ -265,17 +273,17 @@ class PublicationRole(models.TextChoices):
 
 class PublicationCredit(models.Model):
     """
-    Intermediate table mapping Publications to Persons (e.g., records who translated a specific edition).
+    Intermediate table mapping Publications to Agents (e.g., records who translated a specific edition).
     """
 
     publication = models.ForeignKey(
         Publication, on_delete=models.CASCADE, related_name="credits", verbose_name="出版品"
     )
-    person = models.ForeignKey(
-        "person.Person",
+    agent = models.ForeignKey(
+        "agent.Agent",
         on_delete=models.CASCADE,
         related_name="publication_credits",
-        verbose_name="人物",
+        verbose_name="主體",
     )
     display_name = models.CharField(
         max_length=255,
@@ -287,13 +295,13 @@ class PublicationCredit(models.Model):
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
     class Meta:
-        unique_together = [("publication", "person", "role")]
+        unique_together = [("publication", "agent", "role")]
         ordering = ["order"]
-        verbose_name = "出版品人物關聯"
-        verbose_name_plural = "出版品人物關聯"
+        verbose_name = "出版品主體關聯"
+        verbose_name_plural = "出版品主體關聯"
 
     def __str__(self):
-        name_to_display = self.display_name or self.person.name
+        name_to_display = self.display_name or self.agent.name
         return f"{self.publication.title} - {name_to_display} ({self.get_role_display()})"
 
 
@@ -316,13 +324,13 @@ class Catalogue(TimeStampedModel):
 
     title = models.CharField(max_length=300, verbose_name="名稱")
     catalogue_type = models.CharField(max_length=20, choices=CatalogueType.choices, verbose_name="類型")
-    curator = models.ForeignKey(
-        "person.Person",
+    agent_curator = models.ForeignKey(
+        "agent.Agent",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="curated_catalogues",
-        verbose_name="維護者",
+        verbose_name="維護主體",
     )
     year = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="年份")
     note = models.TextField(blank=True, verbose_name="備註")

@@ -132,8 +132,8 @@ const getGroupedPubCredits = (credits: any[]) => {
           <span v-if="groupedWorkCredits.length > 0" class="flex flex-wrap items-center">
             <span v-for="(group, gIdx) in groupedWorkCredits" :key="gIdx" class="flex flex-wrap items-center">
               <span v-for="(credit, cIdx) in group.credits" :key="credit.id">
-                <router-link :to="`/persons/${credit.person_detail.id}`" class="text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
-                  {{ credit.person_detail.name }}
+                <router-link :to="`/agents/${credit.agent_detail.id}`" class="text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
+                  {{ credit.agent_detail.name }}
                 </router-link>
                 <span v-if="cIdx < group.credits.length - 1" class="text-[#2d2016]/80 mx-0.5">、</span>
               </span>
@@ -238,8 +238,8 @@ const getGroupedPubCredits = (credits: any[]) => {
                   <template v-if="pub.credits.length > 0">
                     <span v-for="(group, gIdx) in getGroupedPubCredits(pub.credits)" :key="gIdx">
                       <span v-for="(c, cIdx) in group.credits" :key="c.id">
-                        <router-link :to="`/persons/${c.person_detail.id}`" class="hover:text-[#ae5630] transition-colors">
-                          {{ c.display_name || c.person_detail.name }}
+                        <router-link :to="`/agents/${c.agent_detail.id}`" class="hover:text-[#ae5630] transition-colors">
+                          {{ c.display_name || c.agent_detail.name }}
                         </router-link><span v-if="cIdx < group.credits.length - 1">、</span>
                       </span>
                       <span class="text-[#2d2016]/60 ml-0.5">{{ group.label }}</span>
@@ -277,7 +277,7 @@ const getGroupedPubCredits = (credits: any[]) => {
                 <td class="py-3.5 pr-4 align-top font-medium">{{ entry.catalogue_detail.title }}</td>
                 <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ entry.catalogue_detail.year || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top">
-                  <router-link v-if="entry.catalogue_detail.curator_detail" :to="`/persons/${entry.catalogue_detail.curator_detail.id}`" class="hover:text-[#ae5630] transition-colors">{{ entry.catalogue_detail.curator_detail.name }}</router-link>
+                  <router-link v-if="entry.catalogue_detail.curator_detail" :to="`/agents/${entry.catalogue_detail.curator_detail.id}`" class="hover:text-[#ae5630] transition-colors">{{ entry.catalogue_detail.curator_detail.name }}</router-link>
                   <span v-else>-</span>
                 </td>
                 <td class="py-3.5 align-top text-[#2d2016]/60">{{ entry.note || '-' }}</td>

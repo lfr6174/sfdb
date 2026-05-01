@@ -23,7 +23,7 @@ from .models import (
 class WorkCreditInline(TabularInline):
     model = WorkCredit
     extra = 0
-    autocomplete_fields = ("person",)
+    autocomplete_fields = ("agent",)
 
 
 class WorkConceptInline(StackedInline):
@@ -35,8 +35,8 @@ class WorkConceptInline(StackedInline):
 class PublicationCreditInline(TabularInline):
     model = PublicationCredit
     extra = 0
-    fields = ("person", "display_name", "role", "order")
-    autocomplete_fields = ("person",)
+    fields = ("agent", "display_name", "role", "order")
+    autocomplete_fields = ("agent",)
 
 
 class WorkPublicationInlineForWork(TabularInline):
@@ -92,7 +92,7 @@ class WorkAdmin(ModelAdmin):
         ("language", ChoicesDropdownFilter),
         ("year", RangeNumericFilter),
     )
-    search_fields = ("title", "description", "credits__person__name", "credits__person__aliases__name")
+    search_fields = ("title", "description", "credits__agent__name", "credits__agent__aliases__name")
     autocomplete_fields = ("series",)
     inlines = [WorkCreditInline, WorkConceptInline, WorkPublicationInlineForWork]
     readonly_fields = ("created_at", "updated_at")
@@ -111,13 +111,13 @@ class WorkAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("credits__person")
+        return qs.prefetch_related("credits__agent")
 
     def get_credits_display(self, obj):
         credits = obj.credits.all()
         if not credits:
             return "佚名"
-        return "、".join([f"{c.person.name} ({c.get_role_display()})" for c in credits])
+        return "、".join([f"{c.agent.name} ({c.get_role_display()})" for c in credits])
 
     get_credits_display.short_description = "參與人員"
 
@@ -156,7 +156,7 @@ class PublicationAdmin(ModelAdmin):
         ("year", RangeNumericFilter),
         ("publisher", RelatedDropdownFilter),
     )
-    search_fields = ("title", "isbn", "works__title", "credits__person__name", "credits__person__aliases__name")
+    search_fields = ("title", "isbn", "works__title", "credits__agent__name", "credits__agent__aliases__name")
     autocomplete_fields = ("publisher",)
     inlines = [WorkPublicationInlineForPublication, PublicationCreditInline]
     readonly_fields = ("created_at", "updated_at")
@@ -171,7 +171,7 @@ class PublicationAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("credits__person", "works")
+        return qs.prefetch_related("credits__agent", "works")
 
     def get_works_display(self, obj):
         works = obj.works.all()[:3]
@@ -193,7 +193,7 @@ class PublicationAdmin(ModelAdmin):
 
         if not valid_credits:
             return "-"
-        return "、".join([f"{c.display_name or c.person.name} ({c.get_role_display()})" for c in valid_credits])
+        return "、".join([f"{c.display_name or c.agent.name} ({c.get_role_display()})" for c in valid_credits])
 
     get_credits_display.short_description = "參與人員"
 
@@ -205,17 +205,17 @@ class PublicationAdmin(ModelAdmin):
 
 @admin.register(Catalogue)
 class CatalogueAdmin(ModelAdmin):
-    list_display = ("title", "catalogue_type", "curator", "year")
+    list_display = ("title", "catalogue_type", "agent_curator", "year")
     list_filter = (
         ("catalogue_type", ChoicesDropdownFilter),
         ("year", RangeNumericFilter),
     )
-    search_fields = ("title", "curator__name")
-    autocomplete_fields = ("curator",)
+    search_fields = ("title", "agent_curator__name")
+    autocomplete_fields = ("agent_curator",)
     inlines = [CatalogueEntryInline]
     readonly_fields = ("created_at", "updated_at")
 
     fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("title", "catalogue_type", "curator", "year", "note")}),
+        ("基本資訊 (Basic Info)", {"fields": ("title", "catalogue_type", "agent_curator", "year", "note")}),
         ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
     )
