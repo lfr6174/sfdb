@@ -28,14 +28,14 @@ onMounted(() => {
 // Manage displayed concepts for the "show more" functionality
 const DISPLAY_LIMIT = 10
 const displayedConcepts = computed(() => {
-  if (!agent.value?.concept_stats) return []
-  if (isConceptsExpanded.value) return agent.value.concept_stats
-  return agent.value.concept_stats.slice(0, DISPLAY_LIMIT)
+  if (!agent.value?.top_concepts) return []
+  if (isConceptsExpanded.value) return agent.value.top_concepts
+  return agent.value.top_concepts.slice(0, DISPLAY_LIMIT)
 })
 
 const hiddenConceptsCount = computed(() => {
-  if (!agent.value?.concept_stats) return 0
-  return Math.max(0, agent.value.concept_stats.length - DISPLAY_LIMIT)
+  if (!agent.value?.top_concepts) return 0
+  return Math.max(0, agent.value.top_concepts.length - DISPLAY_LIMIT)
 })
 </script>
 
@@ -85,10 +85,10 @@ const hiddenConceptsCount = computed(() => {
       <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
         <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
           <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">作品概念</h2>
-          <span class="text-sm text-[#2d2016]/50 font-mono">{{ agent.concept_stats?.length || 0 }}</span>
+          <span class="text-sm text-[#2d2016]/50 font-mono">{{ agent.top_concepts?.length || 0 }}</span>
         </div>
 
-        <div v-if="agent.concept_stats && agent.concept_stats.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
+        <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
           <router-link
             v-for="concept in displayedConcepts"
             :key="concept.slug"
@@ -96,7 +96,7 @@ const hiddenConceptsCount = computed(() => {
             class="group flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/70 text-base font-medium rounded-lg hover:bg-[#f5f0e8]/50 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
           >
             <span>{{ concept.name }}</span>
-            <span class="text-[13px] font-mono text-[#2d2016]/40 group-hover:text-[#ae5630]/60 transition-colors">{{ concept.count }}</span>
+            <span class="text-[13px] font-mono text-[#2d2016]/40 group-hover:text-[#ae5630]/60 transition-colors">{{ concept.works_count }}</span>
           </router-link>
 
           <!-- Show More Bubble -->

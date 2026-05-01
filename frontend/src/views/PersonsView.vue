@@ -132,9 +132,9 @@ onMounted(() => {
         </p>
 
         <!-- Concept Tags -->
-        <div v-if="agent.concept_stats && agent.concept_stats.length > 0" class="flex flex-wrap items-center gap-2">
+        <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap items-center gap-2">
           <router-link
-            v-for="concept in agent.concept_stats.slice(0, 5)"
+            v-for="concept in agent.top_concepts.slice(0, 5)"
             :key="concept.slug"
             :to="`/concepts/${concept.slug}`"
             class="px-2.5 py-1 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-xs font-medium rounded-lg hover:bg-[#f5f0e8]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
