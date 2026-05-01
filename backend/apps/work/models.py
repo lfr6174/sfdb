@@ -109,13 +109,31 @@ class Work(TimeStampedModel):
         return f"{self.title}{year_str}"
 
 
-class WorkRole(models.TextChoices):
-    """Core contribution roles of a person at the 'Work' level."""
+class Role(models.Model):
+    """
+    Function provided by a contributor, e.g., author, illustrator, etc.
+    https://id.loc.gov/ontologies/bibframe.html#Role
+    """
 
-    AUTHOR = "author", "作者"
-    CO_AUTHOR = "co_author", "合著"
-    STORY = "story", "原作"
-    ART = "art", "作畫"
+    code = models.CharField(
+        max_length=50, unique=True, verbose_name="職責代號", help_text="程式內部使用的代號，例如：illustrator"
+    )
+    verb = models.CharField(max_length=10, verbose_name="動詞", help_text="例如：「某某某 繪」")
+    noun = models.CharField(max_length=10, verbose_name="名詞", help_text="例如：「繪師：某某某」")
+    description = models.CharField(
+        max_length=100, blank=True, verbose_name="說明", help_text="填表時的提示，例如：「小說封面的插畫」"
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="排序", help_text="控制下拉選單的顯示順序")
+
+    class Meta:
+        verbose_name = "職責"
+        verbose_name_plural = "職責"
+        ordering = ["order", "code"]
+
+    def __str__(self):
+        if self.description:
+            return f"{self.noun}　{self.description}"
+        return self.noun
 
 
 class WorkCredit(models.Model):
@@ -130,7 +148,7 @@ class WorkCredit(models.Model):
         related_name="work_credits",
         verbose_name="主體",
     )
-    role = models.CharField(max_length=20, choices=WorkRole.choices, verbose_name="角色")
+    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="work_credits", verbose_name="職責")
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
     class Meta:
@@ -140,7 +158,7 @@ class WorkCredit(models.Model):
         verbose_name_plural = "作品主體關聯"
 
     def __str__(self):
-        return f"{self.work.title} - {self.agent.name} ({self.get_role_display()})"
+        return f"{self.work.title} - {self.agent.name} ({self.role.noun})"
 
 
 class WorkConcept(models.Model):
@@ -242,18 +260,6 @@ class Publication(TimeStampedModel):
         return f"{self.title} ({self.year})"
 
 
-class PublicationRole(models.TextChoices):
-    """Contribution roles of a person at the 'Publication' level."""
-
-    AUTHOR = "author", "作者"
-    CO_AUTHOR = "co_author", "合著"
-    STORY = "story", "原作"
-    ART = "art", "作畫"
-    TRANSLATOR = "translator", "譯者"
-    EDITOR = "editor", "編輯"
-    ILLUSTRATOR = "illustrator", "插畫"
-
-
 class PublicationCredit(models.Model):
     """
     Intermediate table mapping Publications to Agents (e.g., records who translated a specific edition).
@@ -274,7 +280,7 @@ class PublicationCredit(models.Model):
         verbose_name="顯示名稱",
         help_text="若此處留空，將會使用人物的本名。用於翻譯名稱或特定筆名。",
     )
-    role = models.CharField(max_length=20, choices=PublicationRole.choices, verbose_name="角色")
+    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="publication_credits", verbose_name="職責")
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
     class Meta:
@@ -285,7 +291,7 @@ class PublicationCredit(models.Model):
 
     def __str__(self):
         name_to_display = self.display_name or self.agent.name
-        return f"{self.publication.title} - {name_to_display} ({self.get_role_display()})"
+        return f"{self.publication.title} - {name_to_display} ({self.role.noun})"
 
 
 # ============================================================================

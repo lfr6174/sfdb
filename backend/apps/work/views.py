@@ -45,15 +45,17 @@ class WorkViewSet(viewsets.ModelViewSet):
         qs = Work.objects.select_related("series").order_by("-year", "title")
 
         if self.action == "list":
-            return qs.prefetch_related("credits__agent", "work_concepts__concept")
+            return qs.prefetch_related("credits__agent", "credits__role", "work_concepts__concept")
 
         return qs.prefetch_related(
             "credits__agent",
+            "credits__role",
             "work_concepts__concept",
             "publications",
             "publications__works",
             "publications__publisher",
             "publications__credits__agent",
+            "publications__credits__role",
             "catalogue_entries__catalogue__agent_curator",
         )
 
@@ -66,7 +68,7 @@ class WorkViewSet(viewsets.ModelViewSet):
 class PublicationViewSet(viewsets.ModelViewSet):
     queryset = (
         Publication.objects.select_related("publisher")
-        .prefetch_related("credits__agent", "works")
+        .prefetch_related("credits__agent", "credits__role", "works")
         .order_by("year", "title")
     )
     serializer_class = PublicationSerializer

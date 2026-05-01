@@ -9,6 +9,7 @@ from .models import (
     CatalogueEntry,
     Publication,
     PublicationCredit,
+    Role,
     Series,
     Work,
     WorkConcept,
@@ -55,7 +56,8 @@ class SeriesSerializer(serializers.ModelSerializer):
 
 class WorkCreditSerializer(serializers.ModelSerializer):
     agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
-    role_display = serializers.CharField(source="get_role_display", read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", queryset=Role.objects.all())
+    role_display = serializers.CharField(source="role.noun", read_only=True)
 
     class Meta:
         model = WorkCredit
@@ -103,7 +105,8 @@ class WorkBriefSerializer(serializers.ModelSerializer):
 
 class PublicationCreditSerializer(serializers.ModelSerializer):
     agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
-    role_display = serializers.CharField(source="get_role_display", read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", queryset=Role.objects.all())
+    role_display = serializers.CharField(source="role.noun", read_only=True)
 
     class Meta:
         model = PublicationCredit

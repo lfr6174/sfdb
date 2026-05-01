@@ -7,6 +7,7 @@ from .models import (
     CatalogueEntry,
     Publication,
     PublicationCredit,
+    Role,
     Series,
     Work,
     WorkConcept,
@@ -22,7 +23,7 @@ from .models import (
 class WorkCreditInline(TabularInline):
     model = WorkCredit
     extra = 0
-    autocomplete_fields = ("agent",)
+    autocomplete_fields = ("agent", "role")
     classes = ["collapse"]
 
 
@@ -37,7 +38,7 @@ class PublicationCreditInline(TabularInline):
     model = PublicationCredit
     extra = 0
     fields = ("agent", "display_name", "role", "order")
-    autocomplete_fields = ("agent",)
+    autocomplete_fields = ("agent", "role")
     classes = ["collapse"]
 
 
@@ -64,6 +65,13 @@ class CatalogueEntryInline(TabularInline):
 # ============================================================================
 # WORK ADMINS
 # ============================================================================
+
+
+@admin.register(Role)
+class RoleAdmin(ModelAdmin):
+    list_display = ("code", "noun", "verb", "description", "order")
+    search_fields = ("code", "noun", "verb")
+    ordering = ("order", "code")
 
 
 @admin.register(Series)
@@ -103,13 +111,13 @@ class WorkAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("credits__agent")
+        return qs.prefetch_related("credits__agent", "credits__role")
 
     def get_credits_display(self, obj):
         credits = obj.credits.all()
         if not credits:
             return "佚名"
-        return "、".join([f"{c.agent.name} ({c.get_role_display()})" for c in credits])
+        return "、".join([f"{c.agent.name} ({c.role.noun})" for c in credits])
 
     get_credits_display.short_description = "參與人員"
 
@@ -139,7 +147,7 @@ class PublicationAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("credits__agent", "works")
+        return qs.prefetch_related("credits__agent", "credits__role", "works")
 
     def get_works_display(self, obj):
         works = obj.works.all()[:3]
@@ -155,13 +163,13 @@ class PublicationAdmin(ModelAdmin):
         valid_credits = []
         for c in credits:
             # 如果是原作者且沒填寫別名，就不顯示在列表摘要中
-            if c.role in ["author", "co_author", "story", "art"] and not c.display_name:
+            if c.role.code in ["author", "co_author", "story", "art"] and not c.display_name:
                 continue
             valid_credits.append(c)
 
         if not valid_credits:
             return "-"
-        return "、".join([f"{c.display_name or c.agent.name} ({c.get_role_display()})" for c in valid_credits])
+        return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in valid_credits])
 
     get_credits_display.short_description = "參與人員"
 
