@@ -12,10 +12,7 @@ class ConceptCategory(models.TextChoices):
 
 
 class Concept(TimeStampedModel):
-    """
-    The core entity of the database. Acts as both a tag for 'Works' and a standalone
-    encyclopedia entry.
-    """
+    """External links for a concept. Soft limit: 3 per concept."""
 
     name = models.CharField(max_length=100, verbose_name="概念名稱")
     slug = models.SlugField(

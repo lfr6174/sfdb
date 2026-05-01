@@ -91,14 +91,14 @@ onUnmounted(() => {
         </div>
       </section>
 
-      <section v-if="concept.related_concepts_detail && concept.related_concepts_detail.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
+      <section v-if="concept.related_concepts && concept.related_concepts.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
         <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
           <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">相關概念</h2>
         </div>
 
         <div class="flex flex-wrap gap-2.5 md:gap-3">
           <router-link
-            v-for="related in concept.related_concepts_detail"
+            v-for="related in concept.related_concepts"
             :key="related.slug"
             :to="`/concepts/${related.slug}`"
             class="group flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/70 text-base font-medium rounded-lg hover:bg-[#f5f0e8]/50 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"

@@ -4,32 +4,20 @@ from .models import Concept, ConceptLink
 
 
 class ConceptLinkSerializer(serializers.ModelSerializer):
-    """Serializer for ConceptLink."""
-
     class Meta:
         model = ConceptLink
         fields = ["id", "title", "url", "order"]
 
 
 class ConceptMinimalSerializer(serializers.ModelSerializer):
-    """
-    A lightweight serializer for Concept to prevent infinite recursion
-    when serializing the ManyToMany `related_concepts` field.
-    """
-
     class Meta:
         model = Concept
         fields = ["id", "name", "slug", "category"]
 
 
 class ConceptSerializer(serializers.ModelSerializer):
-    """
-    Main serializer for Concept.
-    Includes rich read-only details for relationships.
-    """
-
     links = ConceptLinkSerializer(many=True, read_only=True)
-    related_concepts_detail = ConceptMinimalSerializer(source="related_concepts", many=True, read_only=True)
+    related_concepts = ConceptMinimalSerializer(many=True, read_only=True)
     works_count = serializers.IntegerField(read_only=True)
     work_concepts = serializers.SerializerMethodField()
 
@@ -42,7 +30,6 @@ class ConceptSerializer(serializers.ModelSerializer):
             "category",
             "description",
             "related_concepts",
-            "related_concepts_detail",
             "work_concepts",
             "links",
             "works_count",
@@ -51,10 +38,7 @@ class ConceptSerializer(serializers.ModelSerializer):
         ]
 
     def get_work_concepts(self, obj):
-        """
-        Dynamically construct reverse-related work concepts via QuerySet.
-        This decouples the concept app by avoiding imports of work Models or Serializers.
-        """
+        # Avoid importing work serializers to keep concept app self-contained
         return [
             {
                 "id": wc.id,
