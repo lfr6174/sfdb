@@ -5,7 +5,7 @@ from apps.core.models import TimeStampedModel
 
 class ConceptCategory(models.TextChoices):
     """
-    The three main categories of Sci-Fi concepts.
+    Main categories of sf concepts.
     """
 
     NOVUM = "novum", "新異 (Novum)"
@@ -34,13 +34,7 @@ class Concept(TimeStampedModel):
         help_text="若有外部連結則保持內容精簡。",
     )
 
-    related_concepts = models.ManyToManyField(
-        "self",
-        blank=True,
-        symmetrical=True,
-        verbose_name="相關概念",
-        help_text="Concepts that are closely related for horizontal exploration.",
-    )
+    related_concepts = models.ManyToManyField("self", blank=True, symmetrical=True, verbose_name="相關概念")
 
     class Meta:
         ordering = ["category", "name"]

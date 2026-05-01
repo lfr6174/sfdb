@@ -6,7 +6,7 @@ from apps.core.models import TimeStampedModel
 class Agent(TimeStampedModel):
     """
     Entity having a role in a resource, such as a person or organization.
-    http://id.loc.gov/ontologies/bibframe/Agent
+    https://id.loc.gov/ontologies/bibframe.html#Agent
     """
 
     class AgentType(models.TextChoices):

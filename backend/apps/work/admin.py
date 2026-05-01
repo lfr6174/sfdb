@@ -24,12 +24,14 @@ class WorkCreditInline(TabularInline):
     model = WorkCredit
     extra = 0
     autocomplete_fields = ("agent",)
+    classes = ["collapse"]
 
 
 class WorkConceptInline(StackedInline):
     model = WorkConcept
     extra = 1
     autocomplete_fields = ("concept",)
+    classes = ["collapse"]
 
 
 class PublicationCreditInline(TabularInline):
@@ -37,6 +39,7 @@ class PublicationCreditInline(TabularInline):
     extra = 0
     fields = ("agent", "display_name", "role", "order")
     autocomplete_fields = ("agent",)
+    classes = ["collapse"]
 
 
 class WorkPublicationInlineForWork(TabularInline):
@@ -96,18 +99,6 @@ class WorkAdmin(ModelAdmin):
     autocomplete_fields = ("series",)
     inlines = [WorkCreditInline, WorkConceptInline, WorkPublicationInlineForWork]
     readonly_fields = ("created_at", "updated_at")
-
-    fieldsets = (
-        (
-            "基本資訊 (Basic Info)",
-            {
-                "fields": ("title", "media_type", "work_length", "provenance", "language", "year", "description"),
-                "description": "填寫作品的客觀資訊。",
-            },
-        ),
-        ("系列資訊 (Series Info)", {"fields": ("series", "series_order")}),
-        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
-    )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
