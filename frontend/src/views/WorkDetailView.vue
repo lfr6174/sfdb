@@ -59,49 +59,62 @@ const conceptDescriptions = computed(() => {
 })
 
 const groupedWorkCredits = computed(() => {
-  if (!work.value?.credits) return []
+  if (!work.value?.contributions) return []
   const groups: Record<string, any[]> = {}
-  work.value.credits.forEach((c: any) => {
-    if (!groups[c.role]) groups[c.role] = []
+  const order: string[] = []
+  work.value.contributions.forEach((c: any) => {
+    if (!groups[c.role]) {
+      groups[c.role] = []
+      order.push(c.role)
+    }
     groups[c.role].push(c)
   })
 
-  const result = []
-  const authors = [...(groups['author'] || []), ...(groups['co_author'] || [])]
-  if (authors.length) result.push({ label: '', credits: authors })
-  if (groups['story']) result.push({ label: '原作', credits: groups['story'] })
-  if (groups['art']) result.push({ label: '作畫', credits: groups['art'] })
-  return result
+  return order.map(role => {
+    const credits = groups[role]
+    return {
+      label: role === 'author' ? '' : credits[0].role_display,
+      credits
+    }
+  })
 })
 
-const getGroupedPubCredits = (credits: any[]) => {
-  if (!credits || !credits.length) return []
+const getGroupedPubCredits = (contributions: any[]) => {
+  if (!contributions || !contributions.length) return []
 
-  const filteredCredits = credits.filter((c: any) => {
+  const filteredCredits = contributions.filter((c: any) => {
     // 核心作者群如果沒有填寫專屬的 display_name，就不要顯示在出版品列表上
-    if (['author', 'co_author', 'story', 'art'].includes(c.role)) {
+    if (['author', 'co_author', 'story', 'art', 'artist'].includes(c.role)) {
       return !!c.display_name
     }
     return true // 譯者、繪者、編輯則一律顯示
   })
 
   const groups: Record<string, any[]> = {}
+  const order: string[] = []
   filteredCredits.forEach((c: any) => {
-    if (!groups[c.role]) groups[c.role] = []
+    if (!groups[c.role]) {
+      groups[c.role] = []
+      order.push(c.role)
+    }
     groups[c.role].push(c)
   })
 
-  const result = []
-  const authors = [...(groups['author'] || []), ...(groups['co_author'] || [])]
+  const labelMap: Record<string, string> = {
+    'author': '著',
+    'artist': '作畫',
+    'illustrator': '繪',
+    'translator': '譯',
+    'editor': '編'
+  }
 
-  if (authors.length) result.push({ label: '著', credits: authors })
-  if (groups['story']) result.push({ label: '原作', credits: groups['story'] })
-  if (groups['art']) result.push({ label: '作畫', credits: groups['art'] })
-
-  if (groups['translator']) result.push({ label: '譯', credits: groups['translator'] })
-  if (groups['illustrator']) result.push({ label: '繪', credits: groups['illustrator'] })
-  if (groups['editor']) result.push({ label: '編', credits: groups['editor'] })
-  return result
+  return order.map(role => {
+    const credits = groups[role]
+    return {
+      label: labelMap[role] || credits[0].role_display,
+      credits
+    }
+  })
 }
 </script>
 
@@ -235,15 +248,15 @@ const getGroupedPubCredits = (credits: any[]) => {
                 <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ pub.year || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top">{{ pub.publisher.name || '-' }}</td>
                 <td class="py-3.5 pr-4 align-top text-sm">
-                  <template v-if="pub.credits.length > 0">
-                    <span v-for="(group, gIdx) in getGroupedPubCredits(pub.credits)" :key="gIdx">
+                  <template v-if="pub.contributions.length > 0">
+                    <span v-for="(group, gIdx) in getGroupedPubCredits(pub.contributions)" :key="gIdx">
                       <span v-for="(c, cIdx) in group.credits" :key="c.id">
                         <router-link :to="`/agents/${c.agent_detail.id}`" class="hover:text-[#ae5630] transition-colors">
                           {{ c.display_name || c.agent_detail.name }}
                         </router-link><span v-if="cIdx < group.credits.length - 1">、</span>
                       </span>
                       <span class="text-[#2d2016]/60 ml-0.5">{{ group.label }}</span>
-                      <span v-if="gIdx < getGroupedPubCredits(pub.credits).length - 1">；</span>
+                      <span v-if="gIdx < getGroupedPubCredits(pub.contributions).length - 1">；</span>
                     </span>
                   </template>
                   <span v-else>-</span>

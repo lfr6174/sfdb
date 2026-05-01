@@ -87,7 +87,7 @@ class Work(TimeStampedModel):
 
     agents = models.ManyToManyField(
         "agent.Agent",
-        through="WorkCredit",
+        through="WorkAgent",
         related_name="works",
         verbose_name="相關主體",
         blank=True,
@@ -96,7 +96,7 @@ class Work(TimeStampedModel):
         "concept.Concept", through="WorkConcept", related_name="works", verbose_name="相關概念"
     )
     publications = models.ManyToManyField(
-        "Publication", through="WorkPublication", related_name="works", verbose_name="收錄於出版品"
+        "Publication", through="Manifestation", related_name="works", verbose_name="收錄於出版品"
     )
 
     class Meta:
@@ -136,19 +136,20 @@ class Role(models.Model):
         return self.noun
 
 
-class WorkCredit(models.Model):
+class WorkAgent(models.Model):
     """
-    Intermediate table mapping Works to Agents (records who created the work).
+    Agent and its role (i.e. contribution) in relation to the work.
+    https://id.loc.gov/ontologies/bibframe.html#Contribution
     """
 
-    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="credits", verbose_name="作品")
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="contributions", verbose_name="作品")
     agent = models.ForeignKey(
         "agent.Agent",
         on_delete=models.CASCADE,
-        related_name="work_credits",
+        related_name="work_contributions",
         verbose_name="主體",
     )
-    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="work_credits", verbose_name="職責")
+    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="work_agents", verbose_name="職責")
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
     class Meta:
@@ -186,14 +187,14 @@ class WorkConcept(models.Model):
         return f"{self.work.title} ✕ {self.concept.name}"
 
 
-class WorkPublication(models.Model):
+class Manifestation(models.Model):
     """
-    Intermediate table mapping Works to Publications (e.g., short stories in an anthology).
+    Physical embodiment of an expression of a work, mapping Works to Publications.
     """
 
-    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="work_publications", verbose_name="作品")
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="manifestations", verbose_name="作品")
     publication = models.ForeignKey(
-        "Publication", on_delete=models.CASCADE, related_name="work_publications", verbose_name="出版品"
+        "Publication", on_delete=models.CASCADE, related_name="manifestations", verbose_name="出版品"
     )
 
     class Meta:
@@ -245,7 +246,7 @@ class Publication(TimeStampedModel):
 
     agents = models.ManyToManyField(
         "agent.Agent",
-        through="PublicationCredit",
+        through="PublicationAgent",
         related_name="publications",
         verbose_name="相關主體",
         blank=True,
@@ -260,18 +261,18 @@ class Publication(TimeStampedModel):
         return f"{self.title} ({self.year})"
 
 
-class PublicationCredit(models.Model):
+class PublicationAgent(models.Model):
     """
     Intermediate table mapping Publications to Agents (e.g., records who translated a specific edition).
     """
 
     publication = models.ForeignKey(
-        Publication, on_delete=models.CASCADE, related_name="credits", verbose_name="出版品"
+        Publication, on_delete=models.CASCADE, related_name="contributions", verbose_name="出版品"
     )
     agent = models.ForeignKey(
         "agent.Agent",
         on_delete=models.CASCADE,
-        related_name="publication_credits",
+        related_name="publication_contributions",
         verbose_name="主體",
     )
     display_name = models.CharField(
@@ -280,7 +281,7 @@ class PublicationCredit(models.Model):
         verbose_name="顯示名稱",
         help_text="若此處留空，將會使用人物的本名。用於翻譯名稱或特定筆名。",
     )
-    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="publication_credits", verbose_name="職責")
+    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="publication_agents", verbose_name="職責")
     order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
 
     class Meta:

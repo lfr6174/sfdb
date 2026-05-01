@@ -1,7 +1,7 @@
 from django.db.models import Count, Prefetch, Q
 
 from apps.concept.models import Concept
-from apps.work.models import Publication, PublicationCredit, Work, WorkCredit
+from apps.work.models import Publication, PublicationAgent, Work, WorkAgent
 
 
 def get_agent_top_concepts(agent, limit: int = 7):
@@ -19,9 +19,9 @@ def get_agent_works(agent):
     """Return works the agent has contributed to"""
 
     works = (
-        Work.objects.filter(credits__agent=agent)
+        Work.objects.filter(agents=agent)
         .prefetch_related(
-            Prefetch("credits", queryset=WorkCredit.objects.filter(agent=agent), to_attr="agent_credits"),
+            Prefetch("contributions", queryset=WorkAgent.objects.filter(agent=agent), to_attr="agent_contributions"),
             "concepts",
         )
         .distinct()
@@ -35,7 +35,7 @@ def get_agent_works(agent):
             "year": w.year,
             "media_type": w.get_media_type_display(),
             "work_length": w.get_work_length_display(),
-            "roles": sorted({c.get_role_display() for c in w.agent_credits}),
+            "roles": sorted({c.role.noun for c in w.agent_contributions}),
             "concepts": [{"name": c.name, "slug": c.slug} for c in w.concepts.all()[:3]],
         }
         for w in works
@@ -46,9 +46,11 @@ def get_agent_publications(agent):
     """Return publications the agent has participated in"""
 
     publications = (
-        Publication.objects.filter(credits__agent=agent)
+        Publication.objects.filter(agents=agent)
         .prefetch_related(
-            Prefetch("credits", queryset=PublicationCredit.objects.filter(agent=agent), to_attr="agent_credits")
+            Prefetch(
+                "contributions", queryset=PublicationAgent.objects.filter(agent=agent), to_attr="agent_contributions"
+            )
         )
         .distinct()
         .order_by("-year")
@@ -63,7 +65,7 @@ def get_agent_publications(agent):
             "publisher": p.publisher.name if p.publisher else "",
             "isbn": p.isbn,
             "note": p.note,
-            "roles": sorted({c.get_role_display() for c in p.agent_credits}),
+            "roles": sorted({c.role.noun for c in p.agent_contributions}),
         }
         for p in publications
     ]

@@ -8,12 +8,12 @@ from .models import (
     Catalogue,
     CatalogueEntry,
     Publication,
-    PublicationCredit,
+    PublicationAgent,
     Role,
     Series,
     Work,
+    WorkAgent,
     WorkConcept,
-    WorkCredit,
 )
 from .services import build_work_byline
 
@@ -54,13 +54,13 @@ class SeriesSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "note", "works_count", "created_at", "updated_at"]
 
 
-class WorkCreditSerializer(serializers.ModelSerializer):
+class WorkAgentSerializer(serializers.ModelSerializer):
     agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
     role = serializers.SlugRelatedField(slug_field="code", queryset=Role.objects.all())
     role_display = serializers.CharField(source="role.noun", read_only=True)
 
     class Meta:
-        model = WorkCredit
+        model = WorkAgent
         fields = ["id", "agent", "agent_detail", "role", "role_display", "order"]
 
 
@@ -78,7 +78,7 @@ class WorkBriefSerializer(serializers.ModelSerializer):
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
     byline = serializers.SerializerMethodField()
-    credits = WorkCreditSerializer(many=True, read_only=True)
+    contributions = WorkAgentSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
 
     class Meta:
@@ -90,7 +90,7 @@ class WorkBriefSerializer(serializers.ModelSerializer):
             "media_type_display",
             "work_length_display",
             "byline",
-            "credits",
+            "contributions",
             "work_concepts",
         ]
 
@@ -103,13 +103,13 @@ class WorkBriefSerializer(serializers.ModelSerializer):
 # ============================================================================
 
 
-class PublicationCreditSerializer(serializers.ModelSerializer):
+class PublicationAgentSerializer(serializers.ModelSerializer):
     agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
     role = serializers.SlugRelatedField(slug_field="code", queryset=Role.objects.all())
     role_display = serializers.CharField(source="role.noun", read_only=True)
 
     class Meta:
-        model = PublicationCredit
+        model = PublicationAgent
         fields = ["id", "agent", "agent_detail", "display_name", "role", "role_display", "order"]
 
 
@@ -117,7 +117,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     publisher = AgentSerializer(read_only=True)
     media_display = serializers.CharField(source="get_media_display", read_only=True)
-    credits = PublicationCreditSerializer(many=True, read_only=True)
+    contributions = PublicationAgentSerializer(many=True, read_only=True)
     works = WorkMinimalSerializer(many=True, read_only=True)
 
     class Meta:
@@ -134,7 +134,7 @@ class PublicationSerializer(serializers.ModelSerializer):
             "year",
             "isbn",
             "note",
-            "credits",
+            "contributions",
             "created_at",
             "updated_at",
         ]
@@ -178,7 +178,7 @@ class WorkSerializer(serializers.ModelSerializer):
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
 
     series_detail = SeriesSerializer(source="series", read_only=True)
-    credits = WorkCreditSerializer(many=True, read_only=True)
+    contributions = WorkAgentSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
     publications = PublicationSerializer(many=True, read_only=True)
     catalogue_entries = WorkCatalogueEntrySerializer(many=True, read_only=True)
@@ -199,7 +199,7 @@ class WorkSerializer(serializers.ModelSerializer):
             "series",
             "series_detail",
             "series_order",
-            "credits",
+            "contributions",
             "work_concepts",
             "publications",
             "catalogue_entries",

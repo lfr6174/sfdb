@@ -24,12 +24,12 @@ class AgentViewSet(viewsets.ModelViewSet):
         # 動態決定 Prefetch 範圍，避免 List API 提取用不到的龐大資料
         if self.action == "retrieve":
             qs = qs.prefetch_related(
-                "work_credits__work__concepts",
-                "publication_credits__publication__publisher",
+                "work_contributions__work__concepts",
+                "publication_contributions__publication__publisher",
             )
         elif self.action == "list":
             qs = qs.prefetch_related(
-                "work_credits__work__concepts",
+                "work_contributions__work__concepts",
             )
         return qs
 

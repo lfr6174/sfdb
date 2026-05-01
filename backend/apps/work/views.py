@@ -34,10 +34,10 @@ class WorkViewSet(viewsets.ModelViewSet):
     search_fields = [
         "title",
         "publications__title",
-        "credits__agent__name",
-        "credits__agent__aliases__name",
-        "publications__credits__agent__name",
-        "publications__credits__agent__aliases__name",
+        "contributions__agent__name",
+        "contributions__agent__aliases__name",
+        "publications__contributions__agent__name",
+        "publications__contributions__agent__aliases__name",
     ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
@@ -45,17 +45,17 @@ class WorkViewSet(viewsets.ModelViewSet):
         qs = Work.objects.select_related("series").order_by("-year", "title")
 
         if self.action == "list":
-            return qs.prefetch_related("credits__agent", "credits__role", "work_concepts__concept")
+            return qs.prefetch_related("contributions__agent", "contributions__role", "work_concepts__concept")
 
         return qs.prefetch_related(
-            "credits__agent",
-            "credits__role",
+            "contributions__agent",
+            "contributions__role",
             "work_concepts__concept",
             "publications",
             "publications__works",
             "publications__publisher",
-            "publications__credits__agent",
-            "publications__credits__role",
+            "publications__contributions__agent",
+            "publications__contributions__role",
             "catalogue_entries__catalogue__agent_curator",
         )
 
@@ -68,7 +68,7 @@ class WorkViewSet(viewsets.ModelViewSet):
 class PublicationViewSet(viewsets.ModelViewSet):
     queryset = (
         Publication.objects.select_related("publisher")
-        .prefetch_related("credits__agent", "credits__role", "works")
+        .prefetch_related("contributions__agent", "contributions__role", "works")
         .order_by("year", "title")
     )
     serializer_class = PublicationSerializer
@@ -77,8 +77,8 @@ class PublicationViewSet(viewsets.ModelViewSet):
     search_fields = [
         "title",
         "isbn",
-        "credits__agent__name",
-        "credits__agent__aliases__name",
+        "contributions__agent__name",
+        "contributions__agent__aliases__name",
     ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
@@ -86,7 +86,7 @@ class PublicationViewSet(viewsets.ModelViewSet):
 class CatalogueViewSet(viewsets.ModelViewSet):
     queryset = (
         Catalogue.objects.select_related("agent_curator")
-        .prefetch_related("entries__work", "entries__work__credits__agent")
+        .prefetch_related("entries__work", "entries__work__contributions__agent")
         .annotate(works_count=Count("entries", distinct=True))
         .order_by("-year", "title")
     )
