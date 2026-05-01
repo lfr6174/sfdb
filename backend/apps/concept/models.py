@@ -4,9 +4,7 @@ from apps.core.models import TimeStampedModel
 
 
 class ConceptCategory(models.TextChoices):
-    """
-    Main categories of sf concepts.
-    """
+    """Main categories of sf concepts."""
 
     NOVUM = "novum", "新異 (Novum)"
     NARRATIVE = "narrative", "敘事 (Narrative)"

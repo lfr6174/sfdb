@@ -4,9 +4,11 @@ from rest_framework import filters, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.work.serializers import WorkBriefSerializer
+
 from .models import Concept, ConceptLink
-from .serializers import ConceptLinkSerializer, ConceptSerializer
-from .services import get_random_spotlight_data
+from .serializers import ConceptLinkSerializer, ConceptMinimalSerializer, ConceptSerializer
+from .services import get_random_concept_with_works
 
 
 class ConceptViewSet(viewsets.ModelViewSet):
@@ -24,16 +26,16 @@ class ConceptViewSet(viewsets.ModelViewSet):
     search_fields = ["name", "slug"]
     ordering_fields = ["name", "created_at", "updated_at", "works_count"]
 
-    @action(detail=False, methods=["get"], url_path="random-spotlight")
-    def random_spotlight(self, request):
-        """
-        Retrieve works for a random concept that has at least one associated work.
-        Useful for the homepage spotlight section.
-        """
-        data = get_random_spotlight_data()
+    @action(detail=False, methods=["get"], url_path="random")
+    def random(self, request):
+        """Return a random concept with associated works."""
+        concept = get_random_concept_with_works()
 
-        if not data:
-            return Response({"detail": "No concepts available with associated works."}, status=404)
+        if not concept:
+            return Response({"detail": "No concepts found."}, status=404)
+
+        data = ConceptMinimalSerializer(concept).data
+        data["random_works"] = WorkBriefSerializer(concept.random_works, many=True).data
 
         return Response(data)
 

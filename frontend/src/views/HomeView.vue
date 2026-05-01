@@ -19,11 +19,10 @@ const formatDate = (dateStr: string) => {
 const refreshRandomConcept = async () => {
   isLoading.value = true
   try {
-    // Call the backend random-spotlight API
-    const response = await api.get('/concepts/random-spotlight/')
+    const response = await api.get('/concepts/random/')
     if (response.status === 200 && response.data) {
       currentConcept.value = response.data
-      works.value = response.data.spotlight_works || []
+      works.value = response.data.random_works || []
     }
   } catch (error) {
     console.error('Failed to fetch random spotlight concept:', error)
@@ -34,44 +33,49 @@ const refreshRandomConcept = async () => {
 
 onMounted(async () => {
   try {
-    // Send four independent RESTful requests in parallel
-    const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.all([
+    // Send four independent RESTful requests in parallel using Promise.allSettled
+    const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.allSettled([
       api.get('/works/'),
       api.get('/concepts/', { params: { ordering: '-updated_at' } }), // Fetch genuinely "recently added" concepts by sorting
       api.get('/posts/'),
-      api.get('/concepts/random-spotlight/') // Fetch a random concept on initial load
+      api.get('/concepts/random/') // Fetch a random concept on initial load
     ])
 
-    // 1. Statistics: directly use the count provided by DRF paginator
-    stats.value = {
-      works: worksRes.data.count || 0,
-      concepts: conceptsRes.data.count || 0
+    // 1. Statistics
+    if (worksRes.status === 'fulfilled') {
+      stats.value.works = worksRes.value.data.count || 0
+    }
+    if (conceptsRes.status === 'fulfilled') {
+      stats.value.concepts = conceptsRes.value.data.count || 0
+
+      // 2. Concept processing
+      const allConcepts = conceptsRes.value.data.results || []
+
+      // Group recent concepts by category
+      const recent: Record<string, {name: string, slug: string}[]> = {}
+      allConcepts.forEach((c: any) => {
+        const catName = c.category || '未分類' // If DRF returns category_display, consider using c.category_display instead
+        if (!recent[catName]) recent[catName] = []
+        if (recent[catName].length < 5) recent[catName].push({ name: c.name, slug: c.slug })
+      })
+      recentConcepts.value = recent
     }
 
-    // 2. Concept processing
-    const allConcepts = conceptsRes.data.results || []
-
-    // Group recent concepts by category
-    const recent: Record<string, {name: string, slug: string}[]> = {}
-    allConcepts.forEach((c: any) => {
-      const catName = c.category || '未分類' // If DRF returns category_display, consider using c.category_display instead
-      if (!recent[catName]) recent[catName] = []
-      if (recent[catName].length < 5) recent[catName].push({ name: c.name, slug: c.slug })
-    })
-    recentConcepts.value = recent
-
     // 3. Announcement processing
-    const fetchedPosts = postsRes.data.results || []
-    announcements.value = fetchedPosts.slice(0, 5) // 統一：直接儲存原始資料
+    if (postsRes.status === 'fulfilled') {
+      const fetchedPosts = postsRes.value.data.results || []
+      announcements.value = fetchedPosts.slice(0, 5) // 統一：直接儲存原始資料
+    }
 
     // 4. Set initial random concept
-    if (randomRes.status === 200 && randomRes.data) {
-      currentConcept.value = randomRes.data
-      works.value = randomRes.data.spotlight_works || []
-      isLoading.value = false
+    if (randomRes.status === 'fulfilled' && randomRes.value.status === 200 && randomRes.value.data) {
+      currentConcept.value = randomRes.value.data
+      works.value = randomRes.value.data.random_works || []
     }
   } catch (error) {
     console.error('RESTful API fetch failed:', error)
+  } finally {
+    isLoading.value = false
   }
 })
 </script>
