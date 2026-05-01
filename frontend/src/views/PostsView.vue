@@ -94,9 +94,6 @@ const formatDate = (dateStr: string) => {
         </div>
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
-            <thead>
-
-            </thead>
             <tbody class="divide-y divide-[#2d2016]/5">
               <tr v-for="post in posts" :key="post.id" class="group hover:bg-[#f5f0e8]/30 transition-colors">
                 <td class="py-3.5 pr-4 align-middle">

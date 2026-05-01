@@ -13,7 +13,6 @@ const fetchPageDetail = async () => {
   isLoading.value = true
   hasError.value = false
   try {
-    // 透過 URL 的 slug 去打 API，例如 /api/pages/about/
     const response = await api.get(`/pages/${route.params.slug}/`)
     pageData.value = response.data
   } catch (error) {
@@ -53,10 +52,8 @@ const renderedBody = computed(() => {
       <article class="bg-[#ffffff] rounded-lg p-6 md:p-10 shadow-sm border border-[#2d2016]/10">
         <h1 class="text-3xl md:text-4xl font-bold text-[#2d2016] tracking-tight mb-4">{{ pageData.title }}</h1>
 
-        <!-- 不像文章有作者，靜態頁面直接放分隔線即可 -->
         <hr class="my-6 border-[#2d2016]/10" />
 
-        <!-- Markdown 內文區塊 -->
         <div class="prose prose-stone max-w-none text-[17px] text-[#2d2016]/80 leading-relaxed" v-html="renderedBody">
         </div>
 
