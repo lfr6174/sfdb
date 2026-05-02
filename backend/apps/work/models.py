@@ -9,25 +9,21 @@ from apps.core.models import TimeStampedModel
 
 
 class Series(TimeStampedModel):
-    """
-    A cohesive series of works, e.g. Foundation Series".
-    """
+    """A cohesive series of works, e.g. Foundation Series"."""
 
     title = models.CharField(max_length=300, verbose_name="系列名稱")
     note = models.TextField(blank=True, verbose_name="備註")
 
     class Meta:
+        ordering = ["title"]
         verbose_name = "系列"
         verbose_name_plural = "系列"
-        ordering = ["title"]
 
     def __str__(self):
         return self.title
 
 
 class Language(models.TextChoices):
-    """Language categories for works and publications."""
-
     ZH_HANT = "zh-hant", "繁體中文"
     ZH_HANS = "zh-hans", "簡體中文"
     EN = "en", "英文"
@@ -36,32 +32,22 @@ class Language(models.TextChoices):
 
 
 class MediaType(models.TextChoices):
-    """Media types for a work."""
-
     NOVEL = "novel", "小說"
     COMIC = "comic", "漫畫"
 
 
 class WorkLength(models.TextChoices):
-    """Length categories for a work."""
-
     LONG = "long", "長篇"
     SHORT = "short", "中短篇"
 
 
 class WorkProvenance(models.TextChoices):
-    """Provenance for a work"""
-
     ORIGINAL = "original", "原創"
     LICENSED = "licensed", "代理"
 
 
 class Work(TimeStampedModel):
-    """
-    Core entity: Work.
-    Represents an abstract artistic or literary creation,
-    independent of its specific publication or release format.
-    """
+    """An abstract creation, independent of its specific format."""
 
     title = models.CharField(max_length=300, verbose_name="標題")
     media_type = models.CharField(max_length=20, choices=MediaType.choices, verbose_name="媒體類型")
@@ -163,11 +149,7 @@ class WorkAgent(models.Model):
 
 
 class WorkConcept(models.Model):
-    """
-    Intermediate table mapping Works to Concepts.
-    Records how a specific concept is applied and interpreted in a work.
-    All descriptions here are treated as spoilers by default in the UI.
-    """
+    """How a specific concept is applied in a work."""
 
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="work_concepts", verbose_name="作品")
     concept = models.ForeignKey(
@@ -188,9 +170,7 @@ class WorkConcept(models.Model):
 
 
 class Manifestation(models.Model):
-    """
-    Physical embodiment of an expression of a work, mapping Works to Publications.
-    """
+    """Physical embodiment of an expression of a work, mapping Works to Publications."""
 
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="manifestations", verbose_name="作品")
     publication = models.ForeignKey(
@@ -213,8 +193,6 @@ class Manifestation(models.Model):
 
 
 class PublicationMedia(models.TextChoices):
-    """Publication medium."""
-
     BOOK = "book", "書籍"
     MAGAZINE = "magazine", "雜誌"
     NEWSPAPER = "newspaper", "報紙"
@@ -224,7 +202,8 @@ class PublicationMedia(models.TextChoices):
 
 class Publication(TimeStampedModel):
     """
-    Represents a specific physical or digital release of a Work.
+    Resource reflecting an individual, material embodiment of a Work.
+    https://id.loc.gov/ontologies/bibframe.html#Instance
     """
 
     publisher = models.ForeignKey(
@@ -263,7 +242,8 @@ class Publication(TimeStampedModel):
 
 class PublicationAgent(models.Model):
     """
-    Intermediate table mapping Publications to Agents (e.g., records who translated a specific edition).
+    Agent and its role (i.e. contribution) in relation to the publication.
+    https://id.loc.gov/ontologies/bibframe.html#Contribution
     """
 
     publication = models.ForeignKey(
@@ -308,9 +288,7 @@ class CatalogueType(models.TextChoices):
 
 
 class Catalogue(TimeStampedModel):
-    """
-    Represents external collections, literary awards, or reading lists.
-    """
+    """External collections, literary awards, or reading lists."""
 
     title = models.CharField(max_length=300, verbose_name="名稱")
     catalogue_type = models.CharField(max_length=20, choices=CatalogueType.choices, verbose_name="類型")
