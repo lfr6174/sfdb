@@ -6,6 +6,7 @@ from .models import (
     Catalogue,
     CatalogueEntry,
     Manifestation,
+    ManifestationAgent,
     Publication,
     PublicationAgent,
     Role,
@@ -42,17 +43,29 @@ class PublicationAgentInline(TabularInline):
     classes = ["collapse"]
 
 
+class ManifestationAgentInline(TabularInline):
+    model = ManifestationAgent
+    extra = 0
+    fields = ("agent", "display_name", "role", "order")
+    autocomplete_fields = ("agent", "role")
+    classes = ["collapse"]
+
+
 class ManifestationInlineForWork(TabularInline):
     model = Manifestation
     extra = 0
+    fields = ("publication", "name")
     autocomplete_fields = ("publication",)
+    show_change_link = True
     classes = ["collapse"]
 
 
 class ManifestationInlineForPublication(TabularInline):
     model = Manifestation
     extra = 0
+    fields = ("work", "name")
     autocomplete_fields = ("work",)
+    show_change_link = True
     classes = ["collapse"]
 
 
@@ -178,6 +191,26 @@ class PublicationAdmin(ModelAdmin):
         return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in valid_agents])
 
     get_contributions_display.short_description = "參與人員"
+
+
+@admin.register(Manifestation)
+class ManifestationAdmin(ModelAdmin):
+    list_display = ("publication", "work", "name", "get_contributions_display")
+    search_fields = ("work__title", "publication__title", "name", "contributions__agent__name")
+    autocomplete_fields = ("work", "publication")
+    inlines = [ManifestationAgentInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("work", "publication").prefetch_related("contributions__agent", "contributions__role")
+
+    def get_contributions_display(self, obj):
+        contributions = obj.contributions.all()
+        if not contributions:
+            return "-"
+        return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in contributions])
+
+    get_contributions_display.short_description = "單篇參與人員"
 
 
 # ============================================================================

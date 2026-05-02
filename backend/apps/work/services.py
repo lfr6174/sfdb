@@ -1,15 +1,21 @@
-def build_work_byline(work) -> str:
-    """
-    建立作品的作者群 (Byline) 顯示字串。
-    會過濾重複的主體名稱，若無相關主體則回傳「佚名」。
-    """
-    contributions = work.contributions.all()
-    if not contributions:
-        return "佚名"
+def get_byline(contributions) -> list[dict]:
+    """Return deduplicated agent list for byline rendering."""
+    seen = set()
+    result = []
+    for c in contributions:
+        if c.role and c.agent and c.agent.id not in seen:
+            seen.add(c.agent.id)
+            result.append({"id": c.agent.id, "text": getattr(c, "display_name", "") or c.agent.name})
+    return result
 
-    names = [wa.agent.name for wa in contributions if wa.agent]
 
-    if not names:
-        return "佚名"
+def get_credits(contributions) -> list[dict]:
+    """Return agents grouped by role for credit rendering."""
+    groups = {}
+    for c in contributions:
+        if c.role and c.agent:
+            groups.setdefault(c.role.verb, {}).setdefault(
+                c.agent.id, {"id": c.agent.id, "text": getattr(c, "display_name", "") or c.agent.name}
+            )
 
-    return "、".join(dict.fromkeys(names))
+    return [{"role": role, "agents": list(agents.values())} for role, agents in groups.items()]

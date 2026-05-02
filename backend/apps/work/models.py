@@ -176,6 +176,12 @@ class Manifestation(models.Model):
     publication = models.ForeignKey(
         "Publication", on_delete=models.CASCADE, related_name="manifestations", verbose_name="出版品"
     )
+    name = models.CharField(
+        max_length=300,
+        blank=True,
+        verbose_name="篇名",
+        help_text="代表該作品在此出版物中的名稱，若與出版物名稱相同可留空。",
+    )
 
     class Meta:
         unique_together = [("work", "publication")]
@@ -184,6 +190,40 @@ class Manifestation(models.Model):
 
     def __str__(self):
         return f"{self.publication.title} - {self.work.title}"
+
+
+class ManifestationAgent(models.Model):
+    """
+    Agent and its role (i.e. contribution) in relation to the Manifestation,
+    such as a translator for a short story in an anthology.
+    """
+
+    manifestation = models.ForeignKey(
+        Manifestation, on_delete=models.CASCADE, related_name="contributions", verbose_name="具體呈現"
+    )
+    agent = models.ForeignKey(
+        "agent.Agent", on_delete=models.CASCADE, related_name="manifestation_contributions", verbose_name="主體"
+    )
+    display_name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="顯示名稱",
+        help_text="若此處留空，將會使用人物的本名。用於翻譯名稱或特定筆名。",
+    )
+    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name="manifestation_agents", verbose_name="職責")
+    order = models.PositiveSmallIntegerField(default=0, verbose_name="排序")
+
+    class Meta:
+        unique_together = [("manifestation", "agent", "role")]
+        ordering = ["order"]
+        verbose_name = "收錄作品參與者"
+        verbose_name_plural = "收錄作品參與者"
+
+    def __str__(self):
+        name_to_display = self.display_name or self.agent.name
+        publication_title = self.manifestation.publication.title
+        work_title = self.manifestation.work.title
+        return f"[{publication_title}] 收錄之 <{work_title}> - {name_to_display} ({self.role.noun})"
 
 
 # ============================================================================

@@ -1,24 +1,12 @@
-from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
 from .filters import WorkFilter
-from .models import Catalogue, Publication, Series, Work
+from .models import Work
 from .serializers import (
-    CatalogueSerializer,
-    PublicationSerializer,
-    SeriesSerializer,
     WorkBriefSerializer,
     WorkSerializer,
 )
-
-
-class SeriesViewSet(viewsets.ModelViewSet):
-    queryset = Series.objects.annotate(works_count=Count("works", distinct=True)).order_by("title")
-    serializer_class = SeriesSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ["title"]
-    ordering_fields = ["title", "created_at", "updated_at", "works_count"]
 
 
 class WorkViewSet(viewsets.ModelViewSet):
@@ -36,8 +24,6 @@ class WorkViewSet(viewsets.ModelViewSet):
         "publications__title",
         "contributions__agent__name",
         "contributions__agent__aliases__name",
-        "publications__contributions__agent__name",
-        "publications__contributions__agent__aliases__name",
     ]
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
@@ -56,6 +42,9 @@ class WorkViewSet(viewsets.ModelViewSet):
             "publications__publisher",
             "publications__contributions__agent",
             "publications__contributions__role",
+            "publications__manifestations__work",
+            "publications__manifestations__contributions__agent",
+            "publications__manifestations__contributions__role",
             "catalogue_entries__catalogue__agent_curator",
         )
 
@@ -63,35 +52,3 @@ class WorkViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             return WorkBriefSerializer
         return super().get_serializer_class()
-
-
-class PublicationViewSet(viewsets.ModelViewSet):
-    queryset = (
-        Publication.objects.select_related("publisher")
-        .prefetch_related("contributions__agent", "contributions__role", "works")
-        .order_by("year", "title")
-    )
-    serializer_class = PublicationSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["year", "publisher", "works"]
-    search_fields = [
-        "title",
-        "isbn",
-        "contributions__agent__name",
-        "contributions__agent__aliases__name",
-    ]
-    ordering_fields = ["year", "title", "created_at", "updated_at"]
-
-
-class CatalogueViewSet(viewsets.ModelViewSet):
-    queryset = (
-        Catalogue.objects.select_related("agent_curator")
-        .prefetch_related("entries__work", "entries__work__contributions__agent")
-        .annotate(works_count=Count("entries", distinct=True))
-        .order_by("-year", "title")
-    )
-    serializer_class = CatalogueSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ["catalogue_type", "year"]
-    search_fields = ["title"]
-    ordering_fields = ["year", "title", "created_at", "updated_at", "works_count"]

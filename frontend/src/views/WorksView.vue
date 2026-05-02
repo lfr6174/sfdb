@@ -208,17 +208,6 @@ const clearAllFilters = () => {
   yearMax.value = ''
 }
 
-const getUniqueCredits = (contributions: any[]) => {
-  if (!contributions) return []
-  const seen = new Set()
-  return contributions.filter(c => {
-    if (!c.agent_detail) return false
-    if (seen.has(c.agent_detail.id)) return false
-    seen.add(c.agent_detail.id)
-    return true
-  })
-}
-
 const changePage = (dir: number) => {
   currentPage.value += dir
   fetchWorks()
@@ -429,13 +418,14 @@ const changePage = (dir: number) => {
               </router-link>
               <!-- FIX: removed px padding from · separators to tighten spacing -->
               <div class="flex flex-wrap items-center gap-1 text-[15px] text-[#2d2016]/70 font-medium">
-                <span v-if="getUniqueCredits(work.contributions).length > 0" class="flex flex-wrap items-center">
-                  <span v-for="(credit, cIdx) in getUniqueCredits(work.contributions)" :key="credit.id">
-                    <router-link :to="`/agents/${credit.agent_detail.id}`" class="hover:text-[#ae5630] transition-colors">{{ credit.display_name || credit.agent_detail.name }}</router-link>
-                    <span v-if="cIdx < getUniqueCredits(work.contributions).length - 1" class="mx-0.5">、</span>
-                  </span>
+                <span v-if="work.byline && work.byline.length" class="flex flex-wrap items-center">
+                  <template v-for="(agent, idx) in work.byline" :key="idx">
+                    <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="hover:text-[#ae5630] transition-colors">{{ agent.text }}</router-link>
+                    <span v-else>{{ agent.text }}</span>
+                    <span v-if="idx < work.byline.length - 1" class="mx-0.5">、</span>
+                  </template>
                 </span>
-                <span v-else>{{ work.byline || '佚名' }}</span>
+                <span v-else>佚名</span>
 
                 <span class="text-[#2d2016]/30">·</span>
                 <span>{{ work.year || '未知年份' }}</span>
@@ -450,11 +440,11 @@ const changePage = (dir: number) => {
             <div class="md:w-5/12 flex-shrink-0 flex flex-wrap justify-start md:justify-end content-start gap-1.5">
               <router-link
                 v-for="wc in work.work_concepts"
-                :key="wc.concept_detail.slug"
-                :to="`/concepts/${wc.concept_detail.slug}`"
+                :key="wc.concept.slug"
+                :to="`/concepts/${wc.concept.slug}`"
                 class="px-2.5 py-1 bg-[#f5f0e8]/10 border border-[#2d2016]/10 text-[#2d2016]/60 text-sm font-medium rounded hover:bg-[#f5f0e8]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all"
               >
-                {{ wc.concept_detail.name }}
+                {{ wc.concept.name }}
               </router-link>
             </div>
           </div>

@@ -127,7 +127,13 @@ onMounted(async () => {
               {{ work.title }}
             </h3>
             <p class="text-sm md:text-base text-[#2d2016]/60 mt-0.5">
-              {{ work.byline || '佚名' }} · {{ work.year || '未知年份' }} · {{ work.media_type_display || '未知媒體' }} · {{ work.work_length_display || '未知篇幅' }}
+              <template v-if="work.byline && work.byline.length">
+                <template v-for="(agent, idx) in work.byline" :key="idx">
+                  <span>{{ agent.text }}</span><span v-if="idx < work.byline.length - 1">、</span>
+                </template>
+              </template>
+              <span v-else>佚名</span>
+              · {{ work.year || '未知年份' }} · {{ work.media_type_display || '未知媒體' }} · {{ work.work_length_display || '未知篇幅' }}
             </p>
           </router-link>
         </div>

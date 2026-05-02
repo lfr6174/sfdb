@@ -7,15 +7,16 @@ from apps.concept.serializers import ConceptMinimalSerializer
 from .models import (
     Catalogue,
     CatalogueEntry,
+    Manifestation,
+    ManifestationAgent,
     Publication,
     PublicationAgent,
-    Role,
     Series,
     Work,
     WorkAgent,
     WorkConcept,
 )
-from .services import build_work_byline
+from .services import get_byline, get_credits
 
 # ============================================================================
 # MINIMAL / UTILITY SERIALIZERS
@@ -55,21 +56,21 @@ class SeriesSerializer(serializers.ModelSerializer):
 
 
 class WorkAgentSerializer(serializers.ModelSerializer):
-    agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
-    role = serializers.SlugRelatedField(slug_field="code", queryset=Role.objects.all())
+    agent = AgentMinimalSerializer(read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", read_only=True)
     role_display = serializers.CharField(source="role.noun", read_only=True)
 
     class Meta:
         model = WorkAgent
-        fields = ["id", "agent", "agent_detail", "role", "role_display", "order"]
+        fields = ["id", "agent", "role", "role_display", "order"]
 
 
 class WorkConceptSerializer(serializers.ModelSerializer):
-    concept_detail = ConceptMinimalSerializer(source="concept", read_only=True)
+    concept = ConceptMinimalSerializer(read_only=True)
 
     class Meta:
         model = WorkConcept
-        fields = ["id", "concept", "concept_detail", "description"]
+        fields = ["id", "concept", "description"]
 
 
 class WorkBriefSerializer(serializers.ModelSerializer):
@@ -95,7 +96,7 @@ class WorkBriefSerializer(serializers.ModelSerializer):
         ]
 
     def get_byline(self, obj):
-        return build_work_byline(obj)
+        return get_byline(obj.contributions.all())
 
 
 # ============================================================================
@@ -103,14 +104,37 @@ class WorkBriefSerializer(serializers.ModelSerializer):
 # ============================================================================
 
 
+class ManifestationAgentSerializer(serializers.ModelSerializer):
+    agent = AgentMinimalSerializer(read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", read_only=True)
+    role_display = serializers.CharField(source="role.noun", read_only=True)
+
+    class Meta:
+        model = ManifestationAgent
+        fields = ["id", "agent", "display_name", "role", "role_display", "order"]
+
+
+class ManifestationSerializer(serializers.ModelSerializer):
+    work = WorkMinimalSerializer(read_only=True)
+    contributions = ManifestationAgentSerializer(many=True, read_only=True)
+    display_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Manifestation
+        fields = ["id", "work", "name", "display_name", "contributions"]
+
+    def get_display_name(self, obj):
+        return obj.name if obj.name else obj.publication.title
+
+
 class PublicationAgentSerializer(serializers.ModelSerializer):
-    agent_detail = AgentMinimalSerializer(source="agent", read_only=True)
-    role = serializers.SlugRelatedField(slug_field="code", queryset=Role.objects.all())
+    agent = AgentMinimalSerializer(read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", read_only=True)
     role_display = serializers.CharField(source="role.noun", read_only=True)
 
     class Meta:
         model = PublicationAgent
-        fields = ["id", "agent", "agent_detail", "display_name", "role", "role_display", "order"]
+        fields = ["id", "agent", "display_name", "role", "role_display", "order"]
 
 
 class PublicationSerializer(serializers.ModelSerializer):
@@ -118,7 +142,9 @@ class PublicationSerializer(serializers.ModelSerializer):
     publisher = AgentSerializer(read_only=True)
     media_display = serializers.CharField(source="get_media_display", read_only=True)
     contributions = PublicationAgentSerializer(many=True, read_only=True)
+    manifestations = ManifestationSerializer(many=True, read_only=True)
     works = WorkMinimalSerializer(many=True, read_only=True)
+    credit = serializers.SerializerMethodField()
 
     class Meta:
         model = Publication
@@ -134,10 +160,15 @@ class PublicationSerializer(serializers.ModelSerializer):
             "year",
             "isbn",
             "note",
+            "manifestations",
             "contributions",
+            "credit",
             "created_at",
             "updated_at",
         ]
+
+    def get_credit(self, obj):
+        return get_credits(obj.contributions.all())
 
 
 # ============================================================================
@@ -147,19 +178,19 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 class CatalogueBriefSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    agent_curator_detail = AgentMinimalSerializer(source="agent_curator", read_only=True)
+    agent_curator = AgentMinimalSerializer(read_only=True)
 
     class Meta:
         model = Catalogue
-        fields = ["id", "title", "catalogue_type_display", "year", "agent_curator_detail"]
+        fields = ["id", "title", "catalogue_type_display", "year", "agent_curator"]
 
 
 class WorkCatalogueEntrySerializer(serializers.ModelSerializer):
-    catalogue_detail = CatalogueBriefSerializer(source="catalogue", read_only=True)
+    catalogue = CatalogueBriefSerializer(read_only=True)
 
     class Meta:
         model = CatalogueEntry
-        fields = ["id", "catalogue_detail", "order", "note"]
+        fields = ["id", "catalogue", "order", "note"]
 
 
 # ============================================================================
@@ -177,11 +208,12 @@ class WorkSerializer(serializers.ModelSerializer):
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
 
-    series_detail = SeriesSerializer(source="series", read_only=True)
+    series = SeriesSerializer(read_only=True)
     contributions = WorkAgentSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
-    publications = PublicationSerializer(many=True, read_only=True)
+    publications = serializers.SerializerMethodField()
     catalogue_entries = WorkCatalogueEntrySerializer(many=True, read_only=True)
+    credit = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
@@ -197,15 +229,46 @@ class WorkSerializer(serializers.ModelSerializer):
             "year",
             "description",
             "series",
-            "series_detail",
             "series_order",
             "contributions",
+            "credit",
             "work_concepts",
             "publications",
             "catalogue_entries",
             "created_at",
             "updated_at",
         ]
+
+    def get_credit(self, obj):
+        return get_credits(obj.contributions.all())
+
+    def get_publications(self, obj):
+        manifestations = (
+            obj.manifestations.select_related("publication", "publication__publisher")
+            .prefetch_related(
+                "contributions__agent",
+                "contributions__role",
+                "publication__contributions__agent",
+                "publication__contributions__role",
+            )
+            .all()
+        )
+
+        res = []
+        for man in manifestations:
+            pub = man.publication
+            pub_data = PublicationSerializer(pub, context=self.context).data
+
+            pub_data["manifestation_id"] = man.id
+            pub_data["manifestation_name"] = man.name
+            pub_data["manifestation_display_name"] = man.name if man.name else pub.title
+
+            man_credit = get_credits(man.contributions.all())
+            pub_credit = pub_data.get("credit", [])
+            pub_data["credit"] = man_credit + pub_credit
+
+            res.append(pub_data)
+        return res
 
 
 # ============================================================================
@@ -214,16 +277,16 @@ class WorkSerializer(serializers.ModelSerializer):
 
 
 class CatalogueEntrySerializer(serializers.ModelSerializer):
-    work_detail = WorkBriefSerializer(source="work", read_only=True)
+    work = WorkBriefSerializer(read_only=True)
 
     class Meta:
         model = CatalogueEntry
-        fields = ["id", "catalogue", "work", "work_detail", "order", "note"]
+        fields = ["id", "catalogue", "work", "order", "note"]
 
 
 class CatalogueSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    agent_curator_detail = AgentMinimalSerializer(source="agent_curator", read_only=True)
+    agent_curator = AgentMinimalSerializer(read_only=True)
     works_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -234,7 +297,6 @@ class CatalogueSerializer(serializers.ModelSerializer):
             "catalogue_type",
             "catalogue_type_display",
             "agent_curator",
-            "agent_curator_detail",
             "year",
             "note",
             "works_count",
