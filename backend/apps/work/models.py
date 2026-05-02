@@ -158,7 +158,9 @@ class WorkConcept(models.Model):
         related_name="work_concepts",
         verbose_name="概念",
     )
-    description = models.TextField(blank=True, verbose_name="概念應用詳述", help_text="說明該概念在此作品中如何運作。")
+    description = models.CharField(
+        max_length=300, blank=True, verbose_name="概念應用詳述", help_text="說明該概念在此作品中如何運作。"
+    )
 
     class Meta:
         unique_together = [("work", "concept")]

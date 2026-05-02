@@ -1,5 +1,5 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, StackedInline, TabularInline
+from unfold.admin import ModelAdmin, TabularInline
 from unfold.contrib.filters.admin import ChoicesDropdownFilter, RangeNumericFilter, RelatedDropdownFilter
 
 from .models import (
@@ -28,7 +28,7 @@ class WorkAgentInline(TabularInline):
     classes = ["collapse"]
 
 
-class WorkConceptInline(StackedInline):
+class WorkConceptInline(TabularInline):
     model = WorkConcept
     extra = 0
     autocomplete_fields = ("concept",)
