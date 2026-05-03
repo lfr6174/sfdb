@@ -70,13 +70,13 @@ const groupedConcepts = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto space-y-6">
 
     <!-- Header Controls -->
-    <section class="bg-[#ffffff] rounded-lg p-5 md:p-6 shadow-sm border border-[#2d2016]/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <section class="card flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl md:text-3xl font-bold text-[#2d2016] tracking-tight mb-1">概念探索</h1>
-        <p class="text-sm md:text-base text-[#2d2016]/60">瀏覽全站所有的概念</p>
+        <h1 class="text-2xl md:text-3xl font-bold text-main tracking-tight mb-1">概念探索</h1>
+        <p class="text-sm md:text-base text-main/60">瀏覽全站所有的概念</p>
       </div>
 
       <div class="flex items-center gap-3 w-full md:w-auto">
@@ -84,11 +84,11 @@ const groupedConcepts = computed(() => {
           v-model="searchQuery"
           type="text"
           placeholder="搜尋概念名稱…"
-          class="flex-1 md:w-64 h-10 px-3.5 border border-[#2d2016]/20 rounded-lg bg-[#ffffff] focus:bg-[#ffffff] focus:outline-none focus:border-[#ae5630] focus:ring-1 focus:ring-[#ae5630] transition-colors text-[#2d2016] placeholder-[#2d2016]/40"
+          class="flex-1 md:w-64 h-10 px-3.5 border border-main/20 rounded-lg bg-bg focus:bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main placeholder-main/40"
         >
         <select
           v-model="sortBy"
-          class="h-10 px-3 border border-[#2d2016]/20 rounded-lg bg-[#ffffff] focus:outline-none focus:border-[#ae5630] focus:ring-1 focus:ring-[#ae5630] transition-colors text-[#2d2016] cursor-pointer"
+          class="h-10 px-3 border border-main/20 rounded-lg bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main cursor-pointer"
         >
           <option value="alpha">字母排序</option>
           <option value="count">作品數排序</option>
@@ -97,42 +97,37 @@ const groupedConcepts = computed(() => {
       </div>
     </section>
 
-    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+    <div v-if="isLoading" class="card text-center py-16 text-main/50 font-medium">
       正在讀取全站概念...
     </div>
 
     <!-- Concept Groups -->
-    <div v-else class="space-y-6">
-      <section
-        v-for="(concepts, category) in groupedConcepts"
-        :key="category"
-        class="bg-[#ffffff] rounded-lg p-5 md:p-6 shadow-sm border border-[#2d2016]/10"
-      >
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">{{ category }}</h2>
-          <span class="text-sm text-[#2d2016]/50 font-mono">{{ concepts.length }}</span>
-        </div>
+    <div v-else class="card md:!p-8">
+      <div v-if="Object.keys(groupedConcepts).length > 0" class="flex flex-col gap-8 md:gap-10">
+        <template v-for="(concepts, category) in groupedConcepts" :key="category">
+          <div class="flex flex-col">
+            <!-- 分類標籤：套用模組化 section-label -->
+            <h2 class="section-label">{{ category }}</h2>
 
-        <div v-if="concepts.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
-          <router-link
-            v-for="concept in concepts"
-            :key="concept.id"
-            :to="`/concepts/${concept.slug}`"
-            class="group flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium rounded-lg cursor-pointer hover:bg-[#f5f0e8]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
-          >
-            <span>{{ concept.name }}</span>
-            <span class="text-[13px] font-mono text-[#2d2016]/40 group-hover:text-[#ae5630]/60 transition-colors">{{ concept.works_count }}</span>
-          </router-link>
-        </div>
-
-        <div v-else class="text-[#2d2016]/40 py-2">
-          此分類下沒有符合搜尋條件的概念。
-        </div>
-      </section>
+            <!-- 概念 Chip 雲 -->
+            <div class="flex flex-wrap gap-2 md:gap-3">
+              <router-link
+                v-for="concept in concepts"
+                :key="concept.id"
+                :to="`/concepts/${concept.slug}`"
+                class="tag !rounded-lg flex items-center gap-2"
+              >
+                <span>{{ concept.name }}</span>
+                <span class="text-xs font-mono opacity-60 pt-px">{{ concept.works_count }}</span>
+              </router-link>
+            </div>
+          </div>
+        </template>
+      </div>
 
       <!-- Empty State -->
-      <div v-if="Object.keys(groupedConcepts).length === 0" class="text-center py-16 text-[#2d2016]/50 bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
-        找不到任何包含「<span class="text-[#ae5630] font-medium">{{ searchQuery }}</span>」的概念。
+      <div v-else class="text-center py-10 text-main/50">
+        找不到任何包含「<span class="text-primary font-medium">{{ searchQuery }}</span>」的概念。
       </div>
     </div>
 

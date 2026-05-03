@@ -36,6 +36,24 @@ const validWorkConcepts = computed(() => {
   return concept.value.work_concepts.filter((item: any) => item.description && item.description.trim() !== '')
 })
 
+const earliestYear = computed(() => {
+  if (!concept.value?.work_concepts || concept.value.work_concepts.length === 0) return '—'
+  const years = concept.value.work_concepts
+    .map((w: any) => parseInt(w.year))
+    .filter((y: number) => !isNaN(y))
+  if (years.length === 0) return '—'
+  return Math.min(...years)
+})
+
+const latestYear = computed(() => {
+  if (!concept.value?.work_concepts || concept.value.work_concepts.length === 0) return '—'
+  const years = concept.value.work_concepts
+    .map((w: any) => parseInt(w.year))
+    .filter((y: number) => !isNaN(y))
+  if (years.length === 0) return '—'
+  return Math.max(...years)
+})
+
 // Refetch data to handle same-route navigation
 watch(() => route.params.slug, (newSlug, oldSlug) => {
   if (newSlug && newSlug !== oldSlug) {
@@ -56,103 +74,126 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto space-y-4">
 
-    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+    <div v-if="isLoading" class="card text-center py-16 text-main/50 text-sm font-medium">
       正在讀取概念資料...
     </div>
 
     <template v-else-if="concept">
-      <router-link to="/concepts" class="inline-flex items-center text-sm font-medium text-[#2d2016]/50 hover:text-[#ae5630] transition-colors mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        返回概念探索
-      </router-link>
+      <div class="mb-4">
+        <router-link to="/concepts" class="back-link">
+          ← 返回概念探索
+        </router-link>
+      </div>
 
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 relative">
-        <h1 class="text-3xl md:text-4xl font-bold text-[#2d2016] tracking-tight mb-4 flex items-baseline gap-3 flex-wrap">
-          <span>{{ concept.name }}</span>
-        </h1>
+      <div class="flex flex-col md:flex-row gap-4 items-start pb-12">
 
-        <p class="text-lg text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">{{ concept.description || '目前暫無關於此概念的詳細描述。' }}</p>
+        <!-- Left: Main Content -->
+        <div class="w-full md:w-7/12 lg:w-8/12 flex flex-col gap-5 md:gap-6">
 
-        <div v-if="concept.links && concept.links.length > 0" class="flex flex-wrap gap-4 mt-6 pt-5 border-t border-[#2d2016]/5">
-          <a
-            v-for="link in concept.links"
-            :key="link.id"
-            :href="link.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center text-base font-medium text-[#ae5630] hover:text-[#ae5630]/70 transition-colors gap-1.5"
-          >
-            ↗ {{ link.title }}
-          </a>
-        </div>
-      </section>
+          <!-- Personal Info -->
+          <section class="card relative">
+            <h1 class="text-2xl font-medium text-main mb-4">
+              <span>{{ concept.name }}</span>
+            </h1>
 
-      <section v-if="concept.related_concepts && concept.related_concepts.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">相關概念</h2>
-        </div>
+            <p class="text-sm text-main leading-relaxed whitespace-pre-wrap">{{ concept.description || '目前暫無關於此概念的詳細描述。' }}</p>
 
-        <div class="flex flex-wrap gap-2.5 md:gap-3">
-          <router-link
-            v-for="related in concept.related_concepts"
-            :key="related.slug"
-            :to="`/concepts/${related.slug}`"
-            class="group flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/70 text-base font-medium rounded-lg hover:bg-[#f5f0e8]/50 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
-          >
-            <span>{{ related.name }}</span>
-          </router-link>
-        </div>
-      </section>
+            <!-- Links -->
+            <div v-if="concept.links && concept.links.length > 0" class="flex flex-wrap gap-4 mt-4">
+              <a
+                v-for="link in concept.links"
+                :key="link.id"
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-primary hover:text-primary/70 transition-colors"
+              >
+                ↗ {{ link.title }}
+              </a>
+            </div>
+          </section>
 
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">概念應用範例</h2>
-        </div>
+          <!-- Concept Application Examples -->
+          <section class="card relative">
+            <h2 class="section-label">概念應用範例</h2>
 
-        <div v-if="validWorkConcepts.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
-          <table class="w-full text-left border-collapse min-w-[600px]">
-            <thead>
-              <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
-                <th class="pb-3 pr-4 font-normal w-1/4">作品標題</th>
-                <th class="pb-3 font-normal w-3/4">概念在作品中如何運作</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[17px]">
-              <tr v-for="item in validWorkConcepts" :key="item.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
-                <td class="py-4 pr-4 align-top">
-                  <!-- Support varied API response structures -->
-                  <router-link :to="`/works/${item.work_detail?.id || item.work}`" class="text-lg font-medium group-hover:text-[#ae5630] transition-colors block">
-                    {{ item.work_detail?.title || item.work_title || '未知作品' }}
+            <div v-if="validWorkConcepts.length > 0" class="flex flex-col">
+              <div
+                v-for="item in validWorkConcepts" :key="item.id"
+                class="list-row group"
+              >
+                <span class="font-mono text-sm text-main/50 w-12 shrink-0 pt-0.5">{{ item.year || '-' }}</span>
+                <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+                  <router-link :to="`/works/${item.work}`" class="text-base font-medium text-main group-hover:text-primary transition-colors w-fit block">
+                    {{ item.work_title || '未知作品' }}
                   </router-link>
-                </td>
-                <td class="py-4 align-top leading-relaxed">
                   <span
                     v-if="isSpoilerProtected && !revealedSpoilers.has(item.id)"
                     @click="revealSpoiler(item.id)"
-                    class="cursor-pointer text-[#2d2016]/5 hover:text-[#2d2016]/60 transition-all duration-300 select-none block"
+                    class="cursor-pointer text-main/40 hover:text-main/70 transition-all select-none block text-sm leading-relaxed whitespace-pre-wrap"
                     title="點擊顯示劇透內容"
                   >
                     {{ item.description }}
                   </span>
-                  <span v-else class="block">
+                  <span v-else class="block text-sm text-main/70 leading-relaxed whitespace-pre-wrap">
                     {{ item.description }}
                   </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="text-[#2d2016]/40 py-2">目前尚無收錄此概念的應用範例。</div>
-      </section>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-sm text-main/50 py-3">目前尚無收錄此概念的應用範例。</div>
 
-      <div class="pt-4 pb-12 text-left">
-        <router-link :to="{ path: '/works', query: { concept: concept.slug } }" class="inline-flex items-center text-base font-medium text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">
-          瀏覽所有與「{{ concept.name }}」相關的作品（共 {{ concept.works_count }} 部） ↗
-        </router-link>
+            <!-- Link to all works -->
+            <div class="mt-6 text-left">
+              <router-link :to="{ path: '/works', query: { concept: concept.slug } }" class="text-sm font-medium text-primary hover:text-primary/70 transition-colors">
+                瀏覽所有與「{{ concept.name }}」相關的作品（共 {{ concept.works_count || 0 }} 部） ↗
+              </router-link>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Right: Sidebar -->
+        <aside class="w-full md:w-5/12 lg:w-4/12 card shrink-0 md:sticky md:top-4 flex flex-col divide-y divide-main/10">
+
+          <div class="py-4 first:pt-0 flex flex-col gap-1.5">
+            <span class="text-xs font-medium tracking-widest uppercase text-main/40">收錄作品數</span>
+            <span class="text-sm text-main">{{ concept.works_count || 0 }}</span>
+          </div>
+
+          <div class="py-4 flex flex-col gap-1.5">
+            <span class="text-xs font-medium tracking-widest uppercase text-main/40">最早出現</span>
+            <span class="font-mono text-sm text-main">{{ earliestYear }}</span>
+          </div>
+
+          <div class="py-4 flex flex-col gap-1.5">
+            <span class="text-xs font-medium tracking-widest uppercase text-main/40">最近出現</span>
+            <span class="font-mono text-sm text-main">{{ latestYear }}</span>
+          </div>
+
+          <div class="py-4 last:pb-0 flex flex-col gap-3">
+            <div class="text-xs font-medium tracking-widest uppercase text-main/40 flex items-center justify-between">
+              相關概念
+              <span v-if="concept.related_concepts?.length > 0" class="badge !py-0 !px-1.5 text-xs font-mono">{{ concept.related_concepts.length }}</span>
+            </div>
+
+            <div v-if="concept.related_concepts && concept.related_concepts.length > 0" class="flex flex-wrap gap-2">
+              <router-link
+                v-for="related in concept.related_concepts"
+                :key="related.slug"
+                :to="`/concepts/${related.slug}`"
+                class="tag"
+              >
+                {{ related.name }}
+              </router-link>
+            </div>
+            <div v-else class="text-sm text-main/50 mt-2">尚未與任何概念建立關聯。</div>
+          </div>
+
+        </aside>
+
       </div>
     </template>
 

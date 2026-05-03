@@ -37,159 +37,165 @@ const hiddenConceptsCount = computed(() => {
   if (!agent.value?.top_concepts) return 0
   return Math.max(0, agent.value.top_concepts.length - DISPLAY_LIMIT)
 })
+
+const totalWorksCount = computed(() => {
+  return agent.value?.participated_works?.length || 0
+})
+
+const activeYears = computed(() => {
+  if (!agent.value?.participated_works || agent.value.participated_works.length === 0) return '—'
+  const years = agent.value.participated_works
+    .map((w: any) => parseInt(w.year))
+    .filter((y: number) => !isNaN(y))
+  if (years.length === 0) return '—'
+  const min = Math.min(...years)
+  const max = Math.max(...years)
+  return min === max ? `${min}` : `${min} — ${max}`
+})
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto space-y-4">
 
-    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+    <div v-if="isLoading" class="card text-center py-16 text-main/50 text-sm font-medium">
       正在讀取人物資料...
     </div>
 
     <template v-else-if="agent">
-      <!-- Back Link -->
-      <router-link to="/agents" class="inline-flex items-center text-sm font-medium text-[#2d2016]/50 hover:text-[#ae5630] transition-colors mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        返回人物列表
-      </router-link>
+      <div class="mb-4">
+        <!-- Back Link -->
+        <router-link to="/agents" class="back-link">
+          ← 返回人物列表
+        </router-link>
+      </div>
 
-      <!-- Header Info Section -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 relative">
-        <h1 class="text-3xl md:text-4xl font-bold text-[#2d2016] tracking-tight mb-4 flex items-baseline gap-3 flex-wrap">
-          <span>{{ agent.name }}</span>
-          <span v-if="agent.aliases && agent.aliases.length > 0" class="text-sm md:text-2xl font-normal text-[#2d2016]/40">
-            {{ agent.aliases.map((a: any) => a.name).join(' 、 ') }}
-          </span>
-        </h1>
+      <div class="flex flex-col md:flex-row gap-4 items-start pb-12">
 
-        <p class="text-lg text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">{{ agent.bio || '暫無簡歷提供。' }}</p>
+        <!-- Left: Main Content -->
+        <div class="w-full md:w-7/12 lg:w-8/12 flex flex-col gap-5 md:gap-6">
 
-        <!-- Links -->
-        <div v-if="agent.links && agent.links.length > 0" class="flex flex-wrap gap-4 mt-5">
-          <a
-            v-for="link in agent.links"
-            :key="link.id"
-            :href="link.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center text-base font-medium text-[#ae5630] hover:text-[#ae5630]/70 transition-colors gap-1.5"
-          >
-            ↗ {{ link.title }}
-          </a>
+          <!-- Personal Info -->
+          <section class="card relative">
+            <h1 class="text-2xl font-medium text-main mb-2">
+              <span>{{ agent.name }}</span>
+            </h1>
+
+            <div v-if="agent.aliases && agent.aliases.length > 0" class="text-sm text-main/50 mb-4">
+              {{ agent.aliases.map((a: any) => a.name).join(' · ') }}
+            </div>
+
+            <p class="text-sm text-main leading-relaxed whitespace-pre-wrap border-t border-main/10 pt-4">{{ agent.about || '暫無簡歷提供。' }}</p>
+
+            <!-- Links -->
+            <div v-if="agent.links && agent.links.length > 0" class="flex flex-wrap gap-4 mt-4">
+              <a
+                v-for="link in agent.links"
+                :key="link.id"
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-primary hover:text-primary/70 transition-colors"
+              >
+                ↗ {{ link.title }}
+              </a>
+            </div>
+          </section>
+
+          <!-- Participated Works (Flat List) -->
+          <section class="card relative">
+            <h2 class="section-label">歷年作品</h2>
+
+            <div v-if="agent.participated_works && agent.participated_works.length > 0" class="flex flex-col">
+              <router-link
+                v-for="work in agent.participated_works" :key="work.id"
+                :to="`/works/${work.id}`"
+                class="list-row group cursor-pointer"
+              >
+                <span class="font-mono text-sm text-main/50 w-12 shrink-0 pt-0.5">{{ work.year || '-' }}</span>
+                <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+                  <span class="text-base font-medium text-main group-hover:text-primary transition-colors">{{ work.title }}</span>
+                  <span v-if="work.title_en" class="text-sm text-main/40">{{ work.title_en }}</span>
+                  <span class="text-sm text-main/60">{{ work.work_length || '-' }} · {{ work.media_type || '-' }}</span>
+                </div>
+                <span class="shrink-0 pt-0.5 text-sm font-medium text-primary">{{ work.roles.join('、') }}</span>
+              </router-link>
+            </div>
+            <div v-else class="text-sm text-main/50 py-3">尚無關聯的歷年作品。</div>
+          </section>
+
+          <!-- Participated Publications (Flat List) -->
+          <section v-if="agent.participated_publications && agent.participated_publications.length > 0" class="card relative">
+            <h2 class="section-label">出版與其他參與</h2>
+
+            <div class="flex flex-col">
+              <div
+                v-for="pub in agent.participated_publications" :key="pub.id"
+                class="list-row group"
+              >
+                <span class="font-mono text-sm text-main/50 w-12 shrink-0 pt-0.5">{{ pub.year || '-' }}</span>
+                <div class="flex-1 min-w-0 flex flex-col gap-1.5">
+                  <span class="text-base font-medium text-main">{{ pub.title }}</span>
+                  <span class="text-sm text-main/60">{{ pub.publisher || '-' }}</span>
+                </div>
+                <span class="shrink-0 pt-0.5 text-sm font-medium text-primary">{{ pub.roles.join('、') }}</span>
+              </div>
+            </div>
+          </section>
+
         </div>
-      </section>
 
-      <!-- Concept Tags Section -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">作品概念</h2>
-          <span class="text-sm text-[#2d2016]/50 font-mono">{{ agent.top_concepts?.length || 0 }}</span>
-        </div>
+        <!-- Right: Sidebar -->
+        <aside class="w-full md:w-5/12 lg:w-4/12 card shrink-0 md:sticky md:top-4 flex flex-col divide-y divide-main/10">
 
-        <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
-          <router-link
-            v-for="concept in displayedConcepts"
-            :key="concept.slug"
-            :to="`/concepts/${concept.slug}`"
-            class="group flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/70 text-base font-medium rounded-lg hover:bg-[#f5f0e8]/50 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
-          >
-            <span>{{ concept.name }}</span>
-            <span class="text-[13px] font-mono text-[#2d2016]/40 group-hover:text-[#ae5630]/60 transition-colors">{{ concept.works_count }}</span>
-          </router-link>
+          <div class="py-4 first:pt-0 flex flex-col gap-1.5">
+            <span class="text-xs font-medium tracking-widest uppercase text-main/40">作品總數</span>
+            <span class="text-sm text-main">{{ totalWorksCount }}</span>
+          </div>
 
-          <!-- Show More Bubble -->
-          <button
-            v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
-            @click="isConceptsExpanded = true"
-            class="flex items-center px-3 py-1.5 bg-transparent border border-dashed border-[#ae5630]/40 text-[#ae5630] text-sm font-medium rounded-lg hover:bg-[#ae5630]/5 hover:border-[#ae5630]/60 transition-all duration-200"
-          >
-            + {{ hiddenConceptsCount }} 更多
-          </button>
-          <button
-            v-if="isConceptsExpanded"
-            @click="isConceptsExpanded = false"
-            class="flex items-center px-3 py-1.5 bg-transparent border border-dashed border-[#ae5630]/40 text-[#ae5630] text-sm font-medium rounded-lg hover:bg-[#ae5630]/5 hover:border-[#ae5630]/60 transition-all duration-200"
-          >
-            - 收合
-          </button>
-        </div>
-        <div v-else class="text-[#2d2016]/40 py-2">該人物尚未與任何概念建立關聯。</div>
-      </section>
+          <div class="py-4 flex flex-col gap-1.5">
+            <span class="text-xs font-medium tracking-widest uppercase text-main/40">活躍年份</span>
+            <span class="font-mono text-sm text-main">{{ activeYears }}</span>
+          </div>
 
-      <!-- Original Works Section (Table-like) -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">歷年作品</h2>
-        </div>
+          <div class="py-4 last:pb-0 flex flex-col gap-3">
+            <div class="text-xs font-medium tracking-widest uppercase text-main/40 flex items-center justify-between">
+              常見標籤
+              <span v-if="agent.top_concepts?.length > 0" class="badge !py-0 !px-1.5 text-xs font-mono">{{ agent.top_concepts.length }}</span>
+            </div>
 
-        <div v-if="agent.participated_works && agent.participated_works.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
-          <table class="w-full text-left border-collapse min-w-[700px]">
-            <thead>
-              <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
-                <th class="pb-3 pr-4 font-normal w-20">年份</th>
-                <th class="pb-3 pr-4 font-normal">標題</th>
-                <th class="pb-3 pr-4 font-normal w-32">類型</th>
-                <th class="pb-3 pr-4 font-normal w-32">參與</th>
-                <th class="pb-3 font-normal w-64">概念</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[17px]">
-              <tr v-for="work in agent.participated_works" :key="work.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
-                <td class="py-4 pr-4 font-mono text-[#2d2016]/50 align-top">{{ work.year || '-' }}</td>
-                <td class="py-4 pr-4 align-top">
-                  <router-link :to="`/works/${work.id}`" class="text-lg font-medium group-hover:text-[#ae5630] transition-colors block">{{ work.title }}</router-link>
-                  <div v-if="work.title_en" class="text-base text-[#2d2016]/40 mt-0.5">{{ work.title_en }}</div>
-                </td>
-                <td class="py-4 pr-4 text-[#2d2016]/60 align-top">
-                  {{ work.work_length || '-' }} / {{ work.media_type || '-' }}
-                </td>
-                <td class="py-4 pr-4 align-top leading-snug">{{ work.roles.join('、') }}</td>
-                <td class="py-4 align-top">
-                  <div class="flex flex-wrap gap-2">
-                    <router-link v-for="concept in work.concepts" :key="concept.slug" :to="`/concepts/${concept.slug}`" class="px-2 py-1 bg-[#2d2016]/5 hover:bg-[#ae5630]/10 text-[#2d2016]/70 hover:text-[#ae5630] text-sm font-medium rounded transition-colors cursor-pointer">{{ concept.name }}</router-link>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="text-[#2d2016]/40 py-2">尚無關聯的歷年作品。</div>
-      </section>
+            <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-2">
+              <router-link
+                v-for="concept in displayedConcepts"
+                :key="concept.slug"
+                :to="`/concepts/${concept.slug}`"
+                class="tag !gap-1.5"
+              >
+                <span>{{ concept.name }}</span>
+                <span class="font-mono opacity-50 pt-px">{{ concept.works_count }}</span>
+              </router-link>
 
-      <!-- Participated Publications Section -->
-      <section v-if="agent.participated_publications && agent.participated_publications.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">出版與其他參與</h2>
-        </div>
-        <div class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
-          <table class="w-full text-left border-collapse min-w-[900px]">
-            <thead>
-              <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
-                <th class="pb-3 pr-4 font-normal w-20">年份</th>
-                <th class="pb-3 pr-4 font-normal w-64">出版品名稱</th>
-                <th class="pb-3 pr-4 font-normal w-40">出版商</th>
-                <th class="pb-3 pr-4 font-normal w-32">參與</th>
-                <th class="pb-3 pr-4 font-normal w-32">ISBN</th>
-                <th class="pb-3 font-normal">備註</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[17px]">
-              <tr v-for="pub in agent.participated_publications" :key="pub.id" class="hover:bg-[#f5f0e8]/30 transition-colors group">
-                <td class="py-4 pr-4 font-mono text-[#2d2016]/50 align-top">{{ pub.year || '-' }}</td>
-                <td class="py-4 pr-4 align-top">
-                  <span class="text-lg font-medium text-[#2d2016] block">{{ pub.title }}</span>
-                </td>
-                <td class="py-4 pr-4 text-[#2d2016]/60 align-top">{{ pub.publisher || '-' }}</td>
-                <td class="py-4 pr-4 align-top leading-snug">{{ pub.roles.join('、') }}</td>
-                <td class="py-4 pr-4 font-mono text-[#2d2016]/50 align-top text-base">{{ pub.isbn || '-' }}</td>
-                <td class="py-4 align-top text-[#2d2016]/60 text-base leading-snug">{{ pub.note || '-' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+              <!-- Show More Bubble -->
+              <button
+                v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
+                @click="isConceptsExpanded = true"
+                class="tag !border-dashed !text-primary hover:!bg-primary/5"
+              >
+                + {{ hiddenConceptsCount }} 更多
+              </button>
+              <button
+                v-if="isConceptsExpanded"
+                @click="isConceptsExpanded = false"
+                class="tag !border-dashed !text-primary hover:!bg-primary/5"
+              >
+                - 收合
+              </button>
+            </div>
+            <div v-else class="text-sm text-main/50">該人物尚未與任何概念建立關聯。</div>
+          </div>
+
+        </aside>
+
+      </div>
     </template>
 
   </div>

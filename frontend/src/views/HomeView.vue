@@ -81,22 +81,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-4">
+  <div class="max-w-4xl mx-auto space-y-4">
 
     <!-- Hero Section (Statement & Statistics) - Left Aligned -->
-    <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
+    <section class="card">
       <div class="max-w-4xl">
-        <p class="text-xl md:text-2xl font-medium text-[#2d2016] mb-1 tracking-tight leading-relaxed">
+        <h1 class="text-2xl font-medium text-main mb-4">
           以「概念」為核心的科幻作品資料庫
-        </p>
-        <p class="text-xl md:text-2xl font-medium text-[#2d2016] mb-6 tracking-tight leading-relaxed">
-          目前共收錄 <span class="font-semibold text-[#ae5630]">{{ stats.works }}</span> 件台灣原創科幻作品與 <span class="font-semibold text-[#ae5630]">{{ stats.concepts }}</span> 個核心概念。
+        </h1>
+        <p class="text-sm text-main mb-6">
+          目前共收錄 <span class="font-semibold text-primary">{{ stats.works }}</span> 件台灣原創科幻作品與 <span class="font-semibold text-primary">{{ stats.concepts }}</span> 個核心概念。
         </p>
         <div class="flex flex-wrap gap-4">
-          <router-link to="/works" class="px-6 py-2 bg-[#ae5630] text-[#ffffff] text-base font-medium rounded hover:bg-[#ae5630]/90 transition-colors shadow-sm">
+          <router-link to="/works" class="px-4 py-1.5 rounded-full border border-primary bg-primary text-sm font-medium text-white hover:bg-primary/90 transition-colors">
             瀏覽作品
           </router-link>
-          <router-link to="/concepts" class="px-6 py-2 bg-[#ffffff] text-[#2d2016]/80 border border-[#2d2016]/20 text-base font-medium rounded hover:bg-[#ede8dc] hover:text-[#2d2016] transition-colors shadow-sm">
+          <router-link to="/concepts" class="tag">
             探索概念
           </router-link>
         </div>
@@ -107,26 +107,26 @@ onMounted(async () => {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-5">
 
       <!-- Left Column: Random Concept Works (Narrower) -->
-      <section class="lg:col-span-5 bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight">
-            與 <router-link :to="`/concepts/${currentConcept.slug}`" class="text-[#ae5630] underline decoration-[#ae5630]/40 underline-offset-4 cursor-pointer hover:text-[#ae5630]/80">
+      <section class="lg:col-span-5 card">
+        <div class="section-label">
+          <span>
+            與 <router-link :to="`/concepts/${currentConcept.slug}`" class="text-primary hover:text-primary/70">
               {{ currentConcept.name }}
             </router-link> 相關的作品
-          </h2>
-          <button @click="refreshRandomConcept" class="text-sm md:text-base px-2.5 py-1 text-[#2d2016]/70 border border-[#2d2016]/20 rounded hover:bg-[#ede8dc] hover:text-[#2d2016] transition-colors">
+          </span>
+          <button @click="refreshRandomConcept" class="text-xs font-medium text-main/50 hover:text-primary transition-colors ml-4 pb-1">
             換一個
           </button>
         </div>
 
-        <div v-if="isLoading" class="text-[#2d2016]/50 py-4">讀取作品中...</div>
-        <div v-else-if="works.length > 0" class="space-y-1">
+        <div v-if="isLoading" class="text-sm text-main/50 py-3">讀取作品中...</div>
+        <div v-else-if="works.length > 0" class="flex flex-col">
           <!-- Works List -->
-          <router-link v-for="work in works" :key="work.id" :to="`/works/${work.id}`" class="group flex flex-col py-2.5 border-b border-[#2d2016]/5 last:border-0 hover:bg-[#ede8dc] px-2 -mx-2 rounded transition-colors cursor-pointer">
-            <h3 class="text-lg font-medium text-[#2d2016] group-hover:text-[#ae5630] transition-colors">
+          <router-link v-for="work in works" :key="work.id" :to="`/works/${work.id}`" class="list-row group !flex-col !gap-1 cursor-pointer">
+            <h3 class="text-base font-medium text-main group-hover:text-primary transition-colors">
               {{ work.title }}
             </h3>
-            <p class="text-sm md:text-base text-[#2d2016]/60 mt-0.5">
+            <p class="text-sm text-main/50 mt-1">
               <template v-if="work.byline && work.byline.length">
                 <template v-for="(agent, idx) in work.byline" :key="idx">
                   <span>{{ agent.text }}</span><span v-if="idx < work.byline.length - 1">、</span>
@@ -137,20 +137,20 @@ onMounted(async () => {
             </p>
           </router-link>
         </div>
-        <div v-else class="text-[#2d2016]/50 py-4">
+        <div v-else class="text-sm text-main/50 py-3">
           目前該概念下暫無作品。
         </div>
       </section>
 
       <!-- Right Column: Recent Concepts (Wider) -->
-      <section class="lg:col-span-7 bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
-        <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight mb-4">近期新增概念</h2>
+      <section class="lg:col-span-7 card">
+        <h2 class="section-label">近期新增概念</h2>
 
-        <div class="space-y-3">
+        <div class="space-y-5">
           <div v-for="(tags, category) in recentConcepts" :key="category">
-            <h3 class="text-sm font-bold tracking-widest text-[#2d2016]/50 uppercase mb-2">{{ category }}</h3>
-            <div class="flex flex-wrap gap-2">
-              <router-link v-for="tag in tags" :key="tag.slug" :to="`/concepts/${tag.slug}`" class="px-2.5 py-1 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium rounded-md cursor-pointer hover:bg-[#ae5630]/10 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200">
+            <h3 class="text-xs font-bold tracking-wider text-main/40 uppercase mb-3">{{ category }}</h3>
+            <div class="flex flex-wrap gap-2.5">
+              <router-link v-for="tag in tags" :key="tag.slug" :to="`/concepts/${tag.slug}`" class="tag !text-xs !py-1">
                 {{ tag.name }}
               </router-link>
             </div>
@@ -160,18 +160,18 @@ onMounted(async () => {
     </div>
 
     <!-- Footer Section: Announcements -->
-    <section class="bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10">
-      <div class="flex items-center justify-between mb-3 border-b border-[#2d2016]/5 pb-2">
-        <h2 class="text-lg md:text-xl font-bold text-[#2d2016] tracking-tight">最新資訊</h2>
-        <router-link to="/posts" class="text-sm font-medium text-[#ae5630] hover:underline underline-offset-4 transition-colors">
+    <section class="card">
+      <div class="section-label">
+        <span>最新資訊</span>
+        <router-link to="/posts" class="text-xs font-medium text-main/50 hover:text-primary transition-colors pb-1">
           查看全部
         </router-link>
       </div>
-      <ul class="space-y-2">
-        <li v-for="ann in announcements" :key="ann.id" class="border-b border-[#2d2016]/5 last:border-0">
-          <router-link :to="`/posts/${ann.id}`" class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-1.5 group cursor-pointer w-full">
-            <span class="text-base font-mono text-[#2d2016]/50 min-w-[110px] group-hover:text-[#ae5630]/70 transition-colors">{{ formatDate(ann.created_at) }}</span>
-            <span class="text-base text-[#2d2016]/80 group-hover:text-[#ae5630] transition-colors leading-relaxed">{{ ann.title }}</span>
+      <ul class="flex flex-col">
+        <li v-for="ann in announcements" :key="ann.id">
+          <router-link :to="`/posts/${ann.id}`" class="list-row group cursor-pointer w-full !gap-2 sm:!gap-6 sm:items-center">
+            <span class="text-sm font-mono text-main/50 min-w-[110px]">{{ formatDate(ann.created_at) }}</span>
+            <span class="text-base text-main group-hover:text-primary transition-colors leading-relaxed">{{ ann.title }}</span>
           </router-link>
         </li>
       </ul>

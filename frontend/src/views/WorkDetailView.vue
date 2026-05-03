@@ -31,6 +31,15 @@ const revealSpoiler = (itemId: number) => {
   revealedSpoilers.value.add(itemId)
 }
 
+const visibleIsbns = ref<Set<number>>(new Set())
+const toggleIsbn = (id: number) => {
+  if (visibleIsbns.value.has(id)) {
+    visibleIsbns.value.delete(id)
+  } else {
+    visibleIsbns.value.add(id)
+  }
+}
+
 onMounted(() => {
   fetchWorkDetail()
   window.addEventListener('spoiler-toggle', handleSpoilerToggle)
@@ -61,192 +70,205 @@ const conceptDescriptions = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-6 pb-12">
+  <div class="max-w-4xl mx-auto space-y-4">
 
-    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 text-sm font-medium bg-white rounded-lg border border-[#2d2016]/10 p-5">
       正在讀取作品資料...
     </div>
 
     <template v-else-if="work">
-      <!-- Back Link -->
-      <router-link to="/works" class="inline-flex items-center text-sm font-medium text-[#2d2016]/50 hover:text-[#ae5630] transition-colors mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        返回作品列表
-      </router-link>
+      <div class="mb-4">
+        <!-- Back Link -->
+        <router-link to="/works" class="back-link">
+          ← 返回作品列表
+        </router-link>
+      </div>
 
-      <!-- Header Info & Synopsis Section -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 relative">
-        <h1 class="text-3xl md:text-4xl font-bold text-[#2d2016] tracking-tight mb-4 flex items-baseline gap-3 flex-wrap">
-          <span>{{ work.title }}</span>
-        </h1>
+      <div class="flex flex-col md:flex-row gap-4 md:gap-5 items-start pb-12">
 
-        <!-- Metadata List -->
-        <div class="flex flex-wrap items-center gap-2 text-base text-[#2d2016]/70 mb-6 font-medium">
-          <span v-if="work.credit && work.credit.length" class="flex flex-wrap items-center">
-            <template v-for="(group, gIdx) in work.credit" :key="gIdx">
-              <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
-                <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="text-[#ae5630] hover:text-[#ae5630]/70 transition-colors">{{ agent.text }}</router-link>
-                <span v-else class="text-[#2d2016]/80">{{ agent.text }}</span>
-                <span v-if="aIdx < group.agents.length - 1" class="mx-0.5">、</span>
+        <!-- Main Column -->
+        <div class="w-full md:w-7/12 lg:w-8/12 flex flex-col gap-4 md:gap-5">
+
+          <!-- Header Info & Synopsis Section -->
+          <section class="card relative">
+
+            <!-- Media type and work length -->
+            <div v-if="work.work_length_display || work.media_type_display" class="mb-2 flex flex-wrap gap-2">
+              <span class="pill">
+                {{ work.work_length_display || '' }}{{ work.media_type_display || '' }}
+              </span>
+            </div>
+
+            <h1 class="font-serif text-[21px] md:text-2xl font-medium text-main mb-3">
+              <span>{{ work.title }}</span>
+            </h1>
+
+            <!-- Metadata List -->
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] text-main/60 pb-3 mb-4 border-b border-main/10">
+              <span v-if="work.credit && work.credit.length" class="flex flex-wrap items-center gap-x-[2px]">
+                <template v-for="(group, gIdx) in work.credit" :key="gIdx">
+                  <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
+                    <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="text-primary hover:text-primary/70 transition-colors">{{ agent.text }}</router-link>
+                    <span v-else class="text-main">{{ agent.text }}</span>
+                    <span v-if="aIdx < group.agents.length - 1">、</span>
+                  </template>
+                  <span v-if="group.role" class="text-main/25">{{ group.role }}</span>
+                  <span v-if="gIdx < work.credit.length - 1" class="ml-1 mr-0.5">；</span>
+                </template>
+              </span>
+              <span v-else>-</span>
+
+              <span class="text-main/25">·</span>
+              <span>{{ work.year || '未知年份' }}</span>
+
+              <!-- Series -->
+              <template v-if="work.series">
+                <span class="text-main/25">·</span>
+                <span>{{ work.series.title }}</span>
               </template>
-              <span v-if="group.role" class="text-[#2d2016]/80 ml-0.5">{{ group.role }}</span>
-              <span v-if="gIdx < work.credit.length - 1" class="mx-1">；</span>
-            </template>
-          </span>
-          <span v-else>-</span>
+            </div>
 
-          <span class="text-[#2d2016]/30">·</span>
-          <span>{{ work.year || '未知年份' }}</span>
-          <span class="text-[#2d2016]/30">·</span>
-          <span>{{ work.work_length_display || '未知篇幅' }}</span>
-          <span class="text-[#2d2016]/30">·</span>
-          <span>{{ work.media_type_display || '未知媒體' }}</span>
-        </div>
+            <!-- Synopsis -->
+            <div>
+              <p class="text-[14px] text-main leading-[1.8] whitespace-pre-wrap">{{ work.description || '暫無簡述提供。' }}</p>
+            </div>
 
-        <!-- Synopsis -->
-        <div>
-          <p class="text-lg text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">{{ work.description || '暫無簡述提供。' }}</p>
-        </div>
-      </section>
-
-      <!-- Concept Tags Section -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
-        <div class="flex items-baseline gap-3 mb-5 border-b border-[#2d2016]/5 pb-3">
-          <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight">相關概念</h2>
-        </div>
-
-        <div v-if="work.work_concepts && work.work_concepts.length > 0" class="flex flex-wrap gap-2.5 md:gap-3">
-          <router-link
-            v-for="wc in displayedConcepts"
-            :key="wc.concept.slug"
-            :to="`/concepts/${wc.concept.slug}`"
-            class="group flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/70 text-base font-medium rounded-lg hover:bg-[#f5f0e8]/50 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
-          >
-            <span>{{ wc.concept.name }}</span>
-          </router-link>
-
-          <button v-if="hiddenConceptsCount > 0 && !isConceptsExpanded" @click="isConceptsExpanded = true" class="flex items-center px-3 py-1.5 bg-transparent border border-dashed border-[#ae5630]/40 text-[#ae5630] text-sm font-medium rounded-lg hover:bg-[#ae5630]/5 hover:border-[#ae5630]/60 transition-all duration-200">
-            + {{ hiddenConceptsCount }} 更多
-          </button>
-          <button v-if="isConceptsExpanded" @click="isConceptsExpanded = false" class="flex items-center px-3 py-1.5 bg-transparent border border-dashed border-[#ae5630]/40 text-[#ae5630] text-sm font-medium rounded-lg hover:bg-[#ae5630]/5 hover:border-[#ae5630]/60 transition-all duration-200">
-            - 收合
-          </button>
-        </div>
-        <div v-else class="text-[#2d2016]/40 py-2">尚無標註任何概念。</div>
-      </section>
-
-      <!-- Concept Descriptions (Spoilers) Section -->
-      <section v-if="conceptDescriptions.length > 0" class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10">
-        <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight mb-5 border-b border-[#2d2016]/5 pb-3">概念應用詳述</h2>
-        <div class="space-y-6">
-          <div v-for="wc in conceptDescriptions" :key="wc.id" class="flex flex-col md:flex-row gap-2 md:gap-6 pt-4 first:pt-0 border-t border-[#2d2016]/5 first:border-0">
-            <div class="md:w-1/5 flex-shrink-0">
+            <!-- Concept Tags List -->
+            <div v-if="work.work_concepts && work.work_concepts.length > 0" class="mt-5 flex flex-wrap gap-2">
               <router-link
+                v-for="wc in displayedConcepts"
+                :key="wc.concept.slug"
                 :to="`/concepts/${wc.concept.slug}`"
-                class="group inline-flex items-center gap-1.5 px-3 py-1.5 bg-transparent border border-[#2d2016]/10 text-[#2d2016]/70 text-base font-medium rounded-lg hover:bg-[#f5f0e8]/50 hover:border-[#ae5630]/30 hover:text-[#ae5630] transition-all duration-200"
+                class="tag"
               >
                 <span>{{ wc.concept.name }}</span>
               </router-link>
+
+              <button v-if="hiddenConceptsCount > 0 && !isConceptsExpanded" @click="isConceptsExpanded = true" class="tag !border-dashed !text-primary hover:!bg-hover">
+                + {{ hiddenConceptsCount }} 更多
+              </button>
+              <button v-if="isConceptsExpanded" @click="isConceptsExpanded = false" class="tag !border-dashed !text-primary hover:!bg-hover">
+                - 收合
+              </button>
             </div>
-            <div class="md:w-4/5">
-              <span
-                v-if="isSpoilerProtected && !revealedSpoilers.has(wc.id)"
-                @click="revealSpoiler(wc.id)"
-                class="cursor-pointer text-[#2d2016]/5 hover:text-[#2d2016]/60 transition-all duration-300 select-none block text-[17px] leading-relaxed whitespace-pre-wrap"
-                title="點擊顯示劇透內容"
+          </section>
+
+          <!-- Concepts Section -->
+          <section v-if="conceptDescriptions.length > 0" class="card relative">
+            <h2 class="section-label">概念應用詳述</h2>
+            <div class="flex flex-col">
+              <div v-for="wc in conceptDescriptions" :key="wc.id" class="concept-row">
+                <div class="concept-row-label">
+                  <router-link :to="`/concepts/${wc.concept.slug}`" class="tag">
+                    {{ wc.concept.name }}
+                  </router-link>
+                </div>
+                <p
+                  :class="['concept-row-desc', { 'spoiler': isSpoilerProtected && !revealedSpoilers.has(wc.id), 'text-main': !isSpoilerProtected || revealedSpoilers.has(wc.id) }]"
+                  @click="isSpoilerProtected && !revealedSpoilers.has(wc.id) && revealSpoiler(wc.id)"
+                  :title="isSpoilerProtected && !revealedSpoilers.has(wc.id) ? '點擊顯示劇透內容' : ''"
+                >
+                  {{ wc.description }}
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Sidebar Column (Pubs & Catalogues) -->
+        <aside class="w-full md:w-5/12 lg:w-4/12 shrink-0 flex flex-col gap-4 md:sticky md:top-4">
+
+          <!-- Publications -->
+          <section v-if="work.publications && work.publications.length > 0" class="card-sm">
+            <h2 class="section-label">出版與發行</h2>
+            <div class="flex flex-col">
+              <div
+                v-for="pub in work.publications"
+                :key="pub.manifestation_id || pub.id"
+                class="flat-row items-start"
+                @click="toggleIsbn(pub.manifestation_id || pub.id)"
               >
-                {{ wc.description }}
-              </span>
-              <span v-else class="block text-[17px] text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">
-                {{ wc.description }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+                <!-- Left Column: Year & Media Tag -->
+                <div class="flex flex-col shrink-0 items-start gap-1 pt-[1px]">
+                  <span class="flat-year">{{ pub.year || '-' }}</span>
+                  <span v-if="pub.media_display" class="text-[10px] text-main/40 border border-main/15 rounded px-1 py-0.5 leading-none whitespace-nowrap">
+                    {{ pub.media_display }}
+                  </span>
+                </div>
 
-      <!-- Publications / Releases Section -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
-        <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight mb-5 border-b border-[#2d2016]/5 pb-3">出版與發行</h2>
-        <div v-if="work.publications && work.publications.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
-          <table class="w-full text-left border-collapse min-w-[1000px]">
-            <thead>
-              <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
-                <th class="pb-3 pr-4 font-normal w-48">出版物名稱</th>
-                <th class="pb-3 pr-4 font-normal w-48">收錄名稱</th>
-                <th class="pb-3 pr-4 font-normal w-24">形式</th>
-                <th class="pb-3 pr-4 font-normal w-20">年份</th>
-                <th class="pb-3 pr-4 font-normal w-32">出版商</th>
-                <th class="pb-3 pr-4 font-normal w-40">參與</th>
-                <th class="pb-3 pr-4 font-normal w-32">ISBN</th>
-                <th class="pb-3 font-normal">備註</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[16px]">
-              <tr v-for="pub in work.publications" :key="pub.manifestation_id || pub.id" class="hover:bg-[#f5f0e8]/30 transition-colors">
-                <td class="py-3.5 pr-4 align-top font-medium">{{ pub.title }}</td>
-                <td class="py-3.5 pr-4 align-top font-medium">
-                  <span v-if="pub.manifestations?.length === 1 && pub.manifestation_display_name === pub.title" class="text-[#2d2016]/30">-</span>
-                  <span v-else class="text-[#ae5630]">{{ pub.manifestation_display_name || '-' }}</span>
-                </td>
-                <td class="py-3.5 pr-4 align-top"><span class="px-2 py-0.5 rounded bg-[#2d2016]/5 text-sm">{{ pub.media_display || '-' }}</span></td>
-                <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ pub.year || '-' }}</td>
-                <td class="py-3.5 pr-4 align-top">{{ pub.publisher.name || '-' }}</td>
-                <td class="py-3.5 pr-4 align-top text-sm">
-                  <template v-if="pub.credit && pub.credit.length">
-                    <template v-for="(group, gIdx) in pub.credit" :key="gIdx">
-                      <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
-                        <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="hover:text-[#ae5630] transition-colors">{{ agent.text }}</router-link>
-                        <span v-else class="text-[#2d2016]/60">{{ agent.text }}</span>
-                        <span v-if="aIdx < group.agents.length - 1">、</span>
+                <div class="flat-body">
+                  <!-- Line 1：書名 -->
+                  <div class="mb-[2px]">
+                    <span class="flat-title">{{ pub.title }}</span>
+                  </div>
+
+                  <!-- Line 2：Credit · 出版社 -->
+                  <div
+                    v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
+                    class="flat-sub flex items-center flex-wrap gap-x-1 mt-[2px]"
+                  >
+                    <template v-if="pub.credit && pub.credit.length">
+                      <template v-for="(group, gIdx) in pub.credit" :key="gIdx">
+                        <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
+                          {{ agent.text }}<span v-if="aIdx < group.agents.length - 1">、</span>
+                        </template>
+                        <span v-if="group.role">{{ group.role }}</span>
+                        <span v-if="gIdx < pub.credit.length - 1">；</span>
                       </template>
-                      <span v-if="group.role" class="text-[#2d2016]/60 ml-0.5">{{ group.role }}</span>
-                      <span v-if="gIdx < pub.credit.length - 1">；</span>
+                      <span v-if="pub.publisher?.name" class="text-main/30 px-0.5">/</span>
                     </template>
-                  </template>
-                  <span v-else>-</span>
-                </td>
-                <td class="py-3.5 pr-4 align-top font-mono text-sm text-[#2d2016]/60">{{ pub.isbn || '-' }}</td>
-                <td class="py-3.5 align-top text-[#2d2016]/60">{{ pub.note || '-' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="text-[#2d2016]/40 py-2">無出版或發行紀錄。</div>
-      </section>
+                    <span v-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
+                  </div>
 
-      <!-- Catalogues Section -->
-      <section class="bg-[#ffffff] rounded-lg p-6 md:p-8 shadow-sm border border-[#2d2016]/10 overflow-hidden">
-        <h2 class="text-xl md:text-2xl font-bold text-[#2d2016] tracking-tight mb-5 border-b border-[#2d2016]/5 pb-3">收錄與獲獎目錄</h2>
-        <div v-if="work.catalogue_entries && work.catalogue_entries.length > 0" class="overflow-x-auto -mx-6 md:mx-0 px-6 md:px-0">
-          <table class="w-full text-left border-collapse min-w-[700px]">
-            <thead>
-              <tr class="border-b border-[#2d2016]/10 text-[#2d2016]/60 text-base font-medium tracking-wide">
-                <th class="pb-3 pr-4 font-normal w-24">類型</th>
-                <th class="pb-3 pr-4 font-normal w-48">名稱</th>
-                <th class="pb-3 pr-4 font-normal w-20">年份</th>
-                <th class="pb-3 pr-4 font-normal w-32">維護者</th>
-                <th class="pb-3 font-normal">備註</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#2d2016]/5 text-[#2d2016]/80 text-[16px]">
-              <tr v-for="entry in work.catalogue_entries" :key="entry.id" class="hover:bg-[#f5f0e8]/30 transition-colors">
-                <td class="py-3.5 pr-4 align-top"><span class="px-2 py-0.5 rounded bg-[#2d2016]/5 text-sm">{{ entry.catalogue.catalogue_type_display }}</span></td>
-                <td class="py-3.5 pr-4 align-top font-medium">{{ entry.catalogue.title }}</td>
-                <td class="py-3.5 pr-4 align-top font-mono text-[#2d2016]/60">{{ entry.catalogue.year || '-' }}</td>
-                <td class="py-3.5 pr-4 align-top">
-                  <router-link v-if="entry.catalogue.agent_curator" :to="`/agents/${entry.catalogue.agent_curator.id}`" class="hover:text-[#ae5630] transition-colors">{{ entry.catalogue.agent_curator.name }}</router-link>
-                  <span v-else>-</span>
-                </td>
-                <td class="py-3.5 align-top text-[#2d2016]/60">{{ entry.note || '-' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="text-[#2d2016]/40 py-2">無收錄與獲獎紀錄。</div>
-      </section>
+                  <!-- Line 3：manifestation 副標（單一版本才顯示） -->
+                  <div
+                    v-if="pub.manifestations?.length === 1 && pub.manifestation_display_name && pub.manifestation_display_name !== pub.title"
+                    class="text-[12px] text-primary/90 mt-[2px]"
+                  >
+                    ↳ {{ pub.manifestation_display_name }}
+                  </div>
+
+                  <!-- Line 4：ISBN（點擊顯示） -->
+                  <div
+                    v-if="visibleIsbns.has(pub.manifestation_id || pub.id) && pub.isbn"
+                    class="font-mono text-[12px] text-main/60 mt-1 selection:bg-primary/20"
+                    @click.stop
+                  >
+                    ISBN {{ pub.isbn }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Catalogues -->
+          <section v-if="work.catalogue_entries && work.catalogue_entries.length > 0" class="card-sm">
+            <h2 class="section-label">收錄與獲獎</h2>
+            <div class="flex flex-col">
+              <div v-for="entry in work.catalogue_entries" :key="entry.id" class="flat-row items-start">
+                <!-- Left Column: Year & Type Tag -->
+                <div class="flex flex-col shrink-0 items-start gap-1 pt-[1px]">
+                  <span class="flat-year">{{ entry.catalogue.year || '-' }}</span>
+                  <span v-if="entry.catalogue.catalogue_type_display" class="text-[10px] text-main/40 border border-main/15 rounded px-1 py-0.5 leading-none whitespace-nowrap">
+                    {{ entry.catalogue.catalogue_type_display }}
+                  </span>
+                </div>
+
+                <div class="flat-body">
+                  <div class="mb-[2px]">
+                    <router-link v-if="entry.catalogue.id" :to="`/catalogues/${entry.catalogue.id}`" class="flat-title hover:text-primary transition-colors">{{ entry.catalogue.title }}</router-link>
+                    <span v-else class="flat-title">{{ entry.catalogue.title }}</span>
+                  </div>
+                  <div v-if="entry.note" class="flat-sub mt-[2px] flex items-center flex-wrap gap-x-1.5">
+                    <span v-if="entry.note">{{ entry.note }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </aside>
+      </div>
     </template>
   </div>
 </template>

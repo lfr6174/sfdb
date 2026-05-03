@@ -1,1 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
 @import "tailwindcss";
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ae5630;
+  --color-main: #2d2016;
+  --color-bg: #ffffff;
+  --color-hover: #f5f0e8;
+
+  --font-sans: 'IBM Plex Sans TC', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Lora', ui-serif, Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-xl border border-[#2d2016]/15 p-6 shadow-sm;
+  }
+
+  .card-sm {
+    @apply bg-white rounded-xl border border-[#2d2016]/15 p-4 shadow-sm;
+  }
+
+  .tag {
+    @apply px-2.5 py-1 rounded-lg border border-[#2d2016]/20 text-xs font-medium text-[#2d2016]/60 hover:border-primary/30 hover:text-primary hover:bg-hover transition-all cursor-pointer inline-flex items-center gap-1 whitespace-nowrap;
+  }
+
+  .pill {
+    @apply inline-flex px-2 py-0.5 rounded-md border border-[#2d2016]/10 text-[11px] bg-hover text-[#2d2016]/60 whitespace-nowrap;
+  }
+
+  .badge {
+    @apply px-2.5 py-1 rounded-md text-sm border border-[#2d2016]/20 text-[#2d2016]/70 bg-[#2d2016]/5;
+  }
+
+  .section-label {
+    @apply text-[11px] font-medium tracking-[0.08em] uppercase text-[#2d2016]/40 mb-3 pb-2 border-b border-[#2d2016]/10 flex justify-between items-center;
+  }
+
+  .list-row {
+    @apply py-3 pl-3 border-b border-[#2d2016]/10 border-l-2 border-transparent hover:border-l-primary hover:bg-hover transition-all flex items-start gap-4 text-[14px] text-main;
+  }
+
+  .flat-row {
+    @apply flex items-baseline gap-3 py-2 px-2 border-b border-[#2d2016]/5 border-l-2 border-transparent hover:border-l-primary hover:bg-hover transition-all cursor-pointer;
+  }
+  .flat-row:last-child {
+    @apply border-b-0;
+  }
+  .flat-year {
+    @apply font-mono text-[11px] text-[#2d2016]/40 min-w-[32px] shrink-0 pt-[1px];
+  }
+  .flat-body {
+    @apply flex-1 min-w-0 flex flex-col gap-[2px];
+  }
+  .flat-title {
+    @apply text-[13px] font-medium text-main;
+  }
+  .flat-sub {
+    @apply text-[12px] text-[#2d2016]/60;
+  }
+  .flat-badge {
+    @apply inline-flex px-1.5 py-[1px] rounded-[3px] text-[11px] border border-[#2d2016]/10 text-[#2d2016]/40 mr-1 whitespace-nowrap;
+  }
+
+  .concept-row {
+    @apply flex flex-col md:flex-row gap-4 py-3 px-3 border-b border-[#2d2016]/10 border-l-2 border-transparent hover:border-l-primary hover:bg-hover transition-all items-start;
+  }
+  .concept-row:last-child {
+    @apply border-b-0;
+  }
+  .concept-row-label {
+    @apply md:w-1/5 shrink-0 pt-0.5;
+  }
+  .concept-row-desc {
+    @apply text-[14px] text-main leading-relaxed md:w-4/5;
+  }
+
+  .back-link {
+    @apply text-[13px] font-medium text-[#2d2016]/40 hover:text-primary transition-colors inline-flex items-center gap-1;
+  }
+
+  .spoiler {
+    @apply text-[#2d2016]/40 cursor-pointer transition-all duration-200;
+    filter: blur(3px);
+  }
+  .spoiler:hover {
+    filter: blur(1.5px);
+    @apply text-[#2d2016]/60;
+  }
+}

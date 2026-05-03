@@ -44,6 +44,7 @@ class ConceptSerializer(serializers.ModelSerializer):
                 "id": wc.id,
                 "work": wc.work_id,
                 "work_title": wc.work.title,
+                "year": wc.work.year,
                 "description": wc.description,
             }
             for wc in obj.work_concepts.select_related("work").all()

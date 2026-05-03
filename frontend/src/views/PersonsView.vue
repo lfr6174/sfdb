@@ -76,7 +76,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto space-y-6">
 
     <!-- Header Controls -->
     <section class="bg-[#ffffff] rounded-lg p-5 md:p-6 shadow-sm border border-[#2d2016]/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -120,10 +120,15 @@ onMounted(() => {
         class="bg-[#ffffff] rounded-lg p-5 shadow-sm border border-[#2d2016]/10 hover:border-[#ae5630]/30 transition-colors group cursor-pointer"
         @click="$router.push(`/agents/${agent.id}`)"
       >
-        <!-- Name and Works Count -->
-        <div class="flex items-baseline gap-3 mb-2">
-          <h2 class="text-xl font-bold text-[#2d2016] group-hover:text-[#ae5630] transition-colors">{{ agent.name }}</h2>
-          <span class="text-sm text-[#2d2016]/50">{{ agent.works_count || 0 }} 作品</span>
+        <!-- Name, Aliases and Works Count -->
+        <div class="flex flex-wrap items-baseline justify-between gap-3 mb-2">
+          <div class="flex items-baseline gap-3 flex-wrap">
+            <h2 class="text-xl font-bold text-[#2d2016] group-hover:text-[#ae5630] transition-colors">{{ agent.name }}</h2>
+            <span v-if="agent.aliases && agent.aliases.length > 0" class="text-[15px] text-[#2d2016]/50">
+              {{ agent.aliases.map(a => a.name).join(' · ') }}
+            </span>
+          </div>
+          <span class="text-sm font-medium text-[#2d2016]/40 shrink-0">{{ agent.works_count || 0 }} 部作品</span>
         </div>
 
         <!-- Biography (truncated to 2 lines) -->

@@ -39,29 +39,29 @@ const renderedBody = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto space-y-6 pb-12">
-    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+  <div class="max-w-4xl mx-auto space-y-4 pb-12">
+    <div v-if="isLoading" class="card text-center py-16 text-main/50 text-sm font-medium">
       正在讀取頁面資料...
     </div>
 
-    <div v-else-if="hasError" class="text-center py-16 text-[#2d2016]/50 font-medium bg-[#ffffff] rounded-lg border border-[#2d2016]/10">
+    <div v-else-if="hasError" class="card text-center py-16 text-main/50 text-sm font-medium">
       找不到該頁面。
     </div>
 
     <template v-else-if="pageData">
-      <article class="bg-[#ffffff] rounded-lg p-6 md:p-10 shadow-sm border border-[#2d2016]/10">
-        <h1 class="text-3xl md:text-4xl font-bold text-[#2d2016] tracking-tight mb-4">{{ pageData.title }}</h1>
+      <article class="card">
+        <h1 class="text-2xl font-medium text-main mb-4">{{ pageData.title }}</h1>
 
-        <hr class="my-6 border-[#2d2016]/10" />
+        <div class="mb-6 pb-3 border-b border-main/10"></div>
 
-        <div class="prose prose-stone max-w-none text-[17px] text-[#2d2016]/80 leading-relaxed" v-html="renderedBody">
+        <div class="prose prose-stone max-w-none text-sm text-main leading-relaxed" v-html="renderedBody">
         </div>
 
-        <div class="mt-12 pt-6 border-t border-[#2d2016]/5 text-right flex justify-between items-center">
-          <router-link to="/" class="text-sm font-medium text-[#2d2016]/50 hover:text-[#ae5630] transition-colors">
+        <div class="mt-12 pt-4 border-t border-main/10 text-right flex justify-between items-center">
+          <router-link to="/" class="back-link">
             ← 返回首頁
           </router-link>
-          <span class="text-sm font-mono text-[#2d2016]/40">最後更新於 {{ formatDate(pageData.updated_at) }}</span>
+          <span class="font-mono text-xs text-main/50">最後更新於 {{ formatDate(pageData.updated_at) }}</span>
         </div>
       </article>
     </template>
