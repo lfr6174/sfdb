@@ -2,11 +2,14 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
+import { useSpoiler } from '../composables/useSpoiler'
 
 const route = useRoute()
 const work = ref<any>(null)
 const isLoading = ref(true)
 const isConceptsExpanded = ref(false)
+
+const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
 
 const fetchWorkDetail = async () => {
   isLoading.value = true
@@ -20,17 +23,6 @@ const fetchWorkDetail = async () => {
   }
 }
 
-const isSpoilerProtected = ref(localStorage.getItem('spoiler') !== 'false')
-const revealedSpoilers = ref<Set<number>>(new Set())
-
-const handleSpoilerToggle = (e: any) => {
-  isSpoilerProtected.value = e.detail
-}
-
-const revealSpoiler = (itemId: number) => {
-  revealedSpoilers.value.add(itemId)
-}
-
 const visibleIsbns = ref<Set<number>>(new Set())
 const toggleIsbn = (id: number) => {
   if (visibleIsbns.value.has(id)) {
@@ -42,11 +34,6 @@ const toggleIsbn = (id: number) => {
 
 onMounted(() => {
   fetchWorkDetail()
-  window.addEventListener('spoiler-toggle', handleSpoilerToggle)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('spoiler-toggle', handleSpoilerToggle)
 })
 
 // Manage displayed concepts for the "show more" functionality
@@ -72,7 +59,7 @@ const conceptDescriptions = computed(() => {
 <template>
   <div class="max-w-4xl mx-auto space-y-4">
 
-    <div v-if="isLoading" class="text-center py-16 text-[#2d2016]/50 text-sm font-medium bg-white rounded-lg border border-[#2d2016]/10 p-5">
+    <div v-if="isLoading" class="card text-center py-16 text-main/50 text-sm font-medium">
       正在讀取作品資料...
     </div>
 

@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { marked } from 'marked'
+import { formatDate } from '../utils/formatters'
 
 const route = useRoute()
 const pageData = ref<any>(null)
@@ -26,11 +27,6 @@ const fetchPageDetail = async () => {
 onMounted(() => {
   fetchPageDetail()
 })
-
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '-'
-  return dateStr.split('T')[0].replace(/-/g, '/')
-}
 
 const renderedBody = computed(() => {
   if (!pageData.value?.body) return '無內容'

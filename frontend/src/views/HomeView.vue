@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import api from '../api/axios'
+import { formatDate } from '../utils/formatters'
 
 const works = ref<any[]>([])
 const isLoading = ref(true)
@@ -9,12 +10,6 @@ const stats = ref({ works: 0, concepts: 0 })
 const currentConcept = ref<any>({})
 const recentConcepts = ref<Record<string, {name: string, slug: string}[]>>({})
 const announcements = ref<any[]>([])
-
-// 共用的日期格式化函式
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '-'
-  return dateStr.split('T')[0].replace(/-/g, '/')
-}
 
 const refreshRandomConcept = async () => {
   isLoading.value = true

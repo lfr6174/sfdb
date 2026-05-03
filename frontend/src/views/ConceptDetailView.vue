@@ -2,18 +2,14 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
+import { useSpoiler } from '../composables/useSpoiler'
 
 const route = useRoute()
 
 const concept = ref<any>(null)
 const isLoading = ref(true)
 
-const isSpoilerProtected = ref(localStorage.getItem('spoiler') !== 'false')
-const revealedSpoilers = ref<Set<number>>(new Set())
-
-const handleSpoilerToggle = (e: any) => {
-  isSpoilerProtected.value = e.detail
-}
+const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
 
 const fetchConceptDetail = async () => {
   isLoading.value = true
@@ -25,10 +21,6 @@ const fetchConceptDetail = async () => {
   } finally {
     isLoading.value = false
   }
-}
-
-const revealSpoiler = (itemId: number) => {
-  revealedSpoilers.value.add(itemId)
 }
 
 const validWorkConcepts = computed(() => {
@@ -57,7 +49,7 @@ const latestYear = computed(() => {
 // Refetch data to handle same-route navigation
 watch(() => route.params.slug, (newSlug, oldSlug) => {
   if (newSlug && newSlug !== oldSlug) {
-    revealedSpoilers.value.clear()
+    clearRevealedSpoilers()
     fetchConceptDetail()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -65,11 +57,6 @@ watch(() => route.params.slug, (newSlug, oldSlug) => {
 
 onMounted(() => {
   fetchConceptDetail()
-  window.addEventListener('spoiler-toggle', handleSpoilerToggle)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('spoiler-toggle', handleSpoilerToggle)
 })
 </script>
 

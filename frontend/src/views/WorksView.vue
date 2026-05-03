@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
+import PaginationControls from '../components/PaginationControls.vue'
 
 // Filter Constants
 const MEDIA_OPTIONS = [
@@ -446,17 +447,14 @@ const changePage = (dir: number) => {
           </div>
         </div>
 
-        <div v-if="works.length > 0 && (hasPrev || hasNext)" class="flex items-center justify-center gap-4 mt-6 pb-4">
-          <button :disabled="!hasPrev" @click="changePage(-1)" class="px-3 py-1 text-xs rounded-full font-medium transition-colors border border-main/10" :class="hasPrev ? 'bg-bg text-main/50 hover:text-primary hover:border-primary/30' : 'text-main/25 cursor-not-allowed'">
-            上一頁
-          </button>
-          <span class="font-mono text-xs text-main/50">
-            {{ currentPage }} / {{ totalPages }}
-          </span>
-          <button :disabled="!hasNext" @click="changePage(1)" class="px-3 py-1 text-xs rounded-full font-medium transition-colors border border-main/10" :class="hasNext ? 'bg-bg text-main/50 hover:text-primary hover:border-primary/30' : 'text-main/25 cursor-not-allowed'">
-            下一頁
-          </button>
-        </div>
+        <PaginationControls
+          v-if="works.length > 0 && (hasPrev || hasNext)"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          :has-prev="hasPrev"
+          :has-next="hasNext"
+          @change-page="changePage"
+        />
       </template>
     </main>
   </div>
