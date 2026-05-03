@@ -4,7 +4,6 @@ from unfold.contrib.filters.admin import ChoicesDropdownFilter, RangeNumericFilt
 
 from .models import (
     Catalogue,
-    CatalogueEntry,
     Manifestation,
     ManifestationAgent,
     Publication,
@@ -13,6 +12,7 @@ from .models import (
     Series,
     Work,
     WorkAgent,
+    WorkCatalogue,
     WorkConcept,
 )
 
@@ -69,10 +69,18 @@ class ManifestationInlineForPublication(TabularInline):
     classes = ["collapse"]
 
 
-class CatalogueEntryInline(TabularInline):
-    model = CatalogueEntry
+class WorkCatalogueInlineForWork(TabularInline):
+    model = WorkCatalogue
+    extra = 0
+    autocomplete_fields = ("catalogue",)
+    classes = ["collapse"]
+
+
+class WorkCatalogueInlineForCatalogue(TabularInline):
+    model = WorkCatalogue
     extra = 0
     autocomplete_fields = ("work",)
+    classes = ["collapse"]
 
 
 # ============================================================================
@@ -119,7 +127,7 @@ class WorkAdmin(ModelAdmin):
     )
     search_fields = ("title", "description", "contributions__agent__name", "contributions__agent__aliases__name")
     autocomplete_fields = ("series",)
-    inlines = [WorkAgentInline, WorkConceptInline, ManifestationInlineForWork]
+    inlines = [WorkAgentInline, WorkConceptInline, ManifestationInlineForWork, WorkCatalogueInlineForWork]
     readonly_fields = ("created_at", "updated_at")
 
     def get_queryset(self, request):
@@ -220,12 +228,12 @@ class ManifestationAdmin(ModelAdmin):
 
 @admin.register(Catalogue)
 class CatalogueAdmin(ModelAdmin):
-    list_display = ("title", "catalogue_type", "agent_curator", "year")
+    list_display = ("title", "catalogue_type", "year")
     list_filter = (
         ("catalogue_type", ChoicesDropdownFilter),
         ("year", RangeNumericFilter),
     )
-    search_fields = ("title", "agent_curator__name")
-    autocomplete_fields = ("agent_curator",)
-    inlines = [CatalogueEntryInline]
+    search_fields = ("title", "agents__name")
+    autocomplete_fields = ("agents",)
+    inlines = [WorkCatalogueInlineForCatalogue]
     readonly_fields = ("created_at", "updated_at")

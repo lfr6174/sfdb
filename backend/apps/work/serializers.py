@@ -6,7 +6,6 @@ from apps.concept.serializers import ConceptMinimalSerializer
 
 from .models import (
     Catalogue,
-    CatalogueEntry,
     Manifestation,
     ManifestationAgent,
     Publication,
@@ -14,6 +13,7 @@ from .models import (
     Series,
     Work,
     WorkAgent,
+    WorkCatalogue,
     WorkConcept,
 )
 from .services import get_byline, get_credits
@@ -185,12 +185,13 @@ class CatalogueBriefSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "catalogue_type_display", "year", "agent_curator"]
 
 
-class WorkCatalogueEntrySerializer(serializers.ModelSerializer):
+class WorkCatalogueSerializer(serializers.ModelSerializer):
     catalogue = CatalogueBriefSerializer(read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
-        model = CatalogueEntry
-        fields = ["id", "catalogue", "order", "note"]
+        model = WorkCatalogue
+        fields = ["id", "catalogue", "category", "status", "status_display", "note"]
 
 
 # ============================================================================
@@ -212,7 +213,7 @@ class WorkSerializer(serializers.ModelSerializer):
     contributions = WorkAgentSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
     publications = serializers.SerializerMethodField()
-    catalogue_entries = WorkCatalogueEntrySerializer(many=True, read_only=True)
+    work_catalogues = WorkCatalogueSerializer(many=True, read_only=True)
     credit = serializers.SerializerMethodField()
 
     class Meta:
@@ -234,7 +235,7 @@ class WorkSerializer(serializers.ModelSerializer):
             "credit",
             "work_concepts",
             "publications",
-            "catalogue_entries",
+            "work_catalogues",
             "created_at",
             "updated_at",
         ]
@@ -274,14 +275,6 @@ class WorkSerializer(serializers.ModelSerializer):
 # ============================================================================
 # CATALOGUE SERIALIZERS
 # ============================================================================
-
-
-class CatalogueEntrySerializer(serializers.ModelSerializer):
-    work = WorkBriefSerializer(read_only=True)
-
-    class Meta:
-        model = CatalogueEntry
-        fields = ["id", "catalogue", "work", "order", "note"]
 
 
 class CatalogueSerializer(serializers.ModelSerializer):

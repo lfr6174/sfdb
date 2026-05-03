@@ -229,10 +229,10 @@ const conceptDescriptions = computed(() => {
           </section>
 
           <!-- Catalogues -->
-          <section v-if="work.catalogue_entries && work.catalogue_entries.length > 0" class="card-sm">
+          <section v-if="work.work_catalogues && work.work_catalogues.length > 0" class="card-sm">
             <h2 class="section-label">收錄與獲獎</h2>
             <div class="flex flex-col">
-              <div v-for="entry in work.catalogue_entries" :key="entry.id" class="flat-row items-start">
+              <div v-for="entry in work.work_catalogues" :key="entry.id" class="flat-row items-start">
                 <!-- Left Column: Year & Type Tag -->
                 <div class="flex flex-col shrink-0 items-start gap-1 pt-[1px]">
                   <span class="flat-year">{{ entry.catalogue.year || '-' }}</span>
@@ -246,8 +246,11 @@ const conceptDescriptions = computed(() => {
                     <router-link v-if="entry.catalogue.id" :to="`/catalogues/${entry.catalogue.id}`" class="flat-title hover:text-primary transition-colors">{{ entry.catalogue.title }}</router-link>
                     <span v-else class="flat-title">{{ entry.catalogue.title }}</span>
                   </div>
-                  <div v-if="entry.note" class="flat-sub mt-[2px] flex items-center flex-wrap gap-x-1.5">
-                    <span v-if="entry.note">{{ entry.note }}</span>
+                  <div v-if="entry.category || entry.status_display || entry.note" class="flat-sub mt-[2px] flex items-center flex-wrap gap-x-1.5">
+                    <span v-if="entry.category" class="font-medium text-main/80">{{ entry.category }}</span>
+                    <span v-if="entry.category && entry.status_display" class="text-main/30">·</span>
+                    <span v-if="entry.status_display" class="text-primary/90">{{ entry.status_display }}</span>
+                    <span v-if="entry.note" class="text-main/50 ml-1">({{ entry.note }})</span>
                   </div>
                 </div>
               </div>

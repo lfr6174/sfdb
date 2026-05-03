@@ -23,6 +23,7 @@ def get_agent_works(agent):
         .prefetch_related(
             Prefetch("contributions", queryset=WorkAgent.objects.filter(agent=agent), to_attr="agent_contributions"),
             "concepts",
+            "work_catalogues__catalogue",
         )
         .distinct()
         .order_by("-year")
@@ -37,6 +38,17 @@ def get_agent_works(agent):
             "work_length": w.get_work_length_display(),
             "roles": sorted({c.role.noun for c in w.agent_contributions}),
             "concepts": [{"name": c.name, "slug": c.slug} for c in w.concepts.all()[:3]],
+            "awards": [
+                {
+                    "catalogue_id": wc.catalogue.id,
+                    "title": wc.catalogue.title,
+                    "year": wc.catalogue.year,
+                    "category": wc.category,
+                    "status": wc.get_status_display(),
+                }
+                for wc in w.work_catalogues.all()
+                if wc.catalogue.catalogue_type == "award"
+            ],
         }
         for w in works
     ]

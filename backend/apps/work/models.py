@@ -50,7 +50,7 @@ class Work(TimeStampedModel):
     """An abstract creation, independent of its specific format."""
 
     title = models.CharField(max_length=300, verbose_name="標題")
-    media_type = models.CharField(max_length=20, choices=MediaType.choices, verbose_name="媒體類型")
+    media_type = models.CharField(max_length=20, choices=MediaType.choices, verbose_name="體裁")
     work_length = models.CharField(max_length=20, choices=WorkLength.choices, verbose_name="篇幅")
     provenance = models.CharField(max_length=20, choices=WorkProvenance.choices, verbose_name="作品來源")
     language = models.CharField(
@@ -326,7 +326,6 @@ class PublicationAgent(models.Model):
 class CatalogueType(models.TextChoices):
     AWARD = "award", "獎項"
     READING_LIST = "reading_list", "書單"
-    ANTHOLOGY = "anthology", "選集"
 
 
 class Catalogue(TimeStampedModel):
@@ -334,42 +333,46 @@ class Catalogue(TimeStampedModel):
 
     title = models.CharField(max_length=300, verbose_name="名稱")
     catalogue_type = models.CharField(max_length=20, choices=CatalogueType.choices, verbose_name="類型")
-    agent_curator = models.ForeignKey(
-        "agent.Agent",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="curated_catalogues",
-        verbose_name="維護主體",
-    )
+    about = models.TextField(blank=True, verbose_name="簡介")
     year = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="年份")
-    note = models.TextField(blank=True, verbose_name="備註")
+    agents = models.ManyToManyField(
+        "agent.Agent",
+        blank=True,
+        related_name="curated_catalogues",
+        verbose_name="維護者",
+    )
 
     class Meta:
-        verbose_name = "收錄目錄"
-        verbose_name_plural = "收錄目錄"
-        ordering = ["-year", "title"]
+        verbose_name = "精選"
+        verbose_name_plural = "精選"
+        ordering = ["title"]
 
     def __str__(self):
-        return f"{self.title} ({self.year})" if self.year else self.title
+        return self.title
 
 
-class CatalogueEntry(models.Model):
-    """
-    Intermediate table mapping Works to Catalogues.
-    Records details of a work's inclusion in a list or its award status.
-    """
+class AwardStatus(models.TextChoices):
+    SELECTED = "selected", "入選"
+    WINNER = "winner", "獲獎"
 
-    catalogue = models.ForeignKey(Catalogue, on_delete=models.CASCADE, related_name="entries", verbose_name="所屬目錄")
-    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="catalogue_entries", verbose_name="作品")
-    order = models.PositiveSmallIntegerField(default=0, verbose_name="排序", help_text="在書單中的排名或順序")
-    note = models.CharField(max_length=200, blank=True, verbose_name="收錄備註", help_text="例如：獲獎、提名、首獎")
+
+class WorkCatalogue(TimeStampedModel):
+    catalogue = models.ForeignKey(
+        Catalogue, on_delete=models.CASCADE, related_name="work_catalogues", verbose_name="精選"
+    )
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="work_catalogues", verbose_name="作品")
+    category = models.CharField(
+        max_length=100, blank=True, verbose_name="項目", help_text="例如：「最佳長篇小說」、「必讀」"
+    )
+    status = models.CharField(
+        max_length=20, choices=AwardStatus.choices, default=AwardStatus.SELECTED, verbose_name="入選狀態"
+    )
+    note = models.CharField(max_length=255, blank=True, verbose_name="備註")
 
     class Meta:
-        unique_together = [("catalogue", "work")]
-        ordering = ["order"]
+        unique_together = [("catalogue", "work", "category")]
         verbose_name = "目錄收錄紀錄"
         verbose_name_plural = "目錄收錄紀錄"
 
     def __str__(self):
-        return f"[{self.note}] {self.work.title} in {self.catalogue.title}"
+        return f"[{self.get_status_display()}] {self.work.title} in {self.catalogue.title}"

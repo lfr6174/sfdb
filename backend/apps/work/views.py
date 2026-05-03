@@ -45,7 +45,7 @@ class WorkViewSet(viewsets.ModelViewSet):
             "publications__manifestations__work",
             "publications__manifestations__contributions__agent",
             "publications__manifestations__contributions__role",
-            "catalogue_entries__catalogue__agent_curator",
+            "work_catalogues__catalogue",
         )
 
     def get_serializer_class(self):

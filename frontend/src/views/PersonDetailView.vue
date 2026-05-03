@@ -52,6 +52,28 @@ const activeYears = computed(() => {
   const max = Math.max(...years)
   return min === max ? `${min}` : `${min} — ${max}`
 })
+
+const personAwards = computed(() => {
+  if (!agent.value?.participated_works) return []
+  const awardsMap = new Map<number, any>()
+
+  agent.value.participated_works.forEach((w: any) => {
+    if (w.awards && w.awards.length > 0) {
+      w.awards.forEach((award: any) => {
+        if (!awardsMap.has(award.catalogue_id)) {
+          awardsMap.set(award.catalogue_id, {
+            id: award.catalogue_id,
+            title: award.title,
+            count: 0
+          })
+        }
+        awardsMap.get(award.catalogue_id).count += 1
+      })
+    }
+  })
+
+  return Array.from(awardsMap.values()).sort((a, b) => b.count - a.count)
+})
 </script>
 
 <template>
@@ -157,7 +179,7 @@ const activeYears = computed(() => {
             <span class="font-mono text-sm text-main">{{ activeYears }}</span>
           </div>
 
-          <div class="py-4 last:pb-0 flex flex-col gap-3">
+          <div class="py-4 flex flex-col gap-3">
             <div class="text-xs font-medium tracking-widest uppercase text-main/40 flex items-center justify-between">
               常見標籤
             </div>
@@ -190,6 +212,23 @@ const activeYears = computed(() => {
               </button>
             </div>
             <div v-else class="text-sm text-main/50">該人物尚未與任何概念建立關聯。</div>
+          </div>
+
+          <!-- Awards Tag Cloud -->
+          <div v-if="personAwards.length > 0" class="py-4 last:pb-0 flex flex-col gap-3">
+            <div class="text-xs font-medium tracking-widest uppercase text-main/40 flex items-center justify-between">
+              相關獎項
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="award in personAwards"
+                :key="award.id"
+                class="tag !gap-1.5 cursor-default"
+              >
+                <span>{{ award.title }}</span>
+                <span v-if="award.count > 1" class="font-mono opacity-50 pt-px">{{ award.count }}</span>
+              </span>
+            </div>
           </div>
 
         </aside>
