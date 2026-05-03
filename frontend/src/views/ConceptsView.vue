@@ -84,11 +84,11 @@ const groupedConcepts = computed(() => {
           v-model="searchQuery"
           type="text"
           placeholder="搜尋概念名稱…"
-          class="flex-1 md:w-64 h-10 px-3.5 border border-main/20 rounded-lg bg-bg focus:bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main placeholder-main/40"
+          class="form-input flex-1 md:w-64"
         >
         <select
           v-model="sortBy"
-          class="h-10 px-3 border border-main/20 rounded-lg bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main cursor-pointer"
+          class="form-select w-full md:w-auto"
         >
           <option value="alpha">字母排序</option>
           <option value="count">作品數排序</option>

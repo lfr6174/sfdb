@@ -73,8 +73,8 @@ const changePage = (dir: number) => {
           <p class="text-main/50 text-sm font-medium">共 {{ totalPosts }} 篇</p>
         </div>
         <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          <input v-model="searchQuery" type="text" placeholder="搜尋標題、內容..." class="w-full sm:w-64 h-10 px-3 border border-main/20 rounded bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main placeholder-main/40" />
-          <select v-model="ordering" class="w-full sm:w-40 h-10 px-3 border border-main/20 rounded bg-bg focus:outline-none focus:border-primary text-[15px] text-main cursor-pointer">
+          <input v-model="searchQuery" type="text" placeholder="搜尋標題、內容..." class="form-input w-full sm:w-64" />
+          <select v-model="ordering" class="form-select w-full sm:w-40">
             <option value="-created_at">最新發布</option>
             <option value="created_at">最早發布</option>
             <option value="-updated_at">最近更新</option>

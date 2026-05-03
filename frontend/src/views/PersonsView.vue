@@ -81,11 +81,11 @@ onMounted(() => {
           @input="onSearchInput"
           type="text"
           placeholder="搜尋人物姓名或別名…"
-          class="flex-1 md:w-64 h-10 px-3.5 border border-main/20 rounded-lg bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main placeholder-main/40"
+          class="form-input flex-1 md:w-64"
         >
         <select
           v-model="sortBy"
-          class="h-10 px-3 border border-main/20 rounded-lg bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-main cursor-pointer"
+          class="form-select w-full md:w-auto"
         >
           <option value="-updated_at">最近更新</option> <!-- Sort by updated_at descending -->
           <option value="name">字母排序</option>       <!-- Sort by name ascending -->

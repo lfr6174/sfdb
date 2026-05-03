@@ -88,7 +88,7 @@ onMounted(async () => {
           目前共收錄 <span class="font-semibold text-primary">{{ stats.works }}</span> 件台灣原創科幻作品與 <span class="font-semibold text-primary">{{ stats.concepts }}</span> 個核心概念。
         </p>
         <div class="flex flex-wrap gap-4">
-          <router-link to="/works" class="px-4 py-1.5 rounded-full border border-primary bg-primary text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+          <router-link to="/works" class="btn-primary">
             瀏覽作品
           </router-link>
           <router-link to="/concepts" class="tag">

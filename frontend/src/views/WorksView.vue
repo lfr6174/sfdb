@@ -223,7 +223,7 @@ const changePage = (dir: number) => {
     <aside class="w-full lg:w-4/15 card shrink-0 lg:sticky lg:top-4 !p-5">
       <!-- Search -->
       <div class="mb-4">
-        <input v-model="searchQuery" type="text" placeholder="搜尋標題、作者、筆名..." class="w-full h-10 px-3 border border-main/10 rounded bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm text-main placeholder-main/50" />
+        <input v-model="searchQuery" type="text" placeholder="搜尋標題、作者、筆名..." class="form-input w-full !border-main/10 !rounded !text-sm" />
         <button @click="isAdvancedMode = !isAdvancedMode" class="w-full mt-2 py-2 text-xs font-medium text-main/50 border border-main/10 rounded hover:text-primary hover:border-primary/30 transition-colors">
           {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
         </button>
@@ -302,14 +302,14 @@ const changePage = (dir: number) => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">關鍵字</label>
-            <input v-model="searchQuery" type="text" placeholder="標題、作者、筆名等" class="w-full h-10 px-3 border border-main/10 rounded bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm text-main" />
+            <input v-model="searchQuery" type="text" placeholder="標題、作者、筆名等" class="form-input w-full !border-main/10 !rounded !text-sm" />
           </div>
           <div>
             <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">發表年份區間</label>
             <div class="flex items-center gap-2">
-              <input v-model="yearMin" type="number" placeholder="YYYY" class="w-full h-10 px-3 border border-main/10 rounded bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm text-main" />
+              <input v-model="yearMin" type="number" placeholder="YYYY" class="form-input w-full !border-main/10 !rounded !text-sm" />
               <span class="text-xs text-main/40">至</span>
-              <input v-model="yearMax" type="number" placeholder="YYYY" class="w-full h-10 px-3 border border-main/10 rounded bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm text-main" />
+              <input v-model="yearMax" type="number" placeholder="YYYY" class="form-input w-full !border-main/10 !rounded !text-sm" />
             </div>
           </div>
           <div class="space-y-4">
@@ -348,7 +348,7 @@ const changePage = (dir: number) => {
 
         <div class="mt-8 pt-4 border-t border-main/10 flex justify-end gap-3">
           <button @click="clearAllFilters" class="px-3 py-1 rounded-full border border-transparent text-xs font-medium text-main/50 hover:text-primary transition-colors">清除條件</button>
-          <button @click="isAdvancedMode = false" class="px-3 py-1 rounded-full border border-primary bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors">
+          <button @click="isAdvancedMode = false" class="btn-primary !px-3 !py-1 !text-xs">
             查看結果 ({{ totalWorks }})
           </button>
         </div>
@@ -389,7 +389,7 @@ const changePage = (dir: number) => {
             </div>
             <div class="flex items-center gap-2">
               <span class="text-xs text-main/50">排序：</span>
-              <select v-model="ordering" class="h-8 px-2 border border-main/10 rounded bg-bg focus:outline-none focus:border-primary text-sm text-main cursor-pointer">
+              <select v-model="ordering" class="form-select !h-8 !px-2 !rounded !border-main/10 !text-sm">
                 <option value="-year">年份 (新到舊)</option>
                 <option value="year">年份 (舊到新)</option>
                 <option value="title">標題排序</option>
@@ -465,7 +465,7 @@ const changePage = (dir: number) => {
 
       <div class="p-5 border-b border-main/10 shrink-0 bg-bg relative z-10">
         <h2 class="text-2xl font-bold text-main mb-4">選取概念標籤</h2>
-        <input v-model="modalSearchQuery" type="text" placeholder="在此搜尋標籤..." class="w-full h-10 px-3 border border-main/10 rounded bg-bg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm text-main" />
+        <input v-model="modalSearchQuery" type="text" placeholder="在此搜尋標籤..." class="form-input w-full !border-main/10 !rounded !text-sm" />
         <div class="mt-4 min-h-[40px]">
           <span class="text-xs font-bold tracking-widest uppercase text-main/40 mr-2">已選取：</span>
           <div v-if="tempSelectedConcepts.length === 0" class="inline-block text-sm text-main/25">尚未選取任何標籤</div>
@@ -506,7 +506,7 @@ const changePage = (dir: number) => {
         <button @click="closeModal" class="px-3 py-1 rounded-full border border-transparent text-xs font-medium text-main/50 hover:text-primary transition-colors">
           取消
         </button>
-        <button @click="applyModalConcepts" class="px-3 py-1 rounded-full border border-primary bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors">
+        <button @click="applyModalConcepts" class="btn-primary !px-3 !py-1 !text-xs">
           套用篩選
         </button>
       </div>
