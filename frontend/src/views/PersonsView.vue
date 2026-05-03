@@ -125,7 +125,7 @@ onMounted(() => {
           <div class="flex items-baseline gap-3 flex-wrap">
             <h2 class="text-xl font-bold text-[#2d2016] group-hover:text-[#ae5630] transition-colors">{{ agent.name }}</h2>
             <span v-if="agent.aliases && agent.aliases.length > 0" class="text-[15px] text-[#2d2016]/50">
-              {{ agent.aliases.map(a => a.name).join(' · ') }}
+              {{ agent.aliases.map(a => a.name).join('、') }}
             </span>
           </div>
           <span class="text-sm font-medium text-[#2d2016]/40 shrink-0">{{ agent.works_count || 0 }} 部作品</span>

@@ -39,7 +39,7 @@
   }
 
   .list-row {
-    @apply py-3 pl-3 border-b border-[#2d2016]/10 border-l-2 border-transparent hover:border-l-primary hover:bg-hover transition-all flex items-start gap-4 text-[14px] text-main;
+    @apply py-2 pl-3 border-b border-[#2d2016]/10 border-l-2 border-transparent hover:border-l-primary hover:bg-hover transition-all flex items-start gap-4 text-[14px] text-main;
   }
 
   .flat-row {

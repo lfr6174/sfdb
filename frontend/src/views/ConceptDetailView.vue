@@ -163,15 +163,17 @@ onUnmounted(() => {
             <span class="text-sm text-main">{{ concept.works_count || 0 }}</span>
           </div>
 
-          <div class="py-4 flex flex-col gap-1.5">
-            <span class="text-xs font-medium tracking-widest uppercase text-main/40">最早出現</span>
-            <span class="font-mono text-sm text-main">{{ earliestYear }}</span>
-          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="py-4 flex flex-col gap-1.5">
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40">最早出現</span>
+              <span class="font-mono text-sm text-main">{{ earliestYear }}</span>
+            </div>
 
-          <div class="py-4 flex flex-col gap-1.5">
-            <span class="text-xs font-medium tracking-widest uppercase text-main/40">最近出現</span>
-            <span class="font-mono text-sm text-main">{{ latestYear }}</span>
-          </div>
+              <div class="py-4 flex flex-col gap-1.5">
+                <span class="text-xs font-medium tracking-widest uppercase text-main/40">最近出現</span>
+                <span class="font-mono text-sm text-main">{{ latestYear }}</span>
+              </div>
+        </div>
 
           <div class="py-4 last:pb-0 flex flex-col gap-3">
             <div class="text-xs font-medium tracking-widest uppercase text-main/40 flex items-center justify-between">

@@ -96,7 +96,7 @@ const activeYears = computed(() => {
                 rel="noopener noreferrer"
                 class="text-sm text-primary hover:text-primary/70 transition-colors"
               >
-                ↗ {{ link.title }}
+                ↗ {{ link.label}}
               </a>
             </div>
           </section>
@@ -160,7 +160,6 @@ const activeYears = computed(() => {
           <div class="py-4 last:pb-0 flex flex-col gap-3">
             <div class="text-xs font-medium tracking-widest uppercase text-main/40 flex items-center justify-between">
               常見標籤
-              <span v-if="agent.top_concepts?.length > 0" class="badge !py-0 !px-1.5 text-xs font-mono">{{ agent.top_concepts.length }}</span>
             </div>
 
             <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-2">
