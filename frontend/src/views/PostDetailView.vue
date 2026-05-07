@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
-import { marked } from 'marked'
 
 const route = useRoute()
 const post = ref<any>(null)
@@ -28,11 +27,6 @@ const formatDate = (dateStr: string) => {
   if (!dateStr) return '-'
   return dateStr.split('T')[0].replace(/-/g, '/')
 }
-
-const renderedBody = computed(() => {
-  if (!post.value?.body) return '無內容'
-  return marked.parse(post.value.body)
-})
 </script>
 
 <template>
@@ -60,8 +54,7 @@ const renderedBody = computed(() => {
 
         <hr class="my-6 border-[#2d2016]/10" />
 
-        <div class="prose prose-stone max-w-none text-[17px] text-[#2d2016]/80 leading-relaxed" v-html="renderedBody">
-        </div>
+        <div class="prose prose-stone max-w-none text-[17px] text-[#2d2016]/80 leading-relaxed whitespace-pre-wrap">{{ post.body || '無內容' }}</div>
 
         <div class="mt-12 pt-6 border-t border-[#2d2016]/5 text-right">
           <span class="text-sm font-mono text-[#2d2016]/40">最後更新於 {{ formatDate(post.updated_at) }}</span>

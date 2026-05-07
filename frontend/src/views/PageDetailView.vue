@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
-import { marked } from 'marked'
 import { formatDate } from '../utils/formatters'
 
 const route = useRoute()
@@ -27,11 +26,6 @@ const fetchPageDetail = async () => {
 onMounted(() => {
   fetchPageDetail()
 })
-
-const renderedBody = computed(() => {
-  if (!pageData.value?.body) return '無內容'
-  return marked.parse(pageData.value.body)
-})
 </script>
 
 <template>
@@ -50,8 +44,7 @@ const renderedBody = computed(() => {
 
         <div class="mb-6 pb-3 border-b border-main/10"></div>
 
-        <div class="prose prose-stone max-w-none text-sm text-main leading-relaxed" v-html="renderedBody">
-        </div>
+        <div class="prose prose-stone max-w-none text-sm text-main leading-relaxed whitespace-pre-wrap">{{ pageData.body || '無內容' }}</div>
 
         <div class="mt-12 pt-4 border-t border-main/10 text-right flex justify-between items-center">
           <router-link to="/" class="back-link">
