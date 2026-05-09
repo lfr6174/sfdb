@@ -89,7 +89,7 @@ const personAwards = computed(() => {
       <div class="pt-10 mb-9">
         <router-link
           to="/agents"
-          class="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.1em] uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -105,15 +105,15 @@ const personAwards = computed(() => {
 
           <!-- Personal Info -->
           <section>
-            <h1 class="text-[1.75rem] md:text-[2rem] font-normal leading-[1.3] text-main mb-2">
+            <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-2">
               {{ agent.name }}
             </h1>
 
-            <div v-if="agent.aliases && agent.aliases.length > 0" class="text-[13px] text-main/40 mb-5">
+            <div v-if="agent.aliases && agent.aliases.length > 0" class="text-sm text-main/40 mb-5">
               {{ agent.aliases.map((a) => a.name).join(' · ') }}
             </div>
 
-            <p class="text-[13.5px] text-main/75 leading-[1.9] whitespace-pre-wrap mb-5">
+            <p class="text-sm text-main/70 leading-loose whitespace-pre-wrap mb-5">
               {{ agent.about || '暫無簡歷提供。' }}
             </p>
 
@@ -125,7 +125,7 @@ const personAwards = computed(() => {
                 :href="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-[13px] text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-sm text-primary hover:opacity-70 transition-opacity no-underline"
               >
                 ↗ {{ link.label }}
               </a>
@@ -135,8 +135,8 @@ const personAwards = computed(() => {
           <!-- ── Participated Works ── -->
           <section class="mt-12">
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">歷年作品</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">歷年作品</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div v-if="agent.participated_works && agent.participated_works.length > 0" class="flex flex-col">
@@ -144,50 +144,50 @@ const personAwards = computed(() => {
                 v-for="work in agent.participated_works"
                 :key="work.id"
                 :to="`/works/${work.id}`"
-                class="group flex items-start gap-3.5 py-3.5 border-b border-main/[0.08] last:border-0 hover:bg-primary/[0.025] hover:-mx-3 hover:px-3 transition-colors no-underline"
+                class="group flex items-start gap-4 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-3 hover:px-3 transition-colors no-underline"
               >
-                <span class="font-mono text-[11px] text-main/45 w-10 shrink-0 pt-0.5">{{ work.year || '-' }}</span>
+                <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ work.year || '-' }}</span>
 
                 <div class="flex-1 min-w-0">
-                  <span class="text-[14px] font-medium text-main group-hover:text-primary transition-colors block mb-0.5">
+                  <span class="text-sm font-medium text-main group-hover:text-primary transition-colors block mb-0.5">
                     {{ work.title }}
                   </span>
-                  <span v-if="work.title_en" class="text-[12px] text-main/35 block mb-1">{{ work.title_en }}</span>
+                  <span v-if="work.title_en" class="text-xs text-main/40 block mb-1">{{ work.title_en }}</span>
                   <!-- Gray badge for media metadata -->
-                  <span class="font-mono text-[9.5px] tracking-[0.04em] text-main/40 bg-main/[0.06] px-1.5 py-[2px]">
+                  <span class="font-mono text-[10px] tracking-wide text-main/50 bg-main/5 px-1.5 py-0.5">
                     {{ [work.work_length, work.media_type].filter(Boolean).join(' · ') || '-' }}
                   </span>
                 </div>
 
-                <span class="shrink-0 pt-0.5 text-[12px] font-medium text-primary">
+                <span class="shrink-0 pt-0.5 text-xs font-medium text-primary">
                   {{ work.roles.join('、') }}
                 </span>
               </router-link>
             </div>
-            <div v-else class="text-[13px] text-main/40 py-3">尚無關聯的歷年作品。</div>
+            <div v-else class="text-sm text-main/40 py-3">尚無關聯的歷年作品。</div>
           </section>
 
           <!-- ── Participated Publications ── -->
           <section v-if="agent.participated_publications && agent.participated_publications.length > 0" class="mt-10">
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">出版與其他參與</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與其他參與</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div class="flex flex-col">
               <div
                 v-for="pub in agent.participated_publications"
                 :key="pub.id"
-                class="group flex items-start gap-3.5 py-3.5 border-b border-main/[0.08] last:border-0"
+                class="group flex items-start gap-4 py-4 border-b border-main/10 last:border-0"
               >
-                <span class="font-mono text-[11px] text-main/45 w-10 shrink-0 pt-0.5">{{ pub.year || '-' }}</span>
+                <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ pub.year || '-' }}</span>
 
                 <div class="flex-1 min-w-0">
-                  <span class="text-[14px] font-medium text-main block mb-0.5">{{ pub.title }}</span>
-                  <span class="text-[12px] text-main/50">{{ pub.publisher || '-' }}</span>
+                  <span class="text-sm font-medium text-main block mb-0.5">{{ pub.title }}</span>
+                  <span class="text-xs text-main/50">{{ pub.publisher || '-' }}</span>
                 </div>
 
-                <span class="shrink-0 pt-0.5 text-[12px] font-medium text-primary">
+                <span class="shrink-0 pt-0.5 text-xs font-medium text-primary">
                   {{ pub.roles.join('、') }}
                 </span>
               </div>
@@ -202,26 +202,26 @@ const personAwards = computed(() => {
           <!-- Work count -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">作品總數</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品總數</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
-            <span class="font-mono text-[15px] text-main">{{ totalWorksCount }}</span>
+            <span class="font-mono text-base text-main">{{ totalWorksCount }}</span>
           </div>
 
           <!-- Active years -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">活躍年份</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">活躍年份</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
-            <span class="font-mono text-[14px] text-main">{{ activeYears }}</span>
+            <span class="font-mono text-sm text-main">{{ activeYears }}</span>
           </div>
 
           <!-- Top Concepts -->
           <div>
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">常見標籤</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">常見標籤</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
@@ -229,44 +229,44 @@ const personAwards = computed(() => {
                 v-for="concept in displayedConcepts"
                 :key="concept.slug"
                 :to="`/concepts/${concept.slug}`"
-                class="inline-flex items-center gap-1.5 text-[11.5px] text-main/55 border border-main/[0.14] px-2.5 py-[5px] hover:text-primary hover:bg-primary/[0.05] hover:border-primary/25 transition-all whitespace-nowrap no-underline"
+                class="inline-flex items-center gap-1.5 text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
               >
                 <span>{{ concept.name }}</span>
-                <span class="font-mono text-[10px] text-main/35">{{ concept.works_count }}</span>
+                <span class="font-mono text-[10px] text-main/40">{{ concept.works_count }}</span>
               </router-link>
 
               <button
                 v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
                 @click="isConceptsExpanded = true"
-                class="inline-flex items-center text-[11.5px] text-primary border border-dashed border-primary/30 px-2.5 py-[5px] hover:bg-primary/[0.05] transition-all whitespace-nowrap"
+                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
               >
                 + {{ hiddenConceptsCount }} 更多
               </button>
               <button
                 v-if="isConceptsExpanded"
                 @click="isConceptsExpanded = false"
-                class="inline-flex items-center text-[11.5px] text-primary border border-dashed border-primary/30 px-2.5 py-[5px] hover:bg-primary/[0.05] transition-all whitespace-nowrap"
+                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
               >
                 − 收合
               </button>
             </div>
-            <div v-else class="text-[13px] text-main/40">尚未與任何概念建立關聯。</div>
+            <div v-else class="text-sm text-main/40">尚未與任何概念建立關聯。</div>
           </div>
 
           <!-- Awards -->
           <div v-if="personAwards.length > 0">
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">相關獎項</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關獎項</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
             <div class="flex flex-wrap gap-1.5">
               <span
                 v-for="award in personAwards"
                 :key="award.id"
-                class="inline-flex items-center gap-1.5 text-[11.5px] text-main/55 border border-main/[0.14] px-2.5 py-[5px] whitespace-nowrap cursor-default"
+                class="inline-flex items-center gap-1.5 text-xs text-main/60 border border-main/15 px-2.5 py-1 whitespace-nowrap cursor-default"
               >
                 <span>{{ award.title }}</span>
-                <span v-if="award.count > 1" class="font-mono text-[10px] text-main/35">{{ award.count }}</span>
+                <span v-if="award.count > 1" class="font-mono text-[10px] text-main/40">{{ award.count }}</span>
               </span>
             </div>
           </div>

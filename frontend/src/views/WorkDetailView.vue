@@ -69,7 +69,7 @@ const conceptDescriptions = computed(() => {
       <div class="pt-10 mb-9">
         <router-link
           to="/works"
-          class="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.1em] uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -86,18 +86,18 @@ const conceptDescriptions = computed(() => {
 
             <!-- Media type pill (gray filled badge, not a tag) -->
             <div v-if="work.work_length_display || work.media_type_display" class="mb-4">
-              <span class="font-mono text-[10px] tracking-[0.06em] uppercase text-main/45 bg-main/[0.06] px-2 py-[3px] inline-block">
+              <span class="font-mono text-xs tracking-wider uppercase text-main/50 bg-main/5 px-2 py-1 inline-block">
                 {{ work.work_length_display || '' }}{{ work.media_type_display || '' }}
               </span>
             </div>
 
             <!-- Title -->
-            <h1 class="text-[1.75rem] md:text-[2rem] font-normal leading-[1.3] text-main mb-4">
+            <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-4">
               {{ work.title }}
             </h1>
 
             <!-- Meta row -->
-            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-main/55 mb-5">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-main/60 mb-5">
               <span v-if="work.credit && work.credit.length" class="flex flex-wrap items-center gap-x-0.5">
                 <template v-for="(group, gIdx) in work.credit" :key="gIdx">
                   <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
@@ -105,7 +105,7 @@ const conceptDescriptions = computed(() => {
                     <span v-else class="text-main/80">{{ agent.text }}</span>
                     <span v-if="aIdx < group.agents.length - 1">、</span>
                   </template>
-                  <span v-if="group.role" class="text-main/35 ml-0.5">{{ group.role }}</span>
+                  <span v-if="group.role" class="text-main/40 ml-0.5">{{ group.role }}</span>
                   <span v-if="gIdx < work.credit.length - 1" class="ml-1 mr-0.5">；</span>
                 </template>
               </span>
@@ -121,7 +121,7 @@ const conceptDescriptions = computed(() => {
             </div>
 
             <!-- Synopsis -->
-            <p class="text-[13.5px] text-main/75 leading-[1.9] whitespace-pre-wrap mb-7">
+            <p class="text-sm text-main/70 leading-loose whitespace-pre-wrap mb-7">
               {{ work.description || '暫無簡述提供。' }}
             </p>
 
@@ -131,7 +131,7 @@ const conceptDescriptions = computed(() => {
                 v-for="wc in displayedConcepts"
                 :key="wc.concept.slug"
                 :to="`/concepts/${wc.concept.slug}`"
-                class="inline-flex items-center text-[11.5px] text-main/55 border border-main/[0.14] px-2.5 py-[5px] hover:text-primary hover:bg-primary/[0.05] hover:border-primary/25 transition-all whitespace-nowrap no-underline"
+                class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
               >
                 {{ wc.concept.name }}
               </router-link>
@@ -139,14 +139,14 @@ const conceptDescriptions = computed(() => {
               <button
                 v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
                 @click="isConceptsExpanded = true"
-                class="inline-flex items-center text-[11.5px] text-primary border border-dashed border-primary/30 px-2.5 py-[5px] hover:bg-primary/[0.05] transition-all whitespace-nowrap"
+                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
               >
                 + {{ hiddenConceptsCount }} 更多
               </button>
               <button
                 v-if="isConceptsExpanded"
                 @click="isConceptsExpanded = false"
-                class="inline-flex items-center text-[11.5px] text-primary border border-dashed border-primary/30 px-2.5 py-[5px] hover:bg-primary/[0.05] transition-all whitespace-nowrap"
+                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
               >
                 − 收合
               </button>
@@ -158,29 +158,29 @@ const conceptDescriptions = computed(() => {
 
             <!-- Section eyebrow: label inline with rule -->
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">概念應用詳述</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用詳述</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div class="flex flex-col">
               <div
                 v-for="wc in conceptDescriptions"
                 :key="wc.id"
-                class="grid grid-cols-1 md:grid-cols-[7.5rem_1fr] gap-3 md:gap-5 py-4 border-b border-main/[0.08] last:border-0 hover:bg-primary/[0.025] hover:-mx-3 hover:px-3 transition-colors"
+                class="grid grid-cols-1 md:grid-cols-[7.5rem_1fr] gap-3 md:gap-5 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-3 hover:px-3 transition-colors"
               >
                 <div class="pt-0.5">
                   <router-link
                     :to="`/concepts/${wc.concept.slug}`"
-                    class="inline-flex items-center text-[11.5px] text-main/55 border border-main/[0.14] px-2.5 py-[5px] hover:text-primary hover:border-primary/30 hover:bg-primary/[0.05] transition-all no-underline"
+                    class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all no-underline"
                   >
                     {{ wc.concept.name }}
                   </router-link>
                 </div>
                 <p
                   :class="[
-                    'text-[13.5px] leading-[1.78]',
+                    'text-sm leading-relaxed',
                     isSpoilerProtected && !revealedSpoilers.has(wc.id)
-                      ? 'spoiler text-main/40 cursor-pointer'
+                      ? 'blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer'
                       : 'text-main/75'
                   ]"
                   @click="isSpoilerProtected && !revealedSpoilers.has(wc.id) && revealSpoiler(wc.id)"
@@ -199,15 +199,15 @@ const conceptDescriptions = computed(() => {
           <!-- Publications -->
           <section v-if="work.publications && work.publications.length > 0">
             <div class="flex items-center gap-3 mb-4">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">出版與發行</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與發行</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div class="flex flex-col">
               <div
                 v-for="pub in work.publications"
                 :key="pub.manifestation_id || pub.id"
-                class="group flex items-start gap-3 py-3 border-b border-main/[0.08] last:border-0 cursor-pointer hover:bg-primary/[0.03] hover:-mx-3 hover:pl-3 hover:pr-1 transition-colors relative"
+                class="group flex items-start gap-3 py-3 border-b border-main/10 last:border-0 cursor-pointer hover:bg-primary/5 hover:-mx-3 hover:pl-3 hover:pr-1 transition-colors relative"
                 @click="toggleIsbn(pub.manifestation_id || pub.id)"
               >
                 <!-- Accent line -->
@@ -215,22 +215,22 @@ const conceptDescriptions = computed(() => {
 
                 <!-- Left: year + media badge -->
                 <div class="flex flex-col shrink-0 items-start gap-1.5 pt-0.5 w-11">
-                  <span class="font-mono text-[11px] text-main/45">{{ pub.year || '-' }}</span>
+                  <span class="font-mono text-xs text-main/50">{{ pub.year || '-' }}</span>
                   <!-- Gray filled badge — visually distinct from concept tags -->
                   <span
                     v-if="pub.media_display"
-                    class="font-mono text-[9.5px] tracking-[0.04em] text-main/40 bg-main/[0.06] px-1.5 py-[2px] whitespace-nowrap"
+                    class="font-mono text-[10px] tracking-wide text-main/50 bg-main/5 px-1.5 py-0.5 whitespace-nowrap"
                   >
                     {{ pub.media_display }}
                   </span>
                 </div>
 
                 <div class="flex-1 min-w-0">
-                  <span class="text-[13.5px] font-medium text-main block mb-0.5">{{ pub.title }}</span>
+                  <span class="text-sm font-medium text-main block mb-0.5">{{ pub.title }}</span>
 
                   <div
                     v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
-                    class="text-[12px] text-main/50 flex flex-wrap gap-x-1 mt-0.5"
+                    class="text-xs text-main/50 flex flex-wrap gap-x-1 mt-0.5"
                   >
                     <template v-if="pub.credit && pub.credit.length">
                       <template v-for="(group, gIdx) in pub.credit" :key="gIdx">
@@ -247,14 +247,14 @@ const conceptDescriptions = computed(() => {
 
                   <div
                     v-if="pub.manifestations?.length === 1 && pub.manifestation_display_name && pub.manifestation_display_name !== pub.title"
-                    class="text-[12px] text-primary/80 mt-0.5"
+                    class="text-xs text-primary/80 mt-0.5"
                   >
                     ↳ {{ pub.manifestation_display_name }}
                   </div>
 
                   <div
                     v-if="visibleIsbns.has(pub.manifestation_id || pub.id) && pub.isbn"
-                    class="font-mono text-[11px] text-main/40 mt-2 selection:bg-primary/20"
+                    class="font-mono text-xs text-main/40 mt-2 selection:bg-primary/20"
                     @click.stop
                   >
                     ISBN {{ pub.isbn }}
@@ -267,23 +267,23 @@ const conceptDescriptions = computed(() => {
           <!-- Catalogues -->
           <section v-if="work.work_catalogues && work.work_catalogues.length > 0">
             <div class="flex items-center gap-3 mb-4">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">收錄與獲獎</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄與獲獎</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div class="flex flex-col">
               <div
                 v-for="entry in work.work_catalogues"
                 :key="entry.id"
-                class="group flex items-start gap-3 py-3 border-b border-main/[0.08] last:border-0 cursor-pointer hover:bg-primary/[0.03] hover:-mx-3 hover:pl-3 hover:pr-1 transition-colors relative"
+                class="group flex items-start gap-3 py-3 border-b border-main/10 last:border-0 cursor-pointer hover:bg-primary/5 hover:-mx-3 hover:pl-3 hover:pr-1 transition-colors relative"
               >
                 <div class="absolute -left-3 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-primary transition-colors"></div>
 
                 <div class="flex flex-col shrink-0 items-start gap-1.5 pt-0.5 w-11">
-                  <span class="font-mono text-[11px] text-main/45">{{ entry.catalogue.year || '-' }}</span>
+                  <span class="font-mono text-xs text-main/50">{{ entry.catalogue.year || '-' }}</span>
                   <span
                     v-if="entry.catalogue.catalogue_type_display"
-                    class="font-mono text-[9.5px] tracking-[0.04em] text-main/40 bg-main/[0.06] px-1.5 py-[2px] whitespace-nowrap"
+                    class="font-mono text-[10px] tracking-wide text-main/50 bg-main/5 px-1.5 py-0.5 whitespace-nowrap"
                   >
                     {{ entry.catalogue.catalogue_type_display }}
                   </span>
@@ -293,17 +293,17 @@ const conceptDescriptions = computed(() => {
                   <router-link
                     v-if="entry.catalogue.id"
                     :to="`/catalogues/${entry.catalogue.id}`"
-                    class="text-[13.5px] font-medium text-main hover:text-primary transition-colors block mb-0.5 no-underline"
+                    class="text-sm font-medium text-main hover:text-primary transition-colors block mb-0.5 no-underline"
                   >
                     {{ entry.catalogue.title }}
                   </router-link>
-                  <span v-else class="text-[13.5px] font-medium text-main block mb-0.5">
+                  <span v-else class="text-sm font-medium text-main block mb-0.5">
                     {{ entry.catalogue.title }}
                   </span>
 
                   <div
                     v-if="entry.category || entry.status_display || entry.note"
-                    class="text-[12px] text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5"
+                    class="text-xs text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5"
                   >
                     <span v-if="entry.category" class="font-medium text-main/65">{{ entry.category }}</span>
                     <span v-if="entry.category && entry.status_display" class="text-main/20">·</span>

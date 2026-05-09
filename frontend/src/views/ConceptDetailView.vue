@@ -73,7 +73,7 @@ onMounted(() => {
       <div class="pt-10 mb-9">
         <router-link
           to="/concepts"
-          class="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.1em] uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -89,11 +89,11 @@ onMounted(() => {
 
           <!-- Concept Info -->
           <section>
-            <h1 class="text-[1.75rem] md:text-[2rem] font-normal leading-[1.3] text-main mb-5">
+            <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-5">
               {{ concept.name }}
             </h1>
 
-            <p class="text-[13.5px] text-main/75 leading-[1.9] whitespace-pre-wrap mb-5">
+            <p class="text-sm text-main/70 leading-loose whitespace-pre-wrap mb-5">
               {{ concept.description || '目前暫無關於此概念的詳細描述。' }}
             </p>
 
@@ -105,7 +105,7 @@ onMounted(() => {
                 :href="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-[13px] text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-sm text-primary hover:opacity-70 transition-opacity no-underline"
               >
                 ↗ {{ link.title }}
               </a>
@@ -115,22 +115,22 @@ onMounted(() => {
           <!-- ── Application Examples ── -->
           <section class="mt-12">
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">概念應用範例</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用範例</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div v-if="validWorkConcepts.length > 0" class="flex flex-col">
               <div
                 v-for="item in validWorkConcepts"
                 :key="item.id"
-                class="flex items-start gap-3.5 py-4 border-b border-main/[0.08] last:border-0"
+                class="flex items-start gap-4 py-4 border-b border-main/10 last:border-0"
               >
-                <span class="font-mono text-[11px] text-main/45 w-10 shrink-0 pt-0.5">{{ item.year || '-' }}</span>
+                <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ item.year || '-' }}</span>
 
                 <div class="flex-1 min-w-0 flex flex-col gap-2">
                   <router-link
                     :to="`/works/${item.work}`"
-                    class="text-[14px] font-medium text-main hover:text-primary transition-colors no-underline w-fit"
+                    class="text-sm font-medium text-main hover:text-primary transition-colors no-underline w-fit"
                   >
                     {{ item.work_title || '未知作品' }}
                   </router-link>
@@ -138,24 +138,24 @@ onMounted(() => {
                   <p
                     v-if="isSpoilerProtected && !revealedSpoilers.has(item.id)"
                     @click="revealSpoiler(item.id)"
-                    class="text-[13.5px] leading-[1.78] text-main/35 cursor-pointer select-none spoiler"
+                    class="text-sm leading-relaxed blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer select-none"
                     title="點擊顯示劇透內容"
                   >
                     {{ item.description }}
                   </p>
-                  <p v-else class="text-[13.5px] leading-[1.78] text-main/70">
+                  <p v-else class="text-sm leading-relaxed text-main/70">
                     {{ item.description }}
                   </p>
                 </div>
               </div>
             </div>
-            <div v-else class="text-[13px] text-main/40 py-3">目前尚無收錄此概念的應用範例。</div>
+            <div v-else class="text-sm text-main/40 py-3">目前尚無收錄此概念的應用範例。</div>
 
             <!-- Link to all works -->
             <div class="mt-7">
               <router-link
                 :to="{ path: '/works', query: { concept: concept.slug } }"
-                class="text-[13px] text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-sm text-primary hover:opacity-70 transition-opacity no-underline"
               >
                 瀏覽所有與「{{ concept.name }}」相關的作品（共 {{ concept.works_count || 0 }} 部）↗
               </router-link>
@@ -170,30 +170,30 @@ onMounted(() => {
           <!-- Works count -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">收錄作品數</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄作品數</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
-            <span class="font-mono text-[15px] text-main">{{ concept.works_count || 0 }}</span>
+            <span class="font-mono text-base text-main">{{ concept.works_count || 0 }}</span>
           </div>
 
           <!-- Year range -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">出現年份</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出現年份</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
             <div class="flex items-baseline gap-2">
-              <span class="font-mono text-[14px] text-main">{{ earliestYear }}</span>
-              <span class="text-[11px] text-main/30">—</span>
-              <span class="font-mono text-[14px] text-main">{{ latestYear }}</span>
+              <span class="font-mono text-sm text-main">{{ earliestYear }}</span>
+              <span class="text-xs text-main/30">—</span>
+              <span class="font-mono text-sm text-main">{{ latestYear }}</span>
             </div>
           </div>
 
           <!-- Related Concepts -->
           <div>
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">相關概念</span>
-              <div class="flex-1 border-t border-main/[0.08]"></div>
+              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關概念</span>
+              <div class="flex-1 border-t border-main/10"></div>
             </div>
 
             <div v-if="concept.related_concepts && concept.related_concepts.length > 0" class="flex flex-wrap gap-1.5">
@@ -201,12 +201,12 @@ onMounted(() => {
                 v-for="related in concept.related_concepts"
                 :key="related.slug"
                 :to="`/concepts/${related.slug}`"
-                class="inline-flex items-center text-[11.5px] text-main/55 border border-main/[0.14] px-2.5 py-[5px] hover:text-primary hover:bg-primary/[0.05] hover:border-primary/25 transition-all whitespace-nowrap no-underline"
+                class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
               >
                 {{ related.name }}
               </router-link>
             </div>
-            <div v-else class="text-[13px] text-main/40">尚未與任何概念建立關聯。</div>
+            <div v-else class="text-sm text-main/40">尚未與任何概念建立關聯。</div>
           </div>
 
         </aside>

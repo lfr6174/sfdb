@@ -76,8 +76,8 @@ const groupedConcepts = computed(() => {
     <div class="pt-10 pb-6">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
         <div>
-          <h1 class="text-[1.75rem] font-normal text-main leading-tight mb-1">概念探索</h1>
-          <p class="text-[13px] text-main/45">瀏覽全站所有的概念</p>
+          <h1 class="text-3xl font-normal text-main leading-tight mb-1">概念探索</h1>
+          <p class="text-sm text-main/50">瀏覽全站所有的概念</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -85,12 +85,12 @@ const groupedConcepts = computed(() => {
             v-model="searchQuery"
             type="text"
             placeholder="搜尋概念名稱…"
-            class="text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
+            class="text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
           >
           <div class="relative">
             <select
               v-model="sortBy"
-              class="text-[13px] text-main/70 bg-transparent border border-main/[0.14] px-3 py-[7px] pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+              class="text-sm text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
             >
               <option value="alpha">字母排序</option>
               <option value="count">作品數排序</option>
@@ -105,7 +105,7 @@ const groupedConcepts = computed(() => {
     </div>
 
     <!-- ── Loading ── -->
-    <div v-if="isLoading" class="text-center py-16 text-main/45 text-[13px] font-medium">
+    <div v-if="isLoading" class="text-center py-16 text-main/50 text-sm font-medium">
       正在讀取全站概念...
     </div>
 
@@ -119,8 +119,8 @@ const groupedConcepts = computed(() => {
         >
           <!-- Category eyebrow inline with rule -->
           <div class="flex items-center gap-3 mb-5">
-            <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">{{ category }}</span>
-            <div class="flex-1 border-t border-main/[0.08]"></div>
+            <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ category }}</span>
+            <div class="flex-1 border-t border-main/10"></div>
           </div>
 
           <!-- Tag cloud -->
@@ -129,17 +129,17 @@ const groupedConcepts = computed(() => {
               v-for="concept in concepts"
               :key="concept.id"
               :to="`/concepts/${concept.slug}`"
-              class="inline-flex items-center gap-2 text-[12px] text-main/55 border border-main/[0.14] px-3 py-[6px] hover:text-primary hover:bg-primary/[0.05] hover:border-primary/25 transition-all whitespace-nowrap no-underline"
+              class="inline-flex items-center gap-2 text-sm text-main/60 border border-main/15 px-3 py-1.5 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
             >
               <span>{{ concept.name }}</span>
-              <span class="font-mono text-[10px] text-main/35">{{ concept.works_count }}</span>
+              <span class="font-mono text-[10px] text-main/40">{{ concept.works_count }}</span>
             </router-link>
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-16 text-[13px] text-main/45">
+      <div v-else class="text-center py-16 text-sm text-main/50">
         找不到任何包含「<span class="text-primary">{{ searchQuery }}</span>」的概念。
       </div>
     </div>

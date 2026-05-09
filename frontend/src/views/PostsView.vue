@@ -66,11 +66,11 @@ const changePage = (dir: number) => {
   <div class="max-w-4xl mx-auto pb-20">
 
     <!-- ── Page Header ── -->
-    <div class="pt-10 pb-6 border-b border-main/[0.08]">
+    <div class="pt-10 pb-6 border-b border-main/10">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
         <div>
-          <h1 class="text-[1.75rem] font-normal text-main leading-tight mb-1">最新資訊</h1>
-          <p class="text-[13px] text-main/45">共 {{ totalPosts }} 篇文章</p>
+          <h1 class="text-3xl font-normal text-main leading-tight mb-1">最新資訊</h1>
+          <p class="text-sm text-main/50">共 {{ totalPosts }} 篇文章</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -78,12 +78,12 @@ const changePage = (dir: number) => {
             v-model="searchQuery"
             type="text"
             placeholder="搜尋標題、內容…"
-            class="text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
+            class="text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
           >
           <div class="relative">
             <select
               v-model="ordering"
-              class="text-[13px] text-main/70 bg-transparent border border-main/[0.14] px-3 py-[7px] pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+              class="text-sm text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
             >
               <option value="-created_at">最新發布</option>
               <option value="created_at">最早發布</option>
@@ -99,25 +99,25 @@ const changePage = (dir: number) => {
     </div>
 
     <!-- ── List ── -->
-    <div v-if="isLoading" class="text-center py-16 text-main/45 text-[13px] font-medium">
+    <div v-if="isLoading" class="text-center py-16 text-main/50 text-sm font-medium">
       正在讀取文章列表...
     </div>
-    <div v-else-if="posts.length === 0" class="text-center py-16 text-main/45 text-[13px] font-medium">
+    <div v-else-if="posts.length === 0" class="text-center py-16 text-main/50 text-sm font-medium">
       找不到符合條件的文章。
     </div>
     <div v-else class="flex flex-col mt-4">
       <div
         v-for="post in posts"
         :key="post.id"
-        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-6 py-4 border-b border-main/[0.08] last:border-0 hover:bg-primary/[0.025] hover:-mx-4 hover:px-4 transition-colors"
+        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-6 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors"
       >
         <router-link
           :to="`/posts/${post.id}`"
-          class="text-[15px] font-medium text-main group-hover:text-primary transition-colors no-underline block"
+          class="text-base font-medium text-main group-hover:text-primary transition-colors no-underline block"
         >
           {{ post.title }}
         </router-link>
-        <span class="font-mono text-[12.5px] text-main/45 shrink-0">
+        <span class="font-mono text-sm text-main/50 shrink-0">
           {{ formatDate(post.created_at) }}
         </span>
       </div>
