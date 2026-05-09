@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { useSpoiler } from '../composables/useSpoiler'
+import ConceptTag from '../components/ConceptTag.vue'
 
 const route = useRoute()
 
@@ -197,14 +198,11 @@ onMounted(() => {
             </div>
 
             <div v-if="concept.related_concepts && concept.related_concepts.length > 0" class="flex flex-wrap gap-1.5">
-              <router-link
+              <ConceptTag
                 v-for="related in concept.related_concepts"
                 :key="related.slug"
-                :to="`/concepts/${related.slug}`"
-                class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-              >
-                {{ related.name }}
-              </router-link>
+                :concept="related"
+              />
             </div>
             <div v-else class="text-sm text-main/40">尚未與任何概念建立關聯。</div>
           </div>

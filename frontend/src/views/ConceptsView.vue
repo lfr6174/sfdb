@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import api from '../api/axios'
+import ConceptTag from '../components/ConceptTag.vue'
 
 const allConcepts = ref<any[]>([])
 const isLoading = ref(true)
@@ -125,15 +126,12 @@ const groupedConcepts = computed(() => {
 
           <!-- Tag cloud -->
           <div class="flex flex-wrap gap-1.5">
-            <router-link
+            <ConceptTag
               v-for="concept in concepts"
               :key="concept.id"
-              :to="`/concepts/${concept.slug}`"
-              class="inline-flex items-center gap-2 text-sm text-main/60 border border-main/15 px-3 py-1.5 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-            >
-              <span>{{ concept.name }}</span>
-              <span class="font-mono text-[10px] text-main/40">{{ concept.works_count }}</span>
-            </router-link>
+              :concept="concept"
+              size="md"
+            />
           </div>
         </div>
       </div>

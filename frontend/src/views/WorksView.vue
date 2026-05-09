@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
+import ConceptTag from '../components/ConceptTag.vue'
 
 // Filter Constants
 const MEDIA_OPTIONS = [
@@ -555,14 +556,11 @@ const changePage = (dir: number) => {
 
             <!-- Right: concept tags -->
             <div v-if="work.work_concepts && work.work_concepts.length" class="flex flex-wrap gap-1.5 md:justify-end md:max-w-[45%]">
-              <router-link
+              <ConceptTag
                 v-for="wc in work.work_concepts"
                 :key="wc.concept.slug"
-                :to="`/concepts/${wc.concept.slug}`"
-                class="inline-flex items-center text-xs text-main/50 border border-main/15 px-2 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-              >
-                {{ wc.concept.name }}
-              </router-link>
+                :concept="wc.concept"
+              />
             </div>
           </div>
         </div>

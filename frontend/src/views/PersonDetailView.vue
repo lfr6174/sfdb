@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
+import ConceptTag from '../components/ConceptTag.vue'
 
 const route = useRoute()
 
@@ -225,15 +226,11 @@ const personAwards = computed(() => {
             </div>
 
             <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
-              <router-link
+              <ConceptTag
                 v-for="concept in displayedConcepts"
                 :key="concept.slug"
-                :to="`/concepts/${concept.slug}`"
-                class="inline-flex items-center gap-1.5 text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-              >
-                <span>{{ concept.name }}</span>
-                <span class="font-mono text-[10px] text-main/40">{{ concept.works_count }}</span>
-              </router-link>
+                :concept="concept"
+              />
 
               <button
                 v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"

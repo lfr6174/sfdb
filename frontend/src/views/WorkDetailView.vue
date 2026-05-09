@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { useSpoiler } from '../composables/useSpoiler'
+import ConceptTag from '../components/ConceptTag.vue'
 
 const route = useRoute()
 const work = ref<any>(null)
@@ -127,14 +128,11 @@ const conceptDescriptions = computed(() => {
 
             <!-- Concept Tags -->
             <div v-if="work.work_concepts && work.work_concepts.length > 0" class="flex flex-wrap gap-1.5">
-              <router-link
+              <ConceptTag
                 v-for="wc in displayedConcepts"
                 :key="wc.concept.slug"
-                :to="`/concepts/${wc.concept.slug}`"
-                class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-              >
-                {{ wc.concept.name }}
-              </router-link>
+                :concept="wc.concept"
+              />
 
               <button
                 v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
@@ -169,12 +167,7 @@ const conceptDescriptions = computed(() => {
                 class="grid grid-cols-1 md:grid-cols-[7.5rem_1fr] gap-3 md:gap-5 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-3 hover:px-3 transition-colors"
               >
                 <div class="pt-0.5">
-                  <router-link
-                    :to="`/concepts/${wc.concept.slug}`"
-                    class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all no-underline"
-                  >
-                    {{ wc.concept.name }}
-                  </router-link>
+                  <ConceptTag :concept="wc.concept" />
                 </div>
                 <p
                   :class="[
