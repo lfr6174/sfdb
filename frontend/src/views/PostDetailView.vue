@@ -40,7 +40,7 @@ const formatDate = (dateStr: string) => {
       <div class="pt-10 mb-9">
         <router-link
           to="/posts"
-          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -52,14 +52,14 @@ const formatDate = (dateStr: string) => {
       <article class="flex flex-col">
         <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-4">{{ post.title }}</h1>
 
-        <div class="text-sm text-main/50 flex items-center gap-2 mb-8">
+        <div class="text-base text-main/50 flex items-center gap-2 mb-8">
           <span>{{ post.author_name || '管理員' }}</span>
           <span class="text-main/20">·</span>
           <time class="font-mono">{{ formatDate(post.created_at) }}</time>
         </div>
 
         <!-- content -->
-        <div class="prose prose-stone max-w-none text-sm text-main/80 leading-relaxed whitespace-pre-wrap">{{ post.body || '無內容' }}</div>
+        <div class="prose prose-stone max-w-none text-base lg:text-lg text-main/80 leading-loose whitespace-pre-wrap">{{ post.body || '無內容' }}</div>
 
         <div class="mt-16 pt-6 border-t border-main/10 flex justify-end">
           <span class="text-xs font-mono text-main/40">最後更新於 {{ formatDate(post.updated_at) }}</span>

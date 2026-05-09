@@ -70,7 +70,7 @@ const changePage = (dir: number) => {
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
         <div>
           <h1 class="text-3xl font-normal text-main leading-tight mb-1">最新資訊</h1>
-          <p class="text-sm text-main/50">共 {{ totalPosts }} 篇文章</p>
+          <p class="text-base text-main/50">共 {{ totalPosts }} 篇文章</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -78,12 +78,12 @@ const changePage = (dir: number) => {
             v-model="searchQuery"
             type="text"
             placeholder="搜尋標題、內容…"
-            class="text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
+            class="text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
           >
           <div class="relative">
             <select
               v-model="ordering"
-              class="text-sm text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+              class="text-base text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
             >
               <option value="-created_at">最新發布</option>
               <option value="created_at">最早發布</option>
@@ -99,10 +99,10 @@ const changePage = (dir: number) => {
     </div>
 
     <!-- ── List ── -->
-    <div v-if="isLoading" class="text-center py-16 text-main/50 text-sm font-medium">
+    <div v-if="isLoading" class="text-center py-16 text-main/50 text-base font-medium">
       正在讀取文章列表...
     </div>
-    <div v-else-if="posts.length === 0" class="text-center py-16 text-main/50 text-sm font-medium">
+    <div v-else-if="posts.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
       找不到符合條件的文章。
     </div>
     <div v-else class="flex flex-col mt-4">
@@ -113,11 +113,11 @@ const changePage = (dir: number) => {
       >
         <router-link
           :to="`/posts/${post.id}`"
-          class="text-base font-medium text-main group-hover:text-primary transition-colors no-underline block"
+          class="text-lg font-medium text-main group-hover:text-primary transition-colors no-underline block"
         >
           {{ post.title }}
         </router-link>
-        <span class="font-mono text-sm text-main/50 shrink-0">
+        <span class="font-mono text-base text-main/50 shrink-0">
           {{ formatDate(post.created_at) }}
         </span>
       </div>

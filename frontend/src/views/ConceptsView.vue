@@ -78,7 +78,7 @@ const groupedConcepts = computed(() => {
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
         <div>
           <h1 class="text-3xl font-normal text-main leading-tight mb-1">概念探索</h1>
-          <p class="text-sm text-main/50">瀏覽全站所有的概念</p>
+          <p class="text-base text-main/50">瀏覽全站所有的概念</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -86,12 +86,12 @@ const groupedConcepts = computed(() => {
             v-model="searchQuery"
             type="text"
             placeholder="搜尋概念名稱…"
-            class="text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
+            class="text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
           >
           <div class="relative">
             <select
               v-model="sortBy"
-              class="text-sm text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+              class="text-base text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
             >
               <option value="alpha">字母排序</option>
               <option value="count">作品數排序</option>
@@ -106,7 +106,7 @@ const groupedConcepts = computed(() => {
     </div>
 
     <!-- ── Loading ── -->
-    <div v-if="isLoading" class="text-center py-16 text-main/50 text-sm font-medium">
+    <div v-if="isLoading" class="text-center py-16 text-main/50 text-base font-medium">
       正在讀取全站概念...
     </div>
 
@@ -120,7 +120,7 @@ const groupedConcepts = computed(() => {
         >
           <!-- Category eyebrow inline with rule -->
           <div class="flex items-center gap-3 mb-5">
-            <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ category }}</span>
+            <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ category }}</span>
             <div class="flex-1 border-t border-main/10"></div>
           </div>
 
@@ -137,7 +137,7 @@ const groupedConcepts = computed(() => {
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-16 text-sm text-main/50">
+      <div v-else class="text-center py-16 text-base text-main/50">
         找不到任何包含「<span class="text-primary">{{ searchQuery }}</span>」的概念。
       </div>
     </div>

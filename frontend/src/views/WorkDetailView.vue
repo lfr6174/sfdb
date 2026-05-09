@@ -70,7 +70,7 @@ const conceptDescriptions = computed(() => {
       <div class="pt-10 mb-9">
         <router-link
           to="/works"
-          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -98,7 +98,7 @@ const conceptDescriptions = computed(() => {
             </h1>
 
             <!-- Meta row -->
-            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-main/60 mb-5">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-base text-main/70 mb-6">
               <span v-if="work.credit && work.credit.length" class="flex flex-wrap items-center gap-x-0.5">
                 <template v-for="(group, gIdx) in work.credit" :key="gIdx">
                   <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
@@ -122,7 +122,7 @@ const conceptDescriptions = computed(() => {
             </div>
 
             <!-- Synopsis -->
-            <p class="text-sm text-main/70 leading-loose whitespace-pre-wrap mb-7">
+            <p class="text-base text-main/80 leading-relaxed whitespace-pre-wrap mb-8">
               {{ work.description || '暫無簡述提供。' }}
             </p>
 
@@ -156,7 +156,7 @@ const conceptDescriptions = computed(() => {
 
             <!-- Section eyebrow: label inline with rule -->
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用詳述</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用詳述</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -171,7 +171,7 @@ const conceptDescriptions = computed(() => {
                 </div>
                 <p
                   :class="[
-                    'text-sm leading-relaxed',
+                    'text-base leading-relaxed',
                     isSpoilerProtected && !revealedSpoilers.has(wc.id)
                       ? 'blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer'
                       : 'text-main/75'
@@ -192,7 +192,7 @@ const conceptDescriptions = computed(() => {
           <!-- Publications -->
           <section v-if="work.publications && work.publications.length > 0">
             <div class="flex items-center gap-3 mb-4">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與發行</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與發行</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -219,7 +219,7 @@ const conceptDescriptions = computed(() => {
                 </div>
 
                 <div class="flex-1 min-w-0">
-                  <span class="text-sm font-medium text-main block mb-0.5">{{ pub.title }}</span>
+                  <span class="text-base font-medium text-main block mb-0.5">{{ pub.title }}</span>
 
                   <div
                     v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
@@ -260,7 +260,7 @@ const conceptDescriptions = computed(() => {
           <!-- Catalogues -->
           <section v-if="work.work_catalogues && work.work_catalogues.length > 0">
             <div class="flex items-center gap-3 mb-4">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄與獲獎</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄與獲獎</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -286,11 +286,11 @@ const conceptDescriptions = computed(() => {
                   <router-link
                     v-if="entry.catalogue.id"
                     :to="`/catalogues/${entry.catalogue.id}`"
-                    class="text-sm font-medium text-main hover:text-primary transition-colors block mb-0.5 no-underline"
+                    class="text-base font-medium text-main hover:text-primary transition-colors block mb-0.5 no-underline"
                   >
                     {{ entry.catalogue.title }}
                   </router-link>
-                  <span v-else class="text-sm font-medium text-main block mb-0.5">
+                  <span v-else class="text-base font-medium text-main block mb-0.5">
                     {{ entry.catalogue.title }}
                   </span>
 

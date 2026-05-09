@@ -44,12 +44,12 @@ onMounted(() => {
 
         <div class="mb-8 border-b border-main/10"></div>
 
-        <div class="prose prose-stone max-w-none text-sm text-main/80 leading-relaxed whitespace-pre-wrap">{{ pageData.body || '無內容' }}</div>
+        <div class="prose prose-stone max-w-none text-base lg:text-lg text-main/80 leading-loose whitespace-pre-wrap">{{ pageData.body || '無內容' }}</div>
 
         <div class="mt-16 pt-6 border-t border-main/10 flex justify-between items-center">
           <router-link
             to="/"
-            class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+            class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
           >
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
               <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

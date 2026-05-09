@@ -73,7 +73,7 @@ onMounted(() => {
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
         <div>
           <h1 class="text-3xl font-normal text-main leading-tight mb-1">人物</h1>
-          <p class="text-sm text-main/50">瀏覽全站收錄的作品相關人物</p>
+          <p class="text-base text-main/50">瀏覽全站收錄的作品相關人物</p>
         </div>
 
         <div class="flex items-center gap-2">
@@ -82,12 +82,12 @@ onMounted(() => {
             @input="onSearchInput"
             type="text"
             placeholder="搜尋姓名或別名…"
-            class="text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
+            class="text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
           >
           <div class="relative">
             <select
               v-model="sortBy"
-              class="text-sm text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+              class="text-base text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
             >
               <option value="-updated_at">最近更新</option>
               <option value="name">字母排序</option>
@@ -102,7 +102,7 @@ onMounted(() => {
     </div>
 
     <!-- ── Loading ── -->
-    <div v-if="isLoading && agents.length === 0" class="text-center py-16 text-main/50 text-sm font-medium">
+    <div v-if="isLoading && agents.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
       正在讀取人物列表...
     </div>
 
@@ -111,7 +111,7 @@ onMounted(() => {
 
       <!-- Count -->
       <div v-if="totalCount > 0" class="flex items-center gap-3 mt-6 mb-1">
-        <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">
+        <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">
           共 {{ totalCount }} 位人物
         </span>
         <div class="flex-1 border-t border-main/10"></div>
@@ -127,16 +127,16 @@ onMounted(() => {
         <!-- Name row -->
         <div class="flex flex-wrap items-baseline justify-between gap-3 mb-1.5">
           <div class="flex items-baseline gap-2.5 flex-wrap">
-            <span class="text-lg font-medium text-main group-hover:text-primary transition-colors">{{ agent.name }}</span>
-            <span v-if="agent.aliases && agent.aliases.length > 0" class="text-sm text-main/40">
+            <span class="text-xl font-medium text-main group-hover:text-primary transition-colors">{{ agent.name }}</span>
+            <span v-if="agent.aliases && agent.aliases.length > 0" class="text-base text-main/40">
               {{ agent.aliases.map(a => a.name).join(' · ') }}
             </span>
           </div>
-          <span class="font-mono text-xs text-main/40 shrink-0">{{ agent.works_count || 0 }} 部作品</span>
+          <span class="font-mono text-sm text-main/40 shrink-0">{{ agent.works_count || 0 }} 部作品</span>
         </div>
 
         <!-- Bio -->
-        <p class="text-sm text-main/60 leading-relaxed mb-3.5 line-clamp-2">
+        <p class="text-base text-main/70 leading-relaxed mb-3.5 line-clamp-2">
           {{ agent.about || '暫無簡歷提供。' }}
         </p>
 

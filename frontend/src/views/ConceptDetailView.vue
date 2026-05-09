@@ -74,7 +74,7 @@ onMounted(() => {
       <div class="pt-10 mb-9">
         <router-link
           to="/concepts"
-          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -94,7 +94,7 @@ onMounted(() => {
               {{ concept.name }}
             </h1>
 
-            <p class="text-sm text-main/70 leading-loose whitespace-pre-wrap mb-5">
+            <p class="text-base text-main/80 leading-relaxed whitespace-pre-wrap mb-5">
               {{ concept.description || '目前暫無關於此概念的詳細描述。' }}
             </p>
 
@@ -106,7 +106,7 @@ onMounted(() => {
                 :href="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-sm text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-base text-primary hover:opacity-70 transition-opacity no-underline"
               >
                 ↗ {{ link.title }}
               </a>
@@ -116,7 +116,7 @@ onMounted(() => {
           <!-- ── Application Examples ── -->
           <section class="mt-12">
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用範例</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用範例</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -131,7 +131,7 @@ onMounted(() => {
                 <div class="flex-1 min-w-0 flex flex-col gap-2">
                   <router-link
                     :to="`/works/${item.work}`"
-                    class="text-sm font-medium text-main hover:text-primary transition-colors no-underline w-fit"
+                    class="text-base font-medium text-main hover:text-primary transition-colors no-underline w-fit"
                   >
                     {{ item.work_title || '未知作品' }}
                   </router-link>
@@ -139,24 +139,24 @@ onMounted(() => {
                   <p
                     v-if="isSpoilerProtected && !revealedSpoilers.has(item.id)"
                     @click="revealSpoiler(item.id)"
-                    class="text-sm leading-relaxed blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer select-none"
+                    class="text-base leading-relaxed blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer select-none"
                     title="點擊顯示劇透內容"
                   >
                     {{ item.description }}
                   </p>
-                  <p v-else class="text-sm leading-relaxed text-main/70">
+                  <p v-else class="text-base leading-relaxed text-main/70">
                     {{ item.description }}
                   </p>
                 </div>
               </div>
             </div>
-            <div v-else class="text-sm text-main/40 py-3">目前尚無收錄此概念的應用範例。</div>
+            <div v-else class="text-base text-main/40 py-3">目前尚無收錄此概念的應用範例。</div>
 
             <!-- Link to all works -->
             <div class="mt-7">
               <router-link
                 :to="{ path: '/works', query: { concept: concept.slug } }"
-                class="text-sm text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-base text-primary hover:opacity-70 transition-opacity no-underline"
               >
                 瀏覽所有與「{{ concept.name }}」相關的作品（共 {{ concept.works_count || 0 }} 部）↗
               </router-link>
@@ -171,29 +171,29 @@ onMounted(() => {
           <!-- Works count -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄作品數</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄作品數</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
-            <span class="font-mono text-base text-main">{{ concept.works_count || 0 }}</span>
+            <span class="font-mono text-xl text-main">{{ concept.works_count || 0 }}</span>
           </div>
 
           <!-- Year range -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出現年份</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出現年份</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
             <div class="flex items-baseline gap-2">
-              <span class="font-mono text-sm text-main">{{ earliestYear }}</span>
+              <span class="font-mono text-base text-main">{{ earliestYear }}</span>
               <span class="text-xs text-main/30">—</span>
-              <span class="font-mono text-sm text-main">{{ latestYear }}</span>
+              <span class="font-mono text-base text-main">{{ latestYear }}</span>
             </div>
           </div>
 
           <!-- Related Concepts -->
           <div>
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關概念</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關概念</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 

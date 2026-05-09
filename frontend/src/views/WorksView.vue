@@ -229,11 +229,11 @@ const changePage = (dir: number) => {
           v-model="searchQuery"
           type="text"
           placeholder="搜尋標題、作者…"
-          class="w-full text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
+          class="w-full text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
         />
         <button
           @click="isAdvancedMode = !isAdvancedMode"
-          class="w-full mt-2 py-2 text-xs font-medium tracking-wide text-main/50 border border-main/10 hover:text-primary hover:border-primary/30 transition-colors"
+          class="w-full mt-2 py-2 text-sm font-medium tracking-wide text-main/50 border border-main/10 hover:text-primary hover:border-primary/30 transition-colors"
         >
           {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
         </button>
@@ -242,7 +242,7 @@ const changePage = (dir: number) => {
       <!-- Media Type -->
       <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
-          <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap scale-90 origin-left">作品媒體</span>
+          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品媒體</span>
           <div class="flex-1 border-t border-main/10"></div>
         </div>
         <div class="flex flex-col gap-2">
@@ -261,7 +261,7 @@ const changePage = (dir: number) => {
       <!-- Work Length -->
       <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
-          <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap scale-90 origin-left">作品篇幅</span>
+          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品篇幅</span>
           <div class="flex-1 border-t border-main/10"></div>
         </div>
         <div class="flex flex-col gap-2">
@@ -280,7 +280,7 @@ const changePage = (dir: number) => {
       <!-- Concept Tags -->
       <div>
         <div class="flex items-center gap-2 mb-3">
-          <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap scale-90 origin-left">概念標籤</span>
+          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念標籤</span>
           <div class="flex-1 border-t border-main/10"></div>
         </div>
 
@@ -304,7 +304,7 @@ const changePage = (dir: number) => {
         <div class="space-y-4">
           <div v-for="(concepts, cat) in leftPanelConcepts" :key="cat">
             <div v-if="concepts.length > 0">
-              <div class="text-xs font-medium tracking-widest uppercase text-main/30 mb-2 scale-90 origin-left">{{ cat.split(' ')[0] }}</div>
+              <div class="text-sm font-medium tracking-widest uppercase text-main/30 mb-2">{{ cat.split(' ')[0] }}</div>
               <div class="flex flex-col gap-1.5">
                 <label v-for="concept in concepts" :key="concept.id" class="flex items-center gap-2 cursor-pointer group">
                   <input
@@ -337,7 +337,7 @@ const changePage = (dir: number) => {
       <section v-if="isAdvancedMode" class="pb-10 border-b border-main/10 mb-8">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center gap-3">
-            <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">進階搜尋</span>
+            <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">進階搜尋</span>
             <div class="flex-1 border-t border-main/10 w-12"></div>
           </div>
           <button
@@ -350,37 +350,37 @@ const changePage = (dir: number) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-xs font-medium tracking-widest uppercase text-main/40 mb-2 scale-90 origin-left">關鍵字</label>
+            <label class="block text-sm font-medium tracking-widest uppercase text-main/40 mb-2">關鍵字</label>
             <input
               v-model="searchQuery"
               type="text"
               placeholder="標題、作者、筆名等"
-              class="w-full text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
+              class="w-full text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
             />
           </div>
 
           <div>
-            <label class="block text-xs font-medium tracking-widest uppercase text-main/40 mb-2 scale-90 origin-left">發表年份區間</label>
+            <label class="block text-sm font-medium tracking-widest uppercase text-main/40 mb-2">發表年份區間</label>
             <div class="flex items-center gap-2">
               <input
                 v-model="yearMin"
                 type="number"
                 placeholder="YYYY"
-                class="w-full text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
+                class="w-full text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
               />
               <span class="text-xs text-main/40 shrink-0">至</span>
               <input
                 v-model="yearMax"
                 type="number"
                 placeholder="YYYY"
-                class="w-full text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
+                class="w-full text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
               />
             </div>
           </div>
 
           <div class="space-y-5">
             <div>
-              <label class="block text-xs font-medium tracking-widest uppercase text-main/40 mb-2.5 scale-90 origin-left">媒體類型</label>
+              <label class="block text-sm font-medium tracking-widest uppercase text-main/40 mb-2.5">媒體類型</label>
               <div class="flex flex-wrap gap-x-5 gap-y-2">
                 <label v-for="opt in MEDIA_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
                   <input type="checkbox" :value="opt.value" v-model="selectedMedia" class="w-4 h-4 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0" />
@@ -389,7 +389,7 @@ const changePage = (dir: number) => {
               </div>
             </div>
             <div>
-              <label class="block text-xs font-medium tracking-widest uppercase text-main/40 mb-2.5 scale-90 origin-left">作品篇幅</label>
+              <label class="block text-sm font-medium tracking-widest uppercase text-main/40 mb-2.5">作品篇幅</label>
               <div class="flex flex-wrap gap-x-5 gap-y-2">
                 <label v-for="opt in LENGTH_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
                   <input type="checkbox" :value="opt.value" v-model="selectedLengths" class="w-4 h-4 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0" />
@@ -400,10 +400,10 @@ const changePage = (dir: number) => {
           </div>
 
           <div>
-            <label class="block text-xs font-medium tracking-widest uppercase text-main/40 mb-2.5 scale-90 origin-left">概念標籤</label>
+            <label class="block text-sm font-medium tracking-widest uppercase text-main/40 mb-2.5">概念標籤</label>
             <button
               @click="openModal"
-              class="w-full text-left px-3 py-2 border border-dashed border-primary/30 text-sm text-primary hover:bg-primary/5 transition-colors"
+              class="w-full text-left px-3 py-2 border border-dashed border-primary/30 text-base text-primary hover:bg-primary/5 transition-colors"
             >
               + 點擊選取概念標籤
             </button>
@@ -423,13 +423,13 @@ const changePage = (dir: number) => {
         <div class="mt-8 pt-5 border-t border-main/10 flex justify-end gap-3">
           <button
             @click="clearAllFilters"
-            class="text-xs text-main/50 px-3 py-1.5 hover:text-primary transition-colors"
+            class="text-sm text-main/50 px-3 py-1.5 hover:text-primary transition-colors"
           >
             清除條件
           </button>
           <button
             @click="isAdvancedMode = false"
-            class="text-xs font-medium text-bg bg-primary px-4 py-1.5 hover:opacity-85 transition-opacity"
+            class="text-sm font-medium text-bg bg-primary px-4 py-1.5 hover:opacity-85 transition-opacity"
           >
             查看結果（{{ totalWorks }}）
           </button>
@@ -491,7 +491,7 @@ const changePage = (dir: number) => {
 
           <!-- Count + Sort -->
           <div class="flex items-center justify-between">
-            <span class="text-xs text-main/50">
+            <span class="text-sm text-main/50">
               共 <span class="font-mono text-primary">{{ totalWorks }}</span> 部作品
             </span>
 
@@ -500,7 +500,7 @@ const changePage = (dir: number) => {
               <div class="relative">
                 <select
                   v-model="ordering"
-                  class="text-xs text-main/70 bg-transparent border border-main/10 pl-2.5 pr-6 py-1 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+                  class="text-sm text-main/70 bg-transparent border border-main/10 pl-2.5 pr-6 py-1 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
                 >
                   <option value="-year">年份（新到舊）</option>
                   <option value="year">年份（舊到新）</option>
@@ -516,8 +516,8 @@ const changePage = (dir: number) => {
         </div>
 
         <!-- Works List -->
-        <div v-if="isLoading" class="text-center py-16 text-main/40 text-sm">搜尋中…</div>
-        <div v-else-if="works.length === 0" class="text-center py-16 text-main/40 text-sm">找不到符合條件的作品。</div>
+        <div v-if="isLoading" class="text-center py-16 text-main/40 text-base">搜尋中…</div>
+        <div v-else-if="works.length === 0" class="text-center py-16 text-main/40 text-base">找不到符合條件的作品。</div>
 
         <div v-else class="flex flex-col">
           <div
@@ -529,12 +529,12 @@ const changePage = (dir: number) => {
             <div class="flex-1 min-w-0">
               <router-link
                 :to="`/works/${work.id}`"
-                class="text-sm font-medium text-main group-hover:text-primary transition-colors no-underline block mb-1.5"
+                class="text-base font-medium text-main group-hover:text-primary transition-colors no-underline block mb-1.5"
               >
                 {{ work.title }}
               </router-link>
 
-              <div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-main/50">
+              <div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm text-main/50">
                 <span v-if="work.byline && work.byline.length" class="flex flex-wrap items-center gap-x-0.5">
                   <template v-for="(agent, idx) in work.byline" :key="idx">
                     <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="hover:text-primary transition-colors no-underline">{{ agent.text }}</router-link>
@@ -601,12 +601,12 @@ const changePage = (dir: number) => {
           v-model="modalSearchQuery"
           type="text"
           placeholder="搜尋標籤…"
-          class="w-full text-sm text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
+          class="w-full text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors"
         />
 
         <!-- Selected in modal -->
         <div class="mt-4 min-h-[28px] flex flex-wrap items-center gap-1.5">
-          <span class="text-xs font-medium tracking-widest uppercase text-main/40 mr-1 shrink-0 scale-90 origin-left">已選取</span>
+          <span class="text-sm font-medium tracking-widest uppercase text-main/40 mr-1 shrink-0">已選取</span>
           <span v-if="tempSelectedConcepts.length === 0" class="text-xs text-main/30">—</span>
           <span
             v-for="concept in tempSelectedConcepts"
@@ -625,7 +625,7 @@ const changePage = (dir: number) => {
           <div v-for="cat in CATEGORIES" :key="cat">
             <template v-if="modalGroupedConcepts[cat]?.length > 0">
               <div class="flex items-center gap-3 mb-4">
-                <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ cat }}</span>
+                <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ cat }}</span>
                 <div class="flex-1 border-t border-main/10"></div>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">

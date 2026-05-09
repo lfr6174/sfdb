@@ -90,7 +90,7 @@ const personAwards = computed(() => {
       <div class="pt-10 mb-9">
         <router-link
           to="/agents"
-          class="inline-flex items-center gap-1.5 text-xs font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
             <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -110,11 +110,11 @@ const personAwards = computed(() => {
               {{ agent.name }}
             </h1>
 
-            <div v-if="agent.aliases && agent.aliases.length > 0" class="text-sm text-main/40 mb-5">
+            <div v-if="agent.aliases && agent.aliases.length > 0" class="text-base text-main/40 mb-5">
               {{ agent.aliases.map((a) => a.name).join(' · ') }}
             </div>
 
-            <p class="text-sm text-main/70 leading-loose whitespace-pre-wrap mb-5">
+            <p class="text-base text-main/80 leading-relaxed whitespace-pre-wrap mb-5">
               {{ agent.about || '暫無簡歷提供。' }}
             </p>
 
@@ -126,7 +126,7 @@ const personAwards = computed(() => {
                 :href="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-sm text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-base text-primary hover:opacity-70 transition-opacity no-underline"
               >
                 ↗ {{ link.label }}
               </a>
@@ -136,7 +136,7 @@ const personAwards = computed(() => {
           <!-- ── Participated Works ── -->
           <section class="mt-12">
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">歷年作品</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">歷年作品</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -150,7 +150,7 @@ const personAwards = computed(() => {
                 <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ work.year || '-' }}</span>
 
                 <div class="flex-1 min-w-0">
-                  <span class="text-sm font-medium text-main group-hover:text-primary transition-colors block mb-0.5">
+                  <span class="text-base font-medium text-main group-hover:text-primary transition-colors block mb-0.5">
                     {{ work.title }}
                   </span>
                   <span v-if="work.title_en" class="text-xs text-main/40 block mb-1">{{ work.title_en }}</span>
@@ -165,13 +165,13 @@ const personAwards = computed(() => {
                 </span>
               </router-link>
             </div>
-            <div v-else class="text-sm text-main/40 py-3">尚無關聯的歷年作品。</div>
+            <div v-else class="text-base text-main/40 py-3">尚無關聯的歷年作品。</div>
           </section>
 
           <!-- ── Participated Publications ── -->
           <section v-if="agent.participated_publications && agent.participated_publications.length > 0" class="mt-10">
             <div class="flex items-center gap-3 mb-5">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與其他參與</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與其他參與</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -184,7 +184,7 @@ const personAwards = computed(() => {
                 <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ pub.year || '-' }}</span>
 
                 <div class="flex-1 min-w-0">
-                  <span class="text-sm font-medium text-main block mb-0.5">{{ pub.title }}</span>
+                  <span class="text-base font-medium text-main block mb-0.5">{{ pub.title }}</span>
                   <span class="text-xs text-main/50">{{ pub.publisher || '-' }}</span>
                 </div>
 
@@ -203,25 +203,25 @@ const personAwards = computed(() => {
           <!-- Work count -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品總數</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品總數</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
-            <span class="font-mono text-base text-main">{{ totalWorksCount }}</span>
+            <span class="font-mono text-xl text-main">{{ totalWorksCount }}</span>
           </div>
 
           <!-- Active years -->
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">活躍年份</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">活躍年份</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
-            <span class="font-mono text-sm text-main">{{ activeYears }}</span>
+            <span class="font-mono text-base text-main">{{ activeYears }}</span>
           </div>
 
           <!-- Top Concepts -->
           <div>
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">常見標籤</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">常見標籤</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
@@ -253,7 +253,7 @@ const personAwards = computed(() => {
           <!-- Awards -->
           <div v-if="personAwards.length > 0">
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-xs font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關獎項</span>
+              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關獎項</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
             <div class="flex flex-wrap gap-1.5">
