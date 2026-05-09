@@ -70,64 +70,77 @@ const groupedConcepts = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto">
 
-    <!-- Header Controls -->
-    <section class="card flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-bold text-main tracking-tight mb-1">概念探索</h1>
-        <p class="text-sm md:text-base text-main/60">瀏覽全站所有的概念</p>
+    <!-- ── Page Header ── -->
+    <div class="pt-10 pb-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
+        <div>
+          <h1 class="text-[1.75rem] font-normal text-main leading-tight mb-1">概念探索</h1>
+          <p class="text-[13px] text-main/45">瀏覽全站所有的概念</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="搜尋概念名稱…"
+            class="text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
+          >
+          <div class="relative">
+            <select
+              v-model="sortBy"
+              class="text-[13px] text-main/70 bg-transparent border border-main/[0.14] px-3 py-[7px] pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+            >
+              <option value="alpha">字母排序</option>
+              <option value="count">作品數排序</option>
+              <option value="recent">最近更新</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-main/40" width="9" height="5" viewBox="0 0 10 6" fill="none">
+              <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <div class="flex items-center gap-3 w-full md:w-auto">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="搜尋概念名稱…"
-          class="form-input flex-1 md:w-64"
-        >
-        <select
-          v-model="sortBy"
-          class="form-select w-full md:w-auto"
-        >
-          <option value="alpha">字母排序</option>
-          <option value="count">作品數排序</option>
-          <option value="recent">最近更新</option>
-        </select>
-      </div>
-    </section>
-
-    <div v-if="isLoading" class="card text-center py-16 text-main/50 font-medium">
+    <!-- ── Loading ── -->
+    <div v-if="isLoading" class="text-center py-16 text-main/45 text-[13px] font-medium">
       正在讀取全站概念...
     </div>
 
-    <!-- Concept Groups -->
-    <div v-else class="card md:!p-8">
-      <div v-if="Object.keys(groupedConcepts).length > 0" class="flex flex-col gap-8 md:gap-10">
-        <template v-for="(concepts, category) in groupedConcepts" :key="category">
-          <div class="flex flex-col">
-            <!-- 分類標籤：套用模組化 section-label -->
-            <h2 class="section-label">{{ category }}</h2>
-
-            <!-- 概念 Chip 雲 -->
-            <div class="flex flex-wrap gap-2 md:gap-3">
-              <router-link
-                v-for="concept in concepts"
-                :key="concept.id"
-                :to="`/concepts/${concept.slug}`"
-                class="tag !rounded-lg flex items-center gap-2"
-              >
-                <span>{{ concept.name }}</span>
-                <span class="text-xs font-mono opacity-60 pt-px">{{ concept.works_count }}</span>
-              </router-link>
-            </div>
+    <!-- ── Concept Groups ── -->
+    <div v-else class="pb-20">
+      <div v-if="Object.keys(groupedConcepts).length > 0" class="flex flex-col">
+        <div
+          v-for="(concepts, category) in groupedConcepts"
+          :key="category"
+          class="py-8"
+        >
+          <!-- Category eyebrow inline with rule -->
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">{{ category }}</span>
+            <div class="flex-1 border-t border-main/[0.08]"></div>
           </div>
-        </template>
+
+          <!-- Tag cloud -->
+          <div class="flex flex-wrap gap-1.5">
+            <router-link
+              v-for="concept in concepts"
+              :key="concept.id"
+              :to="`/concepts/${concept.slug}`"
+              class="inline-flex items-center gap-2 text-[12px] text-main/55 border border-main/[0.14] px-3 py-[6px] hover:text-primary hover:bg-primary/[0.05] hover:border-primary/25 transition-all whitespace-nowrap no-underline"
+            >
+              <span>{{ concept.name }}</span>
+              <span class="font-mono text-[10px] text-main/35">{{ concept.works_count }}</span>
+            </router-link>
+          </div>
+        </div>
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center py-10 text-main/50">
-        找不到任何包含「<span class="text-primary font-medium">{{ searchQuery }}</span>」的概念。
+      <div v-else class="text-center py-16 text-[13px] text-main/45">
+        找不到任何包含「<span class="text-primary">{{ searchQuery }}</span>」的概念。
       </div>
     </div>
 

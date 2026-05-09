@@ -217,229 +217,349 @@ const changePage = (dir: number) => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto flex flex-col lg:flex-row gap-4 items-start pb-12">
+  <div class="max-w-4xl mx-auto flex flex-col lg:flex-row gap-0 lg:gap-12 items-start pb-20">
 
-    <!-- Left Control Panel -->
-    <aside class="w-full lg:w-4/15 card shrink-0 lg:sticky lg:top-4 !p-5">
+    <!-- ══ Left Sidebar ══ -->
+    <aside class="w-full lg:w-[220px] shrink-0 lg:sticky lg:top-8 pt-10 lg:pb-20 lg:border-r lg:border-main/[0.08] lg:pr-8">
+
       <!-- Search -->
-      <div class="mb-4">
-        <input v-model="searchQuery" type="text" placeholder="搜尋標題、作者、筆名..." class="form-input w-full !border-main/10 !rounded !text-sm" />
-        <button @click="isAdvancedMode = !isAdvancedMode" class="w-full mt-2 py-2 text-xs font-medium text-main/50 border border-main/10 rounded hover:text-primary hover:border-primary/30 transition-colors">
+      <div class="mb-7">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="搜尋標題、作者…"
+          class="w-full text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors"
+        />
+        <button
+          @click="isAdvancedMode = !isAdvancedMode"
+          class="w-full mt-2 py-[7px] text-[11.5px] font-medium tracking-[0.03em] text-main/45 border border-main/[0.10] hover:text-primary hover:border-primary/30 transition-colors"
+        >
           {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
         </button>
       </div>
 
-      <!-- Media & Length Filters -->
-      <div class="mb-6 space-y-4">
-        <div>
-          <h3 class="text-xs font-bold tracking-widest uppercase text-main/40 mb-2">作品媒體</h3>
-          <div class="flex flex-col gap-2">
-            <label v-for="opt in MEDIA_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
-              <input type="checkbox" :value="opt.value" v-model="selectedMedia" class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary cursor-pointer" />
-              <span class="text-sm text-main/60 group-hover:text-primary transition-colors">{{ opt.label }}</span>
-            </label>
-          </div>
+      <!-- Media Type -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">作品媒體</span>
+          <div class="flex-1 border-t border-main/[0.08]"></div>
         </div>
-        <div>
-          <h3 class="text-xs font-bold tracking-widest uppercase text-main/40 mb-2">作品篇幅</h3>
-          <div class="flex flex-col gap-2">
-            <label v-for="opt in LENGTH_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
-              <input type="checkbox" :value="opt.value" v-model="selectedLengths" class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary cursor-pointer" />
-              <span class="text-sm text-main/60 group-hover:text-primary transition-colors">{{ opt.label }}</span>
-            </label>
-          </div>
+        <div class="flex flex-col gap-2">
+          <label v-for="opt in MEDIA_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
+            <input
+              type="checkbox"
+              :value="opt.value"
+              v-model="selectedMedia"
+              class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0 cursor-pointer shrink-0"
+            />
+            <span class="text-[13px] text-main/55 group-hover:text-primary transition-colors">{{ opt.label }}</span>
+          </label>
         </div>
       </div>
 
-      <!-- Concept Tags Section -->
-      <div>
-        <h3 class="text-xs font-bold tracking-widest uppercase text-main/40 mb-3">概念標籤</h3>
+      <!-- Work Length -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">作品篇幅</span>
+          <div class="flex-1 border-t border-main/[0.08]"></div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label v-for="opt in LENGTH_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
+            <input
+              type="checkbox"
+              :value="opt.value"
+              v-model="selectedLengths"
+              class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0 cursor-pointer shrink-0"
+            />
+            <span class="text-[13px] text-main/55 group-hover:text-primary transition-colors">{{ opt.label }}</span>
+          </label>
+        </div>
+      </div>
 
-        <!-- Selected Tags -->
-        <div v-if="selectedConcepts.length > 0" class="mb-4 p-3 bg-main/5 rounded-md border border-main/10">
-          <div class="text-xs font-bold text-main/40 mb-2 uppercase tracking-widest">已勾選</div>
-          <div class="flex flex-col gap-2">
-            <label v-for="concept in selectedConcepts" :key="concept.id" class="flex items-center gap-2 cursor-pointer group">
-              <input type="checkbox" :checked="true" @change="toggleConcept(concept)" class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary cursor-pointer" />
-              <span class="text-sm text-primary font-medium">{{ concept.name }}</span>
-            </label>
-          </div>
+      <!-- Concept Tags -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">概念標籤</span>
+          <div class="flex-1 border-t border-main/[0.08]"></div>
         </div>
 
-        <!-- Top Categories -->
+        <!-- Selected tags -->
+        <div v-if="selectedConcepts.length > 0" class="mb-4">
+          <div class="flex flex-col gap-1.5">
+            <label v-for="concept in selectedConcepts" :key="concept.id" class="flex items-center gap-2 cursor-pointer group">
+              <input
+                type="checkbox"
+                :checked="true"
+                @change="toggleConcept(concept)"
+                class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0 cursor-pointer shrink-0"
+              />
+              <span class="text-[13px] text-primary font-medium">{{ concept.name }}</span>
+            </label>
+          </div>
+          <div class="border-t border-main/[0.08] mt-3 mb-3"></div>
+        </div>
+
+        <!-- Top concept categories -->
         <div class="space-y-4">
           <div v-for="(concepts, cat) in leftPanelConcepts" :key="cat">
             <div v-if="concepts.length > 0">
-              <div class="text-xs font-bold text-main/40 mb-1.5 uppercase tracking-widest">{{ cat.split(' ')[0] }}</div>
-              <div class="flex flex-col gap-2">
+              <div class="text-[10px] font-medium tracking-[0.1em] uppercase text-main/30 mb-2">{{ cat.split(' ')[0] }}</div>
+              <div class="flex flex-col gap-1.5">
                 <label v-for="concept in concepts" :key="concept.id" class="flex items-center gap-2 cursor-pointer group">
-                  <input type="checkbox" :checked="false" @change="toggleConcept(concept)" class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary cursor-pointer" />
-                  <span class="text-sm text-main/60 group-hover:text-primary transition-colors">{{ concept.name }}</span>
+                  <input
+                    type="checkbox"
+                    :checked="false"
+                    @change="toggleConcept(concept)"
+                    class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0 cursor-pointer shrink-0"
+                  />
+                  <span class="text-[13px] text-main/55 group-hover:text-primary transition-colors">{{ concept.name }}</span>
                 </label>
               </div>
             </div>
           </div>
         </div>
 
-        <button @click="openModal" class="w-full mt-5 py-2 text-xs font-medium text-primary border border-primary/30 rounded hover:bg-primary/5 transition-colors">
+        <button
+          @click="openModal"
+          class="w-full mt-5 py-[7px] text-[11.5px] font-medium text-primary border border-dashed border-primary/30 hover:bg-primary/[0.05] transition-colors"
+        >
           展開所有標籤
         </button>
       </div>
+
     </aside>
 
-    <!-- Right Main Panel -->
-    <main class="w-full lg:w-11/15 flex flex-col gap-4">
+    <!-- ══ Main Panel ══ -->
+    <main class="flex-1 min-w-0 pt-10">
 
-      <!-- Advanced Search Page -->
-      <section v-if="isAdvancedMode" class="card !p-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-        <div class="flex items-center justify-between border-b border-main/10 pb-3 mb-4">
-          <h2 class="text-base font-bold text-main/50 tracking-widest uppercase">進階搜尋</h2>
-          <button @click="isAdvancedMode = false" class="text-xs px-3 py-1 rounded-full border border-main/10 text-main/50 hover:text-primary hover:border-primary/30 transition-colors">
+      <!-- ── Advanced Search ── -->
+      <section v-if="isAdvancedMode" class="pb-10 border-b border-main/[0.08] mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">進階搜尋</span>
+            <div class="flex-1 border-t border-main/[0.08] w-12"></div>
+          </div>
+          <button
+            @click="isAdvancedMode = false"
+            class="text-[11.5px] text-main/45 border border-main/[0.12] px-3 py-1 hover:text-primary hover:border-primary/30 transition-colors"
+          >
             返回結果列表
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">關鍵字</label>
-            <input v-model="searchQuery" type="text" placeholder="標題、作者、筆名等" class="form-input w-full !border-main/10 !rounded !text-sm" />
+            <label class="block text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 mb-2">關鍵字</label>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="標題、作者、筆名等"
+              class="w-full text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors"
+            />
           </div>
+
           <div>
-            <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">發表年份區間</label>
+            <label class="block text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 mb-2">發表年份區間</label>
             <div class="flex items-center gap-2">
-              <input v-model="yearMin" type="number" placeholder="YYYY" class="form-input w-full !border-main/10 !rounded !text-sm" />
-              <span class="text-xs text-main/40">至</span>
-              <input v-model="yearMax" type="number" placeholder="YYYY" class="form-input w-full !border-main/10 !rounded !text-sm" />
+              <input
+                v-model="yearMin"
+                type="number"
+                placeholder="YYYY"
+                class="w-full text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors"
+              />
+              <span class="text-[12px] text-main/35 shrink-0">至</span>
+              <input
+                v-model="yearMax"
+                type="number"
+                placeholder="YYYY"
+                class="w-full text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors"
+              />
             </div>
           </div>
-          <div class="space-y-4">
+
+          <div class="space-y-5">
             <div>
-              <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">媒體類型</label>
-              <div class="flex flex-wrap gap-4">
-                <label v-for="opt in MEDIA_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" :value="opt.value" v-model="selectedMedia" class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary" />
-                  <span class="text-sm text-main/60">{{ opt.label }}</span>
+              <label class="block text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 mb-2.5">媒體類型</label>
+              <div class="flex flex-wrap gap-x-5 gap-y-2">
+                <label v-for="opt in MEDIA_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" :value="opt.value" v-model="selectedMedia" class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0" />
+                  <span class="text-[13px] text-main/55 group-hover:text-primary transition-colors">{{ opt.label }}</span>
                 </label>
               </div>
             </div>
             <div>
-              <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">作品篇幅</label>
-              <div class="flex flex-wrap gap-4">
-                <label v-for="opt in LENGTH_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" :value="opt.value" v-model="selectedLengths" class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary" />
-                  <span class="text-sm text-main/60">{{ opt.label }}</span>
+              <label class="block text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 mb-2.5">作品篇幅</label>
+              <div class="flex flex-wrap gap-x-5 gap-y-2">
+                <label v-for="opt in LENGTH_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
+                  <input type="checkbox" :value="opt.value" v-model="selectedLengths" class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0" />
+                  <span class="text-[13px] text-main/55 group-hover:text-primary transition-colors">{{ opt.label }}</span>
                 </label>
               </div>
             </div>
           </div>
+
           <div>
-            <label class="block text-xs font-bold tracking-widest uppercase text-main/40 mb-2">概念標籤</label>
-            <button @click="openModal" class="w-full text-left px-3 py-2 border border-dashed border-primary/40 rounded text-primary hover:bg-primary/5 transition-colors">
+            <label class="block text-[10px] font-medium tracking-[0.12em] uppercase text-main/40 mb-2.5">概念標籤</label>
+            <button
+              @click="openModal"
+              class="w-full text-left px-3 py-[7px] border border-dashed border-primary/35 text-[13px] text-primary hover:bg-primary/[0.05] transition-colors"
+            >
               + 點擊選取概念標籤
             </button>
-            <div v-if="selectedConcepts.length > 0" class="mt-3 flex flex-wrap gap-2">
-              <span v-for="concept in selectedConcepts" :key="concept.id" class="tag !text-xs !py-1 !px-2.5 !gap-1.5 flex items-center">
+            <div v-if="selectedConcepts.length > 0" class="mt-3 flex flex-wrap gap-1.5">
+              <span
+                v-for="concept in selectedConcepts"
+                :key="concept.id"
+                class="inline-flex items-center gap-1 text-[11.5px] text-primary bg-primary/[0.07] border border-primary/20 px-2.5 py-[4px]"
+              >
                 {{ concept.name }}
-                <button @click.stop="toggleConcept(concept)" class="flex items-center justify-center w-4 h-4 text-base leading-none hover:text-primary transition-colors">&times;</button>
+                <button @click.stop="toggleConcept(concept)" class="text-[14px] leading-none hover:text-primary/60 transition-colors ml-0.5">&times;</button>
               </span>
             </div>
           </div>
         </div>
 
-        <div class="mt-8 pt-4 border-t border-main/10 flex justify-end gap-3">
-          <button @click="clearAllFilters" class="px-3 py-1 rounded-full border border-transparent text-xs font-medium text-main/50 hover:text-primary transition-colors">清除條件</button>
-          <button @click="isAdvancedMode = false" class="btn-primary !px-3 !py-1 !text-xs">
-            查看結果 ({{ totalWorks }})
+        <div class="mt-8 pt-5 border-t border-main/[0.08] flex justify-end gap-3">
+          <button
+            @click="clearAllFilters"
+            class="text-[12px] text-main/45 px-3 py-1.5 hover:text-primary transition-colors"
+          >
+            清除條件
+          </button>
+          <button
+            @click="isAdvancedMode = false"
+            class="text-[12px] font-medium text-bg bg-primary px-4 py-1.5 hover:opacity-85 transition-opacity"
+          >
+            查看結果（{{ totalWorks }}）
           </button>
         </div>
       </section>
 
-      <!-- Works List Results Page -->
+      <!-- ── Results View ── -->
       <template v-else>
-        <!-- Active Filters Bar & Sorting -->
-        <section class="card !p-5 flex flex-col gap-3">
-          <div v-if="selectedConcepts.length || selectedMedia.length || selectedLengths.length || yearMin || yearMax" class="flex flex-wrap items-center gap-2 text-sm pb-3 border-b border-main/5">
-            <span class="text-xs font-medium text-main/50 mr-1">作用中篩選：</span>
 
-            <span v-for="m in selectedMedia" :key="m" class="tag !text-xs !py-1 !px-2.5 !gap-1.5 flex items-center">
+        <!-- Active Filters + Sort Bar -->
+        <div class="flex flex-col gap-3 pb-5 border-b border-main/[0.08] mb-1">
+
+          <!-- Active filter chips -->
+          <div
+            v-if="selectedConcepts.length || selectedMedia.length || selectedLengths.length || yearMin || yearMax"
+            class="flex flex-wrap items-center gap-1.5"
+          >
+            <span class="text-[10.5px] text-main/35 mr-1 shrink-0">作用中：</span>
+
+            <span
+              v-for="m in selectedMedia"
+              :key="m"
+              class="inline-flex items-center gap-1 text-[11.5px] text-primary bg-primary/[0.07] border border-primary/20 px-2.5 py-[4px]"
+            >
               {{ MEDIA_OPTIONS.find(o => o.value === m)?.label }}
-              <button @click="selectedMedia = selectedMedia.filter(v => v !== m)" class="flex items-center justify-center w-4 h-4 text-base leading-none hover:text-primary transition-colors">&times;</button>
-            </span>
-            <span v-for="l in selectedLengths" :key="l" class="tag !text-xs !py-1 !px-2.5 !gap-1.5 flex items-center">
-              {{ LENGTH_OPTIONS.find(o => o.value === l)?.label }}
-              <button @click="selectedLengths = selectedLengths.filter(v => v !== l)" class="flex items-center justify-center w-4 h-4 text-base leading-none hover:text-primary transition-colors">&times;</button>
-            </span>
-            <span v-for="c in selectedConcepts" :key="c.id" class="tag !text-xs !py-1 !px-2.5 !gap-1.5 flex items-center">
-              {{ c.name }}
-              <button @click="toggleConcept(c)" class="flex items-center justify-center w-4 h-4 text-base leading-none hover:text-primary transition-colors">&times;</button>
-            </span>
-            <span v-if="yearMin || yearMax" class="tag !text-xs !py-1 !px-2.5 !gap-1.5 flex items-center">
-              {{ yearMin || '...' }} - {{ yearMax || '...' }}
-              <button @click="yearMin = ''; yearMax = ''" class="flex items-center justify-center w-4 h-4 text-base leading-none hover:text-primary transition-colors">&times;</button>
+              <button @click="selectedMedia = selectedMedia.filter(v => v !== m)" class="text-[14px] leading-none hover:opacity-60 transition-opacity ml-0.5">&times;</button>
             </span>
 
-            <button @click="clearAllFilters" class="ml-auto text-primary hover:text-primary/70 text-xs font-medium">
-              清除全部篩選
+            <span
+              v-for="l in selectedLengths"
+              :key="l"
+              class="inline-flex items-center gap-1 text-[11.5px] text-primary bg-primary/[0.07] border border-primary/20 px-2.5 py-[4px]"
+            >
+              {{ LENGTH_OPTIONS.find(o => o.value === l)?.label }}
+              <button @click="selectedLengths = selectedLengths.filter(v => v !== l)" class="text-[14px] leading-none hover:opacity-60 transition-opacity ml-0.5">&times;</button>
+            </span>
+
+            <span
+              v-for="c in selectedConcepts"
+              :key="c.id"
+              class="inline-flex items-center gap-1 text-[11.5px] text-primary bg-primary/[0.07] border border-primary/20 px-2.5 py-[4px]"
+            >
+              {{ c.name }}
+              <button @click="toggleConcept(c)" class="text-[14px] leading-none hover:opacity-60 transition-opacity ml-0.5">&times;</button>
+            </span>
+
+            <span
+              v-if="yearMin || yearMax"
+              class="inline-flex items-center gap-1 text-[11.5px] text-primary bg-primary/[0.07] border border-primary/20 px-2.5 py-[4px]"
+            >
+              {{ yearMin || '…' }}–{{ yearMax || '…' }}
+              <button @click="yearMin = ''; yearMax = ''" class="text-[14px] leading-none hover:opacity-60 transition-opacity ml-0.5">&times;</button>
+            </span>
+
+            <button @click="clearAllFilters" class="ml-auto text-[11.5px] text-main/40 hover:text-primary transition-colors">
+              清除全部
             </button>
           </div>
 
+          <!-- Count + Sort -->
           <div class="flex items-center justify-between">
-            <div class="text-main/50 text-xs font-medium">
-              顯示 <span class="text-primary">{{ totalWorks }}</span> 部作品
-            </div>
+            <span class="text-[12px] text-main/45">
+              共 <span class="font-mono text-primary">{{ totalWorks }}</span> 部作品
+            </span>
+
             <div class="flex items-center gap-2">
-              <span class="text-xs text-main/50">排序：</span>
-              <select v-model="ordering" class="form-select !h-8 !px-2 !rounded !border-main/10 !text-sm">
-                <option value="-year">年份 (新到舊)</option>
-                <option value="year">年份 (舊到新)</option>
-                <option value="title">標題排序</option>
-                <option value="-updated_at">最近更新</option>
-              </select>
+              <span class="text-[11.5px] text-main/35">排序</span>
+              <div class="relative">
+                <select
+                  v-model="ordering"
+                  class="text-[12px] text-main/65 bg-transparent border border-main/[0.12] pl-2.5 pr-6 py-[5px] outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
+                >
+                  <option value="-year">年份（新到舊）</option>
+                  <option value="year">年份（舊到新）</option>
+                  <option value="title">標題</option>
+                  <option value="-updated_at">最近更新</option>
+                </select>
+                <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
+                  <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+                </svg>
+              </div>
             </div>
           </div>
-        </section>
-
-        <!-- Works List Content -->
-        <div v-if="isLoading" class="card text-center py-12 text-main/50 text-sm font-medium">
-          搜尋中...
         </div>
-        <div v-else-if="works.length === 0" class="card text-center py-12 text-main/50 text-sm font-medium">
-          找不到符合條件的作品。
-        </div>
-        <div v-else class="space-y-3">
-          <div v-for="work in works" :key="work.id" class="card !p-5 flex flex-col md:flex-row md:items-start justify-between gap-4 transition-colors hover:border-primary/30 group">
 
-            <!-- Basic Info Left -->
-            <div class="flex-1">
-              <router-link :to="`/works/${work.id}`" class="text-base font-medium text-main group-hover:text-primary transition-colors inline-block mb-1.5">
+        <!-- Works List -->
+        <div v-if="isLoading" class="text-center py-16 text-main/40 text-[13px]">搜尋中…</div>
+        <div v-else-if="works.length === 0" class="text-center py-16 text-main/40 text-[13px]">找不到符合條件的作品。</div>
+
+        <div v-else class="flex flex-col">
+          <div
+            v-for="work in works"
+            :key="work.id"
+            class="group flex flex-col md:flex-row md:items-start justify-between gap-3 py-4 border-b border-main/[0.08] last:border-0 hover:bg-primary/[0.025] hover:-mx-4 hover:px-4 transition-colors"
+          >
+            <!-- Left: title + meta -->
+            <div class="flex-1 min-w-0">
+              <router-link
+                :to="`/works/${work.id}`"
+                class="text-[14.5px] font-medium text-main group-hover:text-primary transition-colors no-underline block mb-1.5"
+              >
                 {{ work.title }}
               </router-link>
-              <div class="flex flex-wrap items-center gap-1 text-sm text-main/50">
-                <span v-if="work.byline && work.byline.length" class="flex flex-wrap items-center">
+
+              <div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[12.5px] text-main/50">
+                <span v-if="work.byline && work.byline.length" class="flex flex-wrap items-center gap-x-0.5">
                   <template v-for="(agent, idx) in work.byline" :key="idx">
-                    <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="hover:text-primary transition-colors">{{ agent.text }}</router-link>
+                    <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="hover:text-primary transition-colors no-underline">{{ agent.text }}</router-link>
                     <span v-else>{{ agent.text }}</span>
-                    <span v-if="idx < work.byline.length - 1" class="mx-0.5">、</span>
+                    <span v-if="idx < work.byline.length - 1">、</span>
                   </template>
                 </span>
                 <span v-else>佚名</span>
 
-                <span class="text-main/25">·</span>
-                <span>{{ work.year || '未知年份' }}</span>
-                <span class="text-main/25">·</span>
-                <span>{{ work.work_length_display || '未知篇幅' }}</span>
-                <span class="text-main/25">·</span>
-                <span>{{ work.media_type_display || '未知媒體' }}</span>
+                <span class="text-main/20">·</span>
+                <span>{{ work.year || '未知' }}</span>
+                <span class="text-main/20">·</span>
+                <!-- Gray metadata badges -->
+                <span class="font-mono text-[10px] text-main/40 bg-main/[0.06] px-1.5 py-[1px]">
+                  {{ [work.work_length_display, work.media_type_display].filter(Boolean).join(' · ') || '-' }}
+                </span>
               </div>
             </div>
 
-            <!-- Tags Right -->
-            <div class="md:w-5/12 flex-shrink-0 flex flex-wrap justify-start md:justify-end content-start gap-1.5">
+            <!-- Right: concept tags -->
+            <div v-if="work.work_concepts && work.work_concepts.length" class="flex flex-wrap gap-1.5 md:justify-end md:max-w-[45%]">
               <router-link
                 v-for="wc in work.work_concepts"
                 :key="wc.concept.slug"
                 :to="`/concepts/${wc.concept.slug}`"
-                class="tag !text-xs !py-1 !px-2.5"
+                class="inline-flex items-center text-[11px] text-main/50 border border-main/[0.14] px-2 py-[4px] hover:text-primary hover:bg-primary/[0.05] hover:border-primary/25 transition-all whitespace-nowrap no-underline"
               >
                 {{ wc.concept.name }}
               </router-link>
@@ -459,42 +579,70 @@ const changePage = (dir: number) => {
     </main>
   </div>
 
-  <!-- Modal for all tags -->
-  <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-main/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-    <div class="bg-bg w-full max-w-4xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden">
+  <!-- ══ Concept Modal ══ -->
+  <div
+    v-if="isModalOpen"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-main/40 p-4"
+    @click.self="closeModal"
+  >
+    <div class="bg-bg w-full max-w-3xl max-h-[88vh] flex flex-col overflow-hidden border border-main/[0.12]">
 
-      <div class="p-5 border-b border-main/10 shrink-0 bg-bg relative z-10">
-        <h2 class="text-2xl font-bold text-main mb-4">選取概念標籤</h2>
-        <input v-model="modalSearchQuery" type="text" placeholder="在此搜尋標籤..." class="form-input w-full !border-main/10 !rounded !text-sm" />
-        <div class="mt-4 min-h-[40px]">
-          <span class="text-xs font-bold tracking-widest uppercase text-main/40 mr-2">已選取：</span>
-          <div v-if="tempSelectedConcepts.length === 0" class="inline-block text-sm text-main/25">尚未選取任何標籤</div>
-          <div v-else class="inline-flex flex-wrap gap-2 align-middle">
-            <span v-for="concept in tempSelectedConcepts" :key="concept.id" class="tag !text-xs !py-1 !px-2.5 !gap-1.5 flex items-center">
-              {{ concept.name }}
-              <button @click="toggleTempConcept(concept)" class="flex items-center justify-center w-4 h-4 text-base leading-none hover:text-primary transition-colors">&times;</button>
-            </span>
-          </div>
+      <!-- Modal Header -->
+      <div class="px-6 pt-6 pb-5 border-b border-main/[0.08] shrink-0">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-[1.2rem] font-normal text-main">選取概念標籤</h2>
+          <button
+            @click="closeModal"
+            class="text-[13px] text-main/40 border border-main/[0.12] px-3 py-1 hover:text-primary hover:border-primary/30 transition-colors"
+          >
+            取消
+          </button>
+        </div>
+
+        <input
+          v-model="modalSearchQuery"
+          type="text"
+          placeholder="搜尋標籤…"
+          class="w-full text-[13px] text-main placeholder:text-main/35 bg-transparent border border-main/[0.14] px-3 py-[7px] outline-none focus:border-primary/50 transition-colors"
+        />
+
+        <!-- Selected in modal -->
+        <div class="mt-4 min-h-[28px] flex flex-wrap items-center gap-1.5">
+          <span class="text-[10px] font-medium tracking-[0.1em] uppercase text-main/35 mr-1 shrink-0">已選取</span>
+          <span v-if="tempSelectedConcepts.length === 0" class="text-[12.5px] text-main/25">—</span>
+          <span
+            v-for="concept in tempSelectedConcepts"
+            :key="concept.id"
+            class="inline-flex items-center gap-1 text-[11.5px] text-primary bg-primary/[0.07] border border-primary/20 px-2.5 py-[4px]"
+          >
+            {{ concept.name }}
+            <button @click="toggleTempConcept(concept)" class="text-[14px] leading-none hover:opacity-60 transition-opacity ml-0.5">&times;</button>
+          </span>
         </div>
       </div>
 
-      <div class="p-5 overflow-y-auto flex-1 bg-bg">
+      <!-- Modal Body -->
+      <div class="px-6 py-5 overflow-y-auto flex-1">
         <div class="space-y-8">
           <div v-for="cat in CATEGORIES" :key="cat">
             <template v-if="modalGroupedConcepts[cat]?.length > 0">
               <div class="flex items-center gap-3 mb-4">
-                <h3 class="text-sm font-bold text-main">{{ cat }}</h3>
-                <div class="h-px bg-main/10 flex-1"></div>
+                <span class="text-[10.5px] font-medium tracking-[0.12em] uppercase text-main/40 whitespace-nowrap">{{ cat }}</span>
+                <div class="flex-1 border-t border-main/[0.08]"></div>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
-                <label v-for="concept in modalGroupedConcepts[cat]" :key="concept.id" class="flex items-center gap-2 cursor-pointer group px-2 py-1.5 rounded hover:bg-primary/5 transition-colors">
+                <label
+                  v-for="concept in modalGroupedConcepts[cat]"
+                  :key="concept.id"
+                  class="flex items-center gap-2 cursor-pointer group px-2 py-1.5 hover:bg-primary/[0.04] transition-colors"
+                >
                   <input
                     type="checkbox"
                     :checked="tempSelectedConcepts.some(c => c.id === concept.id)"
                     @change="toggleTempConcept(concept)"
-                    class="w-4 h-4 text-primary border-main/10 rounded focus:ring-primary cursor-pointer shrink-0"
+                    class="w-3.5 h-3.5 rounded-none text-primary border-main/25 focus:ring-0 focus:ring-offset-0 cursor-pointer shrink-0"
                   />
-                  <span class="text-sm text-main/50 group-hover:text-main truncate">{{ concept.name }}</span>
+                  <span class="text-[13px] text-main/55 group-hover:text-main/80 transition-colors truncate">{{ concept.name }}</span>
                 </label>
               </div>
             </template>
@@ -502,11 +650,18 @@ const changePage = (dir: number) => {
         </div>
       </div>
 
-      <div class="p-5 border-t border-main/10 shrink-0 bg-bg flex justify-end gap-3 relative z-10">
-        <button @click="closeModal" class="px-3 py-1 rounded-full border border-transparent text-xs font-medium text-main/50 hover:text-primary transition-colors">
-          取消
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-main/[0.08] shrink-0 flex justify-end gap-3">
+        <button
+          @click="clearAllFilters"
+          class="text-[12px] text-main/45 px-3 py-1.5 hover:text-primary transition-colors"
+        >
+          清除條件
         </button>
-        <button @click="applyModalConcepts" class="btn-primary !px-3 !py-1 !text-xs">
+        <button
+          @click="applyModalConcepts"
+          class="text-[12px] font-medium text-bg bg-primary px-4 py-1.5 hover:opacity-85 transition-opacity"
+        >
           套用篩選
         </button>
       </div>
