@@ -11,7 +11,7 @@ from .serializers import ConceptMinimalSerializer, ConceptSerializer
 from .services import get_random_concept_with_works
 
 
-class ConceptViewSet(viewsets.ModelViewSet):
+class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
     """Concept API. Uses slug as the lookup field."""
 
     queryset = Concept.objects.annotate(works_count=Count("works", distinct=True)).order_by("category", "name")

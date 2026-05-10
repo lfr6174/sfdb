@@ -6,7 +6,7 @@ from .models import Agent, AgentAlias, AgentLink
 from .serializers import AgentAliasSerializer, AgentDetailSerializer, AgentLinkSerializer, AgentSerializer
 
 
-class AgentViewSet(viewsets.ModelViewSet):
+class AgentViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows agents to be viewed or edited.
     """
@@ -40,7 +40,7 @@ class AgentViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
 
-class AgentAliasViewSet(viewsets.ModelViewSet):
+class AgentAliasViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows agent aliases to be viewed or edited independently.
     """
@@ -49,7 +49,7 @@ class AgentAliasViewSet(viewsets.ModelViewSet):
     serializer_class = AgentAliasSerializer
 
 
-class AgentLinkViewSet(viewsets.ModelViewSet):
+class AgentLinkViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows agent links to be viewed or edited independently.
     """

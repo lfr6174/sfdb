@@ -9,7 +9,7 @@ from .serializers import (
 )
 
 
-class WorkViewSet(viewsets.ModelViewSet):
+class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint for Works.
     Uses select_related and prefetch_related to heavily optimize SQL queries,
