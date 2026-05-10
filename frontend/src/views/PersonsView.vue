@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
 
-const agents = ref<any[]>([])
+const persons = ref<any[]>([])
 const isLoading = ref(true)
 
 // Search, sort, and pagination states
@@ -13,10 +13,10 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const totalCount = ref(0)
 
-const fetchAgents = async () => {
+const fetchPersons = async () => {
   isLoading.value = true
   try {
-    const response = await api.get('/agents/', {
+    const response = await api.get('/persons/', {
       params: {
         page: currentPage.value,
         search: searchQuery.value,
@@ -24,7 +24,7 @@ const fetchAgents = async () => {
       }
     })
 
-    agents.value = response.data.results || []
+    persons.value = response.data.results || []
     totalCount.value = response.data.count || 0
 
     // Calculate total pages based on backend's default page size (e.g., 20)
@@ -32,7 +32,7 @@ const fetchAgents = async () => {
     totalPages.value = Math.ceil(totalCount.value / pageSize) || 1
 
   } catch (error) {
-    console.error('Failed to fetch agents:', error)
+    console.error('Failed to fetch persons:', error)
   } finally {
     isLoading.value = false
   }
@@ -44,24 +44,24 @@ const onSearchInput = () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     currentPage.value = 1
-    fetchAgents()
+    fetchPersons()
   }, 300)
 }
 
 // When sort order changes, reset to first page and refetch
 watch(sortBy, () => {
   currentPage.value = 1
-  fetchAgents()
+  fetchPersons()
 })
 
 const changePage = (dir: number) => {
   currentPage.value += dir
-  fetchAgents()
+  fetchPersons()
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 onMounted(() => {
-  fetchAgents()
+  fetchPersons()
 })
 </script>
 
@@ -102,7 +102,7 @@ onMounted(() => {
     </div>
 
     <!-- ── Loading ── -->
-    <div v-if="isLoading && agents.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
+    <div v-if="isLoading && persons.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
       正在讀取人物列表...
     </div>
 
@@ -117,33 +117,33 @@ onMounted(() => {
         <div class="flex-1 border-t border-main/10"></div>
       </div>
 
-      <!-- Agent Rows -->
+      <!-- Person Rows -->
       <div
-        v-for="agent in agents"
-        :key="agent.id"
+        v-for="person in persons"
+        :key="person.id"
         class="group py-5 border-b border-main/10 cursor-pointer hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors"
-        @click="$router.push(`/agents/${agent.id}`)"
+        @click="$router.push(`/persons/${person.id}`)"
       >
         <!-- Name row -->
         <div class="flex flex-wrap items-baseline justify-between gap-3 mb-1.5">
           <div class="flex items-baseline gap-2.5 flex-wrap">
-            <span class="text-xl font-medium text-main group-hover:text-primary transition-colors">{{ agent.name }}</span>
-            <span v-if="agent.aliases && agent.aliases.length > 0" class="text-base text-main/40">
-              {{ agent.aliases.map(a => a.name).join(' · ') }}
+            <span class="text-xl font-medium text-main group-hover:text-primary transition-colors">{{ person.name }}</span>
+            <span v-if="person.aliases && person.aliases.length > 0" class="text-base text-main/40">
+              {{ person.aliases.map(a => a.name).join(' · ') }}
             </span>
           </div>
-          <span class="font-mono text-sm text-main/40 shrink-0">{{ agent.works_count || 0 }} 部作品</span>
+          <span class="font-mono text-sm text-main/40 shrink-0">{{ person.works_count || 0 }} 部作品</span>
         </div>
 
         <!-- Bio -->
         <p class="text-base text-main/70 leading-relaxed mb-3.5 line-clamp-2">
-          {{ agent.about || '暫無簡歷提供。' }}
+          {{ person.about || '暫無簡歷提供。' }}
         </p>
 
         <!-- Concept Tags -->
-        <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
+        <div v-if="person.top_concepts && person.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
           <router-link
-            v-for="concept in agent.top_concepts.slice(0, 5)"
+            v-for="concept in person.top_concepts.slice(0, 5)"
             :key="concept.slug"
             :to="`/concepts/${concept.slug}`"
             class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"

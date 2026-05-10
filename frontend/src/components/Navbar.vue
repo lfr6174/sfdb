@@ -16,7 +16,7 @@ const { isSpoilerProtected, toggleSpoiler } = useSpoiler()
         <nav class="hidden md:flex h-full gap-6">
           <router-link to="/concepts" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-main/60 hover:text-main" active-class="!border-primary !text-primary">概念</router-link>
           <router-link to="/works" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-main/60 hover:text-main" active-class="!border-primary !text-primary">作品</router-link>
-          <router-link to="/agents" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-main/60 hover:text-main" active-class="!border-primary !text-primary">人物</router-link>
+          <router-link to="/persons" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-main/60 hover:text-main" active-class="!border-primary !text-primary">人物</router-link>
           <router-link to="/pages/about" class="inline-flex items-center px-1 border-b-2 font-medium text-base transition-colors border-transparent text-main/60 hover:text-main" active-class="!border-primary !text-primary">關於</router-link>
         </nav>
       </div>

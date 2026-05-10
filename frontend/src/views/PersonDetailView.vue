@@ -6,46 +6,46 @@ import ConceptTag from '../components/ConceptTag.vue'
 
 const route = useRoute()
 
-const agent = ref<any>(null)
+const person = ref<any>(null)
 const isLoading = ref(true)
 const isConceptsExpanded = ref(false)
 
-const fetchAgentDetail = async () => {
+const fetchPersonDetail = async () => {
   isLoading.value = true
   try {
-    const response = await api.get(`/agents/${route.params.id}/`)
-    agent.value = response.data
+    const response = await api.get(`/persons/${route.params.id}/`)
+    person.value = response.data
   } catch (error) {
-    console.error('Failed to fetch agent details:', error)
+    console.error('Failed to fetch person details:', error)
   } finally {
     isLoading.value = false
   }
 }
 
 onMounted(() => {
-  fetchAgentDetail()
+  fetchPersonDetail()
 })
 
 // Manage displayed concepts for the "show more" functionality
 const DISPLAY_LIMIT = 10
 const displayedConcepts = computed(() => {
-  if (!agent.value?.top_concepts) return []
-  if (isConceptsExpanded.value) return agent.value.top_concepts
-  return agent.value.top_concepts.slice(0, DISPLAY_LIMIT)
+  if (!person.value?.top_concepts) return []
+  if (isConceptsExpanded.value) return person.value.top_concepts
+  return person.value.top_concepts.slice(0, DISPLAY_LIMIT)
 })
 
 const hiddenConceptsCount = computed(() => {
-  if (!agent.value?.top_concepts) return 0
-  return Math.max(0, agent.value.top_concepts.length - DISPLAY_LIMIT)
+  if (!person.value?.top_concepts) return 0
+  return Math.max(0, person.value.top_concepts.length - DISPLAY_LIMIT)
 })
 
 const totalWorksCount = computed(() => {
-  return agent.value?.participated_works?.length || 0
+  return person.value?.participated_works?.length || 0
 })
 
 const activeYears = computed(() => {
-  if (!agent.value?.participated_works || agent.value.participated_works.length === 0) return '—'
-  const years = agent.value.participated_works
+  if (!person.value?.participated_works || person.value.participated_works.length === 0) return '—'
+  const years = person.value.participated_works
     .map((w: any) => parseInt(w.year))
     .filter((y: number) => !isNaN(y))
   if (years.length === 0) return '—'
@@ -55,10 +55,10 @@ const activeYears = computed(() => {
 })
 
 const personAwards = computed(() => {
-  if (!agent.value?.participated_works) return []
+  if (!person.value?.participated_works) return []
   const awardsMap = new Map<number, any>()
 
-  agent.value.participated_works.forEach((w: any) => {
+  person.value.participated_works.forEach((w: any) => {
     if (w.awards && w.awards.length > 0) {
       w.awards.forEach((award: any) => {
         if (!awardsMap.has(award.catalogue_id)) {
@@ -84,12 +84,12 @@ const personAwards = computed(() => {
       正在讀取人物資料...
     </div>
 
-    <template v-else-if="agent">
+    <template v-else-if="person">
 
       <!-- Back Link -->
       <div class="pt-10 mb-9">
         <router-link
-          to="/agents"
+          to="/persons"
           class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
         >
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
@@ -107,21 +107,21 @@ const personAwards = computed(() => {
           <!-- Personal Info -->
           <section>
             <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-2">
-              {{ agent.name }}
+              {{ person.name }}
             </h1>
 
-            <div v-if="agent.aliases && agent.aliases.length > 0" class="text-base text-main/40 mb-5">
-              {{ agent.aliases.map((a) => a.name).join(' · ') }}
+            <div v-if="person.aliases && person.aliases.length > 0" class="text-base text-main/40 mb-5">
+              {{ person.aliases.map((a) => a.name).join(' · ') }}
             </div>
 
             <p class="text-base text-main/80 leading-relaxed whitespace-pre-wrap mb-5">
-              {{ agent.about || '暫無簡歷提供。' }}
+              {{ person.about || '暫無簡歷提供。' }}
             </p>
 
             <!-- External Links -->
-            <div v-if="agent.links && agent.links.length > 0" class="flex flex-wrap gap-4">
+            <div v-if="person.links && person.links.length > 0" class="flex flex-wrap gap-4">
               <a
-                v-for="link in agent.links"
+                v-for="link in person.links"
                 :key="link.id"
                 :href="link.url"
                 target="_blank"
@@ -140,9 +140,9 @@ const personAwards = computed(() => {
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
-            <div v-if="agent.participated_works && agent.participated_works.length > 0" class="flex flex-col">
+          <div v-if="person.participated_works && person.participated_works.length > 0" class="flex flex-col">
               <router-link
-                v-for="work in agent.participated_works"
+              v-for="work in person.participated_works"
                 :key="work.id"
                 :to="`/works/${work.id}`"
                 class="group flex items-start gap-4 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-3 hover:px-3 transition-colors no-underline"
@@ -169,7 +169,7 @@ const personAwards = computed(() => {
           </section>
 
           <!-- ── Participated Publications ── -->
-          <section v-if="agent.participated_publications && agent.participated_publications.length > 0" class="mt-10">
+          <section v-if="person.participated_publications && person.participated_publications.length > 0" class="mt-10">
             <div class="flex items-center gap-3 mb-5">
               <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與其他參與</span>
               <div class="flex-1 border-t border-main/10"></div>
@@ -177,7 +177,7 @@ const personAwards = computed(() => {
 
             <div class="flex flex-col">
               <div
-                v-for="pub in agent.participated_publications"
+                v-for="pub in person.participated_publications"
                 :key="pub.id"
                 class="group flex items-start gap-4 py-4 border-b border-main/10 last:border-0"
               >
@@ -225,7 +225,7 @@ const personAwards = computed(() => {
               <div class="flex-1 border-t border-main/10"></div>
             </div>
 
-            <div v-if="agent.top_concepts && agent.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
+          <div v-if="person.top_concepts && person.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
               <ConceptTag
                 v-for="concept in displayedConcepts"
                 :key="concept.slug"

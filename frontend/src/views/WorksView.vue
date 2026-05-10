@@ -537,7 +537,7 @@ const changePage = (dir: number) => {
               <div class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm text-main/50">
                 <span v-if="work.byline && work.byline.length" class="flex flex-wrap items-center gap-x-0.5">
                   <template v-for="(agent, idx) in work.byline" :key="idx">
-                    <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="hover:text-primary transition-colors no-underline">{{ agent.text }}</router-link>
+                    <router-link v-if="agent.id && agent.agent_type === 'person'" :to="`/persons/${agent.id}`" class="hover:text-primary transition-colors no-underline">{{ agent.text }}</router-link>
                     <span v-else>{{ agent.text }}</span>
                     <span v-if="idx < work.byline.length - 1">、</span>
                   </template>

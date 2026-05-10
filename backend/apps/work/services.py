@@ -5,7 +5,13 @@ def get_byline(contributions) -> list[dict]:
     for c in contributions:
         if c.role and c.agent and c.agent.id not in seen:
             seen.add(c.agent.id)
-            result.append({"id": c.agent.id, "text": getattr(c, "display_name", "") or c.agent.name})
+            result.append(
+                {
+                    "id": c.agent.id,
+                    "text": getattr(c, "display_name", "") or c.agent.name,
+                    "agent_type": c.agent.agent_type,
+                }
+            )
     return result
 
 
@@ -15,7 +21,12 @@ def get_credits(contributions) -> list[dict]:
     for c in contributions:
         if c.role and c.agent:
             groups.setdefault(c.role.verb, {}).setdefault(
-                c.agent.id, {"id": c.agent.id, "text": getattr(c, "display_name", "") or c.agent.name}
+                c.agent.id,
+                {
+                    "id": c.agent.id,
+                    "text": getattr(c, "display_name", "") or c.agent.name,
+                    "agent_type": c.agent.agent_type,
+                },
             )
 
     return [{"role": role, "agents": list(agents.values())} for role, agents in groups.items()]

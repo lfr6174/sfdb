@@ -102,7 +102,7 @@ const conceptDescriptions = computed(() => {
               <span v-if="work.credit && work.credit.length" class="flex flex-wrap items-center gap-x-0.5">
                 <template v-for="(group, gIdx) in work.credit" :key="gIdx">
                   <template v-for="(agent, aIdx) in group.agents" :key="aIdx">
-                    <router-link v-if="agent.id" :to="`/agents/${agent.id}`" class="text-primary hover:opacity-70 transition-opacity">{{ agent.text }}</router-link>
+                    <router-link v-if="agent.id && agent.agent_type === 'person'" :to="`/persons/${agent.id}`" class="text-primary hover:opacity-70 transition-opacity">{{ agent.text }}</router-link>
                     <span v-else class="text-main/80">{{ agent.text }}</span>
                     <span v-if="aIdx < group.agents.length - 1">、</span>
                   </template>

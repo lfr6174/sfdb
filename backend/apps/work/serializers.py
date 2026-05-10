@@ -31,7 +31,7 @@ class AgentMinimalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agent
-        fields = ["id", "name"]
+        fields = ["id", "name", "agent_type"]
 
 
 class WorkMinimalSerializer(serializers.ModelSerializer):

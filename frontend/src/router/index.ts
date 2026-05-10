@@ -30,13 +30,13 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/agents',
-      name: 'agents',
+      path: '/persons',
+      name: 'persons',
       component: PersonsView
     },
     {
-      path: '/agents/:id',
-      name: 'agent-detail',
+      path: '/persons/:id',
+      name: 'person-detail',
       component: PersonDetailView,
       props: true
     },
