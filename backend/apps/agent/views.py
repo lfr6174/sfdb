@@ -40,6 +40,14 @@ class AgentViewSet(viewsets.ReadOnlyModelViewSet):
         return super().get_serializer_class()
 
 
+class PersonViewSet(AgentViewSet):
+    """
+    API endpoint that allows persons (Agents of type PERSON) to be viewed or edited.
+    """
+
+    queryset = AgentViewSet.queryset.filter(agent_type=Agent.AgentType.PERSON)
+
+
 class AgentAliasViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows agent aliases to be viewed or edited independently.
