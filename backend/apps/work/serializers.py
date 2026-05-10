@@ -244,32 +244,26 @@ class WorkSerializer(serializers.ModelSerializer):
         return get_credits(obj.contributions.all())
 
     def get_publications(self, obj):
-        manifestations = (
-            obj.manifestations.select_related("publication", "publication__publisher")
-            .prefetch_related(
-                "contributions__agent",
-                "contributions__role",
-                "publication__contributions__agent",
-                "publication__contributions__role",
-            )
-            .all()
-        )
+        # Rely on prefetch_related from ViewSet to avoid N+1 queries.
+        manifestations = obj.manifestations.all()
+        if not manifestations:
+            return []
 
-        res = []
-        for man in manifestations:
-            pub = man.publication
-            pub_data = PublicationSerializer(pub, context=self.context).data
+        # Batch serialize publications to avoid serialization overhead in loops.
+        publications = [man.publication for man in manifestations]
+        pub_data_list = PublicationSerializer(publications, many=True, context=self.context).data
 
+        # Merge manifestation-specific metadata back into the serialized publication data.
+        for man, pub_data in zip(manifestations, pub_data_list):
             pub_data["manifestation_id"] = man.id
             pub_data["manifestation_name"] = man.name
-            pub_data["manifestation_display_name"] = man.name if man.name else pub.title
+            pub_data["manifestation_display_name"] = man.name if man.name else man.publication.title
 
             man_credit = get_credits(man.contributions.all())
             pub_credit = pub_data.get("credit", [])
             pub_data["credit"] = man_credit + pub_credit
 
-            res.append(pub_data)
-        return res
+        return pub_data_list
 
 
 # ============================================================================
