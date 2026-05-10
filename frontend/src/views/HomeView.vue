@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
+import SectionTitle from '../components/SectionTitle.vue'
 
 const works = ref<any[]>([])
 const isLoading = ref(true)
@@ -59,7 +60,7 @@ onMounted(async () => {
     // 3. Announcement processing
     if (postsRes.status === 'fulfilled') {
       const fetchedPosts = postsRes.value.data.results || []
-      announcements.value = fetchedPosts.slice(0, 5) // 統一：直接儲存原始資料
+      announcements.value = fetchedPosts.slice(0, 5)
     }
 
     // 4. Set initial random concept
@@ -103,20 +104,19 @@ onMounted(async () => {
 
       <!-- Left Column: Random Concept Works -->
       <section class="flex flex-col">
-        <div class="flex items-center gap-3 mb-5">
-          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">
-            與 <router-link :to="`/concepts/${currentConcept.slug}`" class="text-primary hover:text-primary/70 transition-colors no-underline">
-              {{ currentConcept.name }}
-            </router-link> 相關的作品
-          </span>
-          <div class="flex-1 border-t border-main/10"></div>
-          <button @click="refreshRandomConcept" class="flex items-center gap-1 text-sm text-main/40 hover:text-primary transition-colors whitespace-nowrap">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-3.5 h-3.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
+        <SectionTitle class="mb-5">
+          與 <router-link :to="`/concepts/${currentConcept.slug}`" class="text-primary hover:text-primary/70 transition-colors no-underline">
+            {{ currentConcept.name }}
+          </router-link> 相關的作品
+          <template #action>
+            <button @click="refreshRandomConcept" class="flex items-center gap-1 text-sm text-main/40 hover:text-primary transition-colors whitespace-nowrap">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-3.5 h-3.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
               換一個
-          </button>
-        </div>
+            </button>
+          </template>
+        </SectionTitle>
 
         <div v-if="isLoading" class="text-base text-main/50 py-3 text-center">正在讀取作品...</div>
         <div v-else-if="works.length > 0" class="flex flex-col">
@@ -155,10 +155,7 @@ onMounted(async () => {
 
       <!-- Right Column: Recent Concepts -->
       <section class="flex flex-col lg:pl-10 lg:border-l border-main/10">
-        <div class="flex items-center gap-3 mb-5">
-          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">近期新增概念</span>
-          <div class="flex-1 border-t border-main/10"></div>
-        </div>
+        <SectionTitle class="mb-5">近期新增概念</SectionTitle>
 
         <div class="space-y-7">
           <div v-for="(tags, category) in recentConcepts" :key="category">
@@ -180,13 +177,12 @@ onMounted(async () => {
 
     <!-- Footer Section: Announcements -->
     <section class="">
-      <div class="flex items-center gap-3 mb-5">
-        <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">最新資訊</span>
-        <div class="flex-1 border-t border-main/10"></div>
-        <router-link to="/posts" class="text-sm text-main/40 hover:text-primary transition-colors no-underline">
-          查看全部
-        </router-link>
-      </div>
+      <SectionTitle class="mb-5">
+        最新資訊
+        <template #action>
+          <router-link to="/posts" class="text-sm text-main/40 hover:text-primary transition-colors no-underline">查看全部</router-link>
+        </template>
+      </SectionTitle>
       <ul class="flex flex-col">
         <li v-for="ann in announcements" :key="ann.id">
           <router-link :to="`/posts/${ann.id}`" class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-3.5 border-b border-main/10 last:border-0 group cursor-pointer hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors no-underline">

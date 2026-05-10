@@ -3,12 +3,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import ConceptTag from '../components/ConceptTag.vue'
+import BackLink from '../components/BackLink.vue'
+import SectionTitle from '../components/SectionTitle.vue'
+import ExpandableTagList from '../components/ExpandableTagList.vue'
 
 const route = useRoute()
 
 const person = ref<any>(null)
 const isLoading = ref(true)
-const isConceptsExpanded = ref(false)
 
 const fetchPersonDetail = async () => {
   isLoading.value = true
@@ -26,18 +28,6 @@ onMounted(() => {
   fetchPersonDetail()
 })
 
-// Manage displayed concepts for the "show more" functionality
-const DISPLAY_LIMIT = 10
-const displayedConcepts = computed(() => {
-  if (!person.value?.top_concepts) return []
-  if (isConceptsExpanded.value) return person.value.top_concepts
-  return person.value.top_concepts.slice(0, DISPLAY_LIMIT)
-})
-
-const hiddenConceptsCount = computed(() => {
-  if (!person.value?.top_concepts) return 0
-  return Math.max(0, person.value.top_concepts.length - DISPLAY_LIMIT)
-})
 
 const totalWorksCount = computed(() => {
   return person.value?.participated_works?.length || 0
@@ -88,15 +78,7 @@ const personAwards = computed(() => {
 
       <!-- Back Link -->
       <div class="pt-10 mb-9">
-        <router-link
-          to="/persons"
-          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
-        >
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
-            <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          返回人物列表
-        </router-link>
+        <BackLink to="/persons" text="返回人物列表" />
       </div>
 
       <div class="flex flex-col md:flex-row gap-10 lg:gap-16 items-start pb-20">
@@ -135,10 +117,7 @@ const personAwards = computed(() => {
 
           <!-- ── Participated Works ── -->
           <section class="mt-12">
-            <div class="flex items-center gap-3 mb-5">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">歷年作品</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-5">歷年作品</SectionTitle>
 
           <div v-if="person.participated_works && person.participated_works.length > 0" class="flex flex-col">
               <router-link
@@ -170,10 +149,7 @@ const personAwards = computed(() => {
 
           <!-- ── Participated Publications ── -->
           <section v-if="person.participated_publications && person.participated_publications.length > 0" class="mt-10">
-            <div class="flex items-center gap-3 mb-5">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與其他參與</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-5">出版與其他參與</SectionTitle>
 
             <div class="flex flex-col">
               <div
@@ -202,60 +178,29 @@ const personAwards = computed(() => {
 
           <!-- Work count -->
           <div>
-            <div class="flex items-center gap-3 mb-2">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品總數</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-2">作品總數</SectionTitle>
             <span class="font-mono text-xl text-main">{{ totalWorksCount }}</span>
           </div>
 
           <!-- Active years -->
           <div>
-            <div class="flex items-center gap-3 mb-2">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">活躍年份</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-2">活躍年份</SectionTitle>
             <span class="font-mono text-base text-main">{{ activeYears }}</span>
           </div>
 
           <!-- Top Concepts -->
           <div>
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">常見標籤</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-3">常見標籤</SectionTitle>
 
-          <div v-if="person.top_concepts && person.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
-              <ConceptTag
-                v-for="concept in displayedConcepts"
-                :key="concept.slug"
-                :concept="concept"
-              />
-
-              <button
-                v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
-                @click="isConceptsExpanded = true"
-                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
-              >
-                + {{ hiddenConceptsCount }} 更多
-              </button>
-              <button
-                v-if="isConceptsExpanded"
-                @click="isConceptsExpanded = false"
-                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
-              >
-                − 收合
-              </button>
+            <div v-if="person.top_concepts && person.top_concepts.length > 0">
+              <ExpandableTagList :concepts="person.top_concepts" :limit="10" />
             </div>
             <div v-else class="text-sm text-main/40">尚未與任何概念建立關聯。</div>
           </div>
 
           <!-- Awards -->
           <div v-if="personAwards.length > 0">
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關獎項</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-3">相關獎項</SectionTitle>
             <div class="flex flex-wrap gap-1.5">
               <span
                 v-for="award in personAwards"

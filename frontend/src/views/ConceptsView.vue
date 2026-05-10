@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import api from '../api/axios'
 import ConceptTag from '../components/ConceptTag.vue'
+import SectionTitle from '../components/SectionTitle.vue'
 
 const allConcepts = ref<any[]>([])
 const isLoading = ref(true)
@@ -119,10 +120,7 @@ const groupedConcepts = computed(() => {
           class="py-8"
         >
           <!-- Category eyebrow inline with rule -->
-          <div class="flex items-center gap-3 mb-5">
-            <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ category }}</span>
-            <div class="flex-1 border-t border-main/10"></div>
-          </div>
+          <SectionTitle class="mb-5">{{ category }}</SectionTitle>
 
           <!-- Tag cloud -->
           <div class="flex flex-wrap gap-1.5">

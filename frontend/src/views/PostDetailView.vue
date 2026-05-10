@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
+import BackLink from '../components/BackLink.vue'
 
 const route = useRoute()
 const post = ref<any>(null)
@@ -38,15 +39,7 @@ const formatDate = (dateStr: string) => {
     <template v-else-if="post">
       <!-- Back Link -->
       <div class="pt-10 mb-9">
-        <router-link
-          to="/posts"
-          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
-        >
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
-            <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          返回文章列表
-        </router-link>
+        <BackLink to="/posts" text="返回文章列表" />
       </div>
 
       <article class="flex flex-col">

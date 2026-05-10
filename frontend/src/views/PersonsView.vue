@@ -2,6 +2,8 @@
 import { ref, onMounted, watch } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
+import SectionTitle from '../components/SectionTitle.vue'
+import { useDebounceFn } from '../composables/useDebounce'
 
 const persons = ref<any[]>([])
 const isLoading = ref(true)
@@ -39,14 +41,10 @@ const fetchPersons = async () => {
 }
 
 // Implement simple debounce for search input to prevent excessive API calls
-let searchTimeout: any = null
-const onSearchInput = () => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    currentPage.value = 1
-    fetchPersons()
-  }, 300)
-}
+const onSearchInput = useDebounceFn(() => {
+  currentPage.value = 1
+  fetchPersons()
+}, 300)
 
 // When sort order changes, reset to first page and refetch
 watch(sortBy, () => {
@@ -110,12 +108,7 @@ onMounted(() => {
     <div v-else class="pb-20">
 
       <!-- Count -->
-      <div v-if="totalCount > 0" class="flex items-center gap-3 mt-6 mb-1">
-        <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">
-          共 {{ totalCount }} 位人物
-        </span>
-        <div class="flex-1 border-t border-main/10"></div>
-      </div>
+      <SectionTitle v-if="totalCount > 0" class="mt-6 mb-1">共 {{ totalCount }} 位人物</SectionTitle>
 
       <!-- Person Rows -->
       <div

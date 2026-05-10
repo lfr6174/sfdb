@@ -7,7 +7,7 @@ withDefaults(defineProps<{
   };
   size?: 'sm' | 'md';
 }>(), {
-  size: 'sm' // 預設為小尺寸，符合大多數的 sidebar 或 inline list 需求
+  size: 'sm' // Default to 'sm' for sidebars or inline lists
 })
 </script>
 

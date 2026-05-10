@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
+import BackLink from '../components/BackLink.vue'
+import SectionTitle from '../components/SectionTitle.vue'
 
 const route = useRoute()
 
@@ -72,15 +74,7 @@ onMounted(() => {
 
       <!-- Back Link -->
       <div class="pt-10 mb-9">
-        <router-link
-          to="/concepts"
-          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
-        >
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
-            <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          返回概念探索
-        </router-link>
+        <BackLink to="/concepts" text="返回概念探索" />
       </div>
 
       <div class="flex flex-col md:flex-row gap-10 lg:gap-16 items-start pb-20">
@@ -115,10 +109,7 @@ onMounted(() => {
 
           <!-- ── Application Examples ── -->
           <section class="mt-12">
-            <div class="flex items-center gap-3 mb-5">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用範例</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-5">概念應用範例</SectionTitle>
 
             <div v-if="validWorkConcepts.length > 0" class="flex flex-col">
               <div
@@ -170,19 +161,13 @@ onMounted(() => {
 
           <!-- Works count -->
           <div>
-            <div class="flex items-center gap-3 mb-2">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄作品數</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-2">收錄作品數</SectionTitle>
             <span class="font-mono text-xl text-main">{{ concept.works_count || 0 }}</span>
           </div>
 
           <!-- Year range -->
           <div>
-            <div class="flex items-center gap-3 mb-2">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出現年份</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-2">出現年份</SectionTitle>
             <div class="flex items-baseline gap-2">
               <span class="font-mono text-base text-main">{{ earliestYear }}</span>
               <span class="text-xs text-main/30">—</span>
@@ -192,10 +177,7 @@ onMounted(() => {
 
           <!-- Related Concepts -->
           <div>
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">相關概念</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-3">相關概念</SectionTitle>
 
             <div v-if="concept.related_concepts && concept.related_concepts.length > 0" class="flex flex-wrap gap-1.5">
               <ConceptTag

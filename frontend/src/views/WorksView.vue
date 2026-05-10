@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
 import ConceptTag from '../components/ConceptTag.vue'
+import SectionTitle from '../components/SectionTitle.vue'
+import { useDebounceFn } from '../composables/useDebounce'
 
 // Filter Constants
 const MEDIA_OPTIONS = [
@@ -87,14 +89,10 @@ const fetchWorks = async () => {
 }
 
 // Debounce Strategy for Real-time Search
-let fetchTimeout: any
-const triggerFetch = () => {
-  clearTimeout(fetchTimeout)
-  fetchTimeout = setTimeout(() => {
-    currentPage.value = 1
-    fetchWorks()
-  }, 300)
-}
+const triggerFetch = useDebounceFn(() => {
+  currentPage.value = 1
+  fetchWorks()
+}, 300)
 
 // Watch all filter states and trigger fetch
 watch([searchQuery, selectedMedia, selectedLengths, selectedConcepts, yearMin, yearMax, ordering], () => {
@@ -241,10 +239,7 @@ const changePage = (dir: number) => {
 
       <!-- Media Type -->
       <div class="mb-6">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品媒體</span>
-          <div class="flex-1 border-t border-main/10"></div>
-        </div>
+        <SectionTitle class="mb-3">作品媒體</SectionTitle>
         <div class="flex flex-col gap-2">
           <label v-for="opt in MEDIA_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
             <input
@@ -260,10 +255,7 @@ const changePage = (dir: number) => {
 
       <!-- Work Length -->
       <div class="mb-6">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">作品篇幅</span>
-          <div class="flex-1 border-t border-main/10"></div>
-        </div>
+        <SectionTitle class="mb-3">作品篇幅</SectionTitle>
         <div class="flex flex-col gap-2">
           <label v-for="opt in LENGTH_OPTIONS" :key="opt.value" class="flex items-center gap-2 cursor-pointer group">
             <input
@@ -279,10 +271,7 @@ const changePage = (dir: number) => {
 
       <!-- Concept Tags -->
       <div>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念標籤</span>
-          <div class="flex-1 border-t border-main/10"></div>
-        </div>
+        <SectionTitle class="mb-3">概念標籤</SectionTitle>
 
         <!-- Selected tags -->
         <div v-if="selectedConcepts.length > 0" class="mb-4">
@@ -335,18 +324,17 @@ const changePage = (dir: number) => {
 
       <!-- ── Advanced Search ── -->
       <section v-if="isAdvancedMode" class="pb-10 border-b border-main/10 mb-8">
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">進階搜尋</span>
-            <div class="flex-1 border-t border-main/10 w-12"></div>
-          </div>
-          <button
-            @click="isAdvancedMode = false"
-            class="text-xs text-main/50 border border-main/10 px-3 py-1 hover:text-primary hover:border-primary/30 transition-colors"
-          >
-            返回結果列表
-          </button>
-        </div>
+        <SectionTitle class="mb-6">
+          進階搜尋
+          <template #action>
+            <button
+              @click="isAdvancedMode = false"
+              class="text-xs text-main/50 border border-main/10 px-3 py-1 hover:text-primary hover:border-primary/30 transition-colors"
+            >
+              返回結果列表
+            </button>
+          </template>
+        </SectionTitle>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -624,10 +612,7 @@ const changePage = (dir: number) => {
         <div class="space-y-8">
           <div v-for="cat in CATEGORIES" :key="cat">
             <template v-if="modalGroupedConcepts[cat]?.length > 0">
-              <div class="flex items-center gap-3 mb-4">
-                <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">{{ cat }}</span>
-                <div class="flex-1 border-t border-main/10"></div>
-              </div>
+              <SectionTitle class="mb-4">{{ cat }}</SectionTitle>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
                 <label
                   v-for="concept in modalGroupedConcepts[cat]"

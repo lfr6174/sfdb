@@ -4,11 +4,13 @@ import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
+import BackLink from '../components/BackLink.vue'
+import SectionTitle from '../components/SectionTitle.vue'
+import ExpandableTagList from '../components/ExpandableTagList.vue'
 
 const route = useRoute()
 const work = ref<any>(null)
 const isLoading = ref(true)
-const isConceptsExpanded = ref(false)
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
 
@@ -37,17 +39,9 @@ onMounted(() => {
   fetchWorkDetail()
 })
 
-// Manage displayed concepts for the "show more" functionality
-const DISPLAY_LIMIT = 15
-const displayedConcepts = computed(() => {
-  if (!work.value?.work_concepts) return []
-  if (isConceptsExpanded.value) return work.value.work_concepts
-  return work.value.work_concepts.slice(0, DISPLAY_LIMIT)
-})
-
-const hiddenConceptsCount = computed(() => {
-  if (!work.value?.work_concepts) return 0
-  return Math.max(0, work.value.work_concepts.length - DISPLAY_LIMIT)
+// Map relational objects to simple concept objects for the tag list component
+const plainConcepts = computed(() => {
+  return work.value?.work_concepts?.map((wc: any) => wc.concept) || []
 })
 
 const conceptDescriptions = computed(() => {
@@ -68,15 +62,7 @@ const conceptDescriptions = computed(() => {
 
       <!-- Back Link -->
       <div class="pt-10 mb-9">
-        <router-link
-          to="/works"
-          class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
-        >
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
-            <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          返回作品列表
-        </router-link>
+        <BackLink to="/works" text="返回作品列表" />
       </div>
 
       <div class="flex flex-col md:flex-row gap-10 lg:gap-16 items-start pb-20">
@@ -191,10 +177,7 @@ const conceptDescriptions = computed(() => {
 
           <!-- Publications -->
           <section v-if="work.publications && work.publications.length > 0">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">出版與發行</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-4">出版與發行</SectionTitle>
 
             <div class="flex flex-col">
               <div
@@ -259,10 +242,7 @@ const conceptDescriptions = computed(() => {
 
           <!-- Catalogues -->
           <section v-if="work.work_catalogues && work.work_catalogues.length > 0">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">收錄與獲獎</span>
-              <div class="flex-1 border-t border-main/10"></div>
-            </div>
+            <SectionTitle class="mb-4">收錄與獲獎</SectionTitle>
 
             <div class="flex flex-col">
               <div

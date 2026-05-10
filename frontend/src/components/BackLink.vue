@@ -1,0 +1,18 @@
+<script setup lang="ts">
+defineProps<{
+  to: string | object;
+  text: string;
+}>()
+</script>
+
+<template>
+  <router-link
+    :to="to"
+    class="inline-flex items-center gap-1.5 text-sm font-medium tracking-widest uppercase text-main/40 hover:text-primary transition-colors group no-underline"
+  >
+    <svg width="13" height="13" viewBox="0 0 14 14" fill="none" class="transition-transform group-hover:-translate-x-0.5">
+      <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    {{ text }}
+  </router-link>
+</template>

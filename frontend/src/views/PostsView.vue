@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
 import { formatDate } from '../utils/formatters'
+import { useDebounceFn } from '../composables/useDebounce'
 
 const PAGE_SIZE = 20
 const posts = ref<any[]>([])
@@ -38,14 +39,10 @@ const fetchPosts = async () => {
   }
 }
 
-let fetchTimeout: any
-const triggerFetch = () => {
-  clearTimeout(fetchTimeout)
-  fetchTimeout = setTimeout(() => {
-    currentPage.value = 1
-    fetchPosts()
-  }, 300)
-}
+const triggerFetch = useDebounceFn(() => {
+  currentPage.value = 1
+  fetchPosts()
+}, 300)
 
 watch([searchQuery, ordering], () => {
   triggerFetch()
