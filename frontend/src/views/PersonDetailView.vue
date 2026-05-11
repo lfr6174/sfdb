@@ -116,30 +116,34 @@ const personAwards = computed(() => {
           </section>
 
           <!-- ── Participated Works ── -->
-          <section class="mt-12">
-            <SectionTitle class="mb-5">歷年作品</SectionTitle>
+          <section class="mt-10">
+            <SectionTitle class="mb-2">歷年作品</SectionTitle>
 
           <div v-if="person.participated_works && person.participated_works.length > 0" class="flex flex-col">
               <router-link
               v-for="work in person.participated_works"
                 :key="work.id"
                 :to="`/works/${work.id}`"
-                class="group flex items-start gap-4 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-3 hover:px-3 transition-colors no-underline"
+                class="group relative z-0 flex items-baseline gap-4 py-3 border-b border-main/10 last:border-0 transition-colors no-underline"
               >
-                <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ work.year || '-' }}</span>
+                <!-- Hover Background Overlay -->
+                <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
 
-                <div class="flex-1 min-w-0">
-                  <span class="text-base font-medium text-main group-hover:text-primary transition-colors block mb-0.5">
+                <!-- Accent line -->
+                <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+
+                <span class="font-mono text-sm text-main/50 w-10 shrink-0">{{ work.year || '-' }}</span>
+
+                <div class="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span class="text-base font-medium text-main group-hover:text-primary transition-colors">
                     {{ work.title }}
                   </span>
-                  <span v-if="work.title_en" class="text-xs text-main/40 block mb-1">{{ work.title_en }}</span>
-                  <!-- Gray badge for media metadata -->
-                  <span class="font-mono text-[10px] tracking-wide text-main/50 bg-main/5 px-1.5 py-0.5">
-                    {{ [work.work_length, work.media_type].filter(Boolean).join(' · ') || '-' }}
+                  <span class="text-sm text-main/50">
+                    {{ [work.work_length, work.media_type].filter(Boolean).join('') }}
                   </span>
                 </div>
 
-                <span class="shrink-0 pt-0.5 text-xs font-medium text-primary">
+                <span class="shrink-0 text-sm font-medium text-primary text-right">
                   {{ work.roles.join('、') }}
                 </span>
               </router-link>
@@ -149,22 +153,22 @@ const personAwards = computed(() => {
 
           <!-- ── Participated Publications ── -->
           <section v-if="person.participated_publications && person.participated_publications.length > 0" class="mt-10">
-            <SectionTitle class="mb-5">出版與其他參與</SectionTitle>
+            <SectionTitle class="mb-2">出版與其他參與</SectionTitle>
 
             <div class="flex flex-col">
               <div
                 v-for="pub in person.participated_publications"
                 :key="pub.id"
-                class="group flex items-start gap-4 py-4 border-b border-main/10 last:border-0"
+                class="flex items-baseline gap-4 py-3 border-b border-main/10 last:border-0"
               >
-                <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ pub.year || '-' }}</span>
+                <span class="font-mono text-sm text-main/50 w-10 shrink-0">{{ pub.year || '-' }}</span>
 
-                <div class="flex-1 min-w-0">
-                  <span class="text-base font-medium text-main block mb-0.5">{{ pub.title }}</span>
-                  <span class="text-xs text-main/50">{{ pub.publisher || '-' }}</span>
+                <div class="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span class="text-base font-medium text-main">{{ pub.title }}</span>
+                  <span v-if="pub.publisher" class="text-sm text-main/50">{{ pub.publisher }}</span>
                 </div>
 
-                <span class="shrink-0 pt-0.5 text-xs font-medium text-primary">
+                <span class="shrink-0 text-sm font-medium text-primary text-right">
                   {{ pub.roles.join('、') }}
                 </span>
               </div>
