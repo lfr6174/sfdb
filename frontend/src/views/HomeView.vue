@@ -79,23 +79,21 @@ onMounted(async () => {
 <template>
   <div class="max-w-4xl mx-auto space-y-0 pb-20">
 
-    <!-- Hero Section (Statement & Statistics) - Left Aligned -->
-    <section class="pt-10 pb-12 md:pb-16">
-      <div class="max-w-3xl">
-        <p class="text-base text-main/70 mb-4">
-          目前共收錄 <span class="font-medium text-primary">{{ stats.works }}</span> 件台灣原創科幻作品與 <span class="font-medium text-primary">{{ stats.concepts }}</span> 個核心概念。
-        </p>
-        <h1 class="text-4xl md:text-5xl font-normal leading-snug text-main mb-8">
-          以「概念」為核心的<br class="hidden md:block">科幻作品資料庫
-        </h1>
-        <div class="flex flex-wrap gap-3">
-          <router-link to="/works" class="text-base font-medium text-bg bg-primary px-6 py-3 hover:opacity-85 transition-opacity no-underline inline-block">
-            瀏覽作品
-          </router-link>
-          <router-link to="/concepts" class="text-base text-main/60 border border-main/15 px-6 py-3 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all no-underline inline-block">
-            探索概念
-          </router-link>
-        </div>
+    <!-- Hero -->
+    <section class="pt-10 pb-14">
+      <h1 class="text-2xl font-normal text-main mb-2">
+        能依概念檢索的科幻書目資料庫
+      </h1>
+      <p class="text-sm text-main/40 mb-7">
+        收錄 {{ stats.works }} 件台灣原創作品與 {{ stats.concepts }} 種概念
+      </p>
+      <div class="flex items-center gap-5">
+        <router-link to="/works" class="text-sm font-medium text-bg bg-primary px-4 py-2 hover:opacity-85 transition-opacity no-underline">
+          瀏覽作品
+        </router-link>
+        <router-link to="/concepts" class="text-sm text-main/40 hover:text-primary transition-colors no-underline">
+          探索概念 →
+        </router-link>
       </div>
     </section>
 

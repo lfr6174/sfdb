@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { useSpoiler } from '../composables/useSpoiler'
-import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
@@ -47,6 +46,12 @@ const plainConcepts = computed(() => {
 const conceptDescriptions = computed(() => {
   if (!work.value?.work_concepts) return []
   return work.value.work_concepts.filter((wc: any) => !!wc.description)
+})
+
+const sortedCatalogues = computed(() => {
+  if (!work.value?.work_catalogues) return []
+  // Sort by year descending
+  return [...work.value.work_catalogues].sort((a, b) => (b.catalogue.year || 0) - (a.catalogue.year || 0))
 })
 
 </script>
@@ -121,10 +126,10 @@ const conceptDescriptions = computed(() => {
           </section>
 
           <!-- ── Concept Descriptions ── -->
-          <section v-if="conceptDescriptions.length > 0" class="mt-12 pt-2">
+          <section v-if="conceptDescriptions.length > 0" class="mt-12">
 
             <!-- Section eyebrow: label inline with rule -->
-            <div class="flex items-center gap-3 mb-5">
+            <div class="flex items-center gap-3 mb-3">
               <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">概念應用詳述</span>
               <div class="flex-1 border-t border-main/10"></div>
             </div>
@@ -133,23 +138,25 @@ const conceptDescriptions = computed(() => {
               <div
                 v-for="wc in conceptDescriptions"
                 :key="wc.id"
-                class="grid grid-cols-1 md:grid-cols-[7.5rem_1fr] gap-3 md:gap-5 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-3 hover:px-3 transition-colors"
+                class="py-3 border-b border-main/10 last:border-0 text-sm leading-relaxed"
               >
-                <div class="pt-0.5">
-                  <ConceptTag :concept="wc.concept" />
-                </div>
-                <p
+                <router-link
+                  :to="`/concepts/${wc.concept.slug}`"
+                  class="font-medium text-primary/80 hover:text-primary transition-colors no-underline"
+                >
+                  {{ wc.concept.name }}
+                </router-link>
+                <span class="text-main/25 mx-2">—</span>
+                <span
                   :class="[
-                    'text-base leading-relaxed',
                     isSpoilerProtected && !revealedSpoilers.has(wc.id)
-                      ? 'blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer'
-                      : 'text-main/75'
+                      ? 'blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer select-none'
+                      : 'text-main/65'
                   ]"
                   @click="isSpoilerProtected && !revealedSpoilers.has(wc.id) && revealSpoiler(wc.id)"
-                  :title="isSpoilerProtected && !revealedSpoilers.has(wc.id) ? '點擊顯示劇透內容' : ''"
                 >
                   {{ wc.description }}
-                </p>
+                </span>
               </div>
             </div>
           </section>
@@ -166,12 +173,10 @@ const conceptDescriptions = computed(() => {
               <div
                 v-for="pub in work.publications"
                 :key="pub.manifestation_id || pub.id"
-                class="group flex items-start gap-3 py-3 border-b border-main/10 last:border-0 cursor-pointer hover:bg-primary/5 hover:-mx-3 hover:pl-3 hover:pr-1 transition-colors relative"
-                @click="toggleIsbn(pub.manifestation_id || pub.id)"
+                class="flex items-start gap-3 py-3 border-b border-main/10 last:border-0"
+                :class="{ 'cursor-pointer': pub.isbn }"
+                @click="pub.isbn && toggleIsbn(pub.manifestation_id || pub.id)"
               >
-                <!-- Accent line -->
-                <div class="absolute -left-3 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-primary transition-colors"></div>
-
                 <!-- Left: year + media badge -->
                 <div class="flex flex-col shrink-0 items-start gap-1.5 pt-0.5 w-11">
                   <span class="font-mono text-xs text-main/50">{{ pub.year || '-' }}</span>
@@ -229,12 +234,10 @@ const conceptDescriptions = computed(() => {
 
             <div class="flex flex-col">
               <div
-                v-for="entry in work.work_catalogues"
+                v-for="entry in sortedCatalogues"
                 :key="entry.id"
-                class="group flex items-start gap-3 py-3 border-b border-main/10 last:border-0 cursor-pointer hover:bg-primary/5 hover:-mx-3 hover:pl-3 hover:pr-1 transition-colors relative"
+                class="flex items-start gap-3 py-3 border-b border-main/10 last:border-0"
               >
-                <div class="absolute -left-3 top-0 bottom-0 w-[2px] bg-transparent group-hover:bg-primary transition-colors"></div>
-
                 <div class="flex flex-col shrink-0 items-start gap-1.5 pt-0.5 w-11">
                   <span class="font-mono text-xs text-main/50">{{ entry.catalogue.year || '-' }}</span>
                   <span
@@ -246,16 +249,7 @@ const conceptDescriptions = computed(() => {
                 </div>
 
                 <div class="flex-1 min-w-0">
-                  <router-link
-                    v-if="entry.catalogue.id"
-                    :to="`/catalogues/${entry.catalogue.id}`"
-                    class="text-base font-medium text-main hover:text-primary transition-colors block mb-0.5 no-underline"
-                  >
-                    {{ entry.catalogue.title }}
-                  </router-link>
-                  <span v-else class="text-base font-medium text-main block mb-0.5">
-                    {{ entry.catalogue.title }}
-                  </span>
+                  <span class="text-base font-medium text-main block mb-0.5">{{ entry.catalogue.title }}</span>
 
                   <div
                     v-if="entry.category || entry.status_display || entry.note"

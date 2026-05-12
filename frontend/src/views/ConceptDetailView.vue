@@ -109,39 +109,38 @@ onMounted(() => {
 
           <!-- ── Application Examples ── -->
           <section class="mt-12">
-            <SectionTitle class="mb-5">概念應用範例</SectionTitle>
+            <SectionTitle class="mb-3">概念應用範例</SectionTitle>
 
             <div v-if="validWorkConcepts.length > 0" class="flex flex-col">
               <div
                 v-for="item in validWorkConcepts"
                 :key="item.id"
-                class="flex items-start gap-4 py-4 border-b border-main/10 last:border-0"
+                class="py-4 border-b border-main/10 last:border-0 flex flex-col gap-1.5"
               >
-                <span class="font-mono text-xs text-main/50 w-10 shrink-0 pt-0.5">{{ item.year || '-' }}</span>
-
-                <div class="flex-1 min-w-0 flex flex-col gap-2">
+                <div class="flex items-baseline gap-2">
                   <router-link
                     :to="`/works/${item.work}`"
-                    class="text-base font-medium text-main hover:text-primary transition-colors no-underline w-fit"
+                    class="text-sm font-medium text-main hover:text-primary transition-colors no-underline"
                   >
                     {{ item.work_title || '未知作品' }}
                   </router-link>
-
-                  <p
-                    v-if="isSpoilerProtected && !revealedSpoilers.has(item.id)"
-                    @click="revealSpoiler(item.id)"
-                    class="text-base leading-relaxed blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer select-none"
-                    title="點擊顯示劇透內容"
-                  >
-                    {{ item.description }}
-                  </p>
-                  <p v-else class="text-base leading-relaxed text-main/70">
-                    {{ item.description }}
-                  </p>
+                  <span class="font-mono text-xs text-main/35 shrink-0">{{ item.year || '-' }}</span>
                 </div>
+
+                <p
+                  v-if="isSpoilerProtected && !revealedSpoilers.has(item.id)"
+                  @click="revealSpoiler(item.id)"
+                  class="text-sm leading-relaxed blur-sm hover:blur-[2px] transition-all duration-200 text-main/40 cursor-pointer select-none"
+                  title="點擊顯示劇透內容"
+                >
+                  {{ item.description }}
+                </p>
+                <p v-else class="text-sm leading-relaxed text-main/55">
+                  {{ item.description }}
+                </p>
               </div>
             </div>
-            <div v-else class="text-base text-main/40 py-3">目前尚無收錄此概念的應用範例。</div>
+            <div v-else class="text-sm text-main/40 py-3">目前尚無收錄此概念的應用範例。</div>
 
             <!-- Link to all works -->
             <div class="mt-7">
