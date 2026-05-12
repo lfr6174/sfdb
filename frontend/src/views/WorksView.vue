@@ -206,6 +206,8 @@ const clearAllFilters = () => {
   selectedConcepts.value = []
   yearMin.value = ''
   yearMax.value = ''
+  tempSelectedConcepts.value = []
+  modalSearchQuery.value = ''
 }
 
 const changePage = (dir: number) => {
