@@ -113,28 +113,11 @@ const conceptDescriptions = computed(() => {
             </p>
 
             <!-- Concept Tags -->
-            <div v-if="work.work_concepts && work.work_concepts.length > 0" class="flex flex-wrap gap-1.5">
-              <ConceptTag
-                v-for="wc in displayedConcepts"
-                :key="wc.concept.slug"
-                :concept="wc.concept"
-              />
-
-              <button
-                v-if="hiddenConceptsCount > 0 && !isConceptsExpanded"
-                @click="isConceptsExpanded = true"
-                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
-              >
-                + {{ hiddenConceptsCount }} 更多
-              </button>
-              <button
-                v-if="isConceptsExpanded"
-                @click="isConceptsExpanded = false"
-                class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
-              >
-                − 收合
-              </button>
-            </div>
+            <ExpandableTagList
+              v-if="work.work_concepts && work.work_concepts.length > 0"
+              :concepts="plainConcepts"
+              :limit="6"
+            />
           </section>
 
           <!-- ── Concept Descriptions ── -->

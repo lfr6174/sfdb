@@ -51,14 +51,14 @@ const personAwards = computed(() => {
   person.value.participated_works.forEach((w: any) => {
     if (w.awards && w.awards.length > 0) {
       w.awards.forEach((award: any) => {
-        if (!awardsMap.has(award.catalogue_id)) {
-          awardsMap.set(award.catalogue_id, {
-            id: award.catalogue_id,
+        if (!awardsMap.has(award.title)) {
+          awardsMap.set(award.title, {
+            id: award.title,
             title: award.title,
             count: 0
           })
         }
-        awardsMap.get(award.catalogue_id).count += 1
+        awardsMap.get(award.title).count += 1
       })
     }
   })
