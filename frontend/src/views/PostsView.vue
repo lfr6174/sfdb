@@ -62,36 +62,27 @@ const changePage = (dir: number) => {
 <template>
   <div class="max-w-4xl mx-auto pb-20">
 
-    <!-- ── Page Header ── -->
-    <div class="pt-10 pb-6 border-b border-main/10">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
-        <div>
-          <h1 class="text-3xl font-normal text-main leading-tight mb-1">最新資訊</h1>
-          <p class="text-base text-main/50">共 {{ totalPosts }} 篇文章</p>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜尋標題、內容…"
-            class="text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
-          >
-          <div class="relative">
-            <select
-              v-model="ordering"
-              class="text-base text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
-            >
-              <option value="-created_at">最新發布</option>
-              <option value="created_at">最早發布</option>
-              <option value="-updated_at">最近更新</option>
-              <option value="updated_at">最早更新</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-main/40" width="9" height="5" viewBox="0 0 10 6" fill="none">
-              <path d="M0 0l5 6 5-6z" fill="currentColor"/>
-            </svg>
-          </div>
-        </div>
+    <!-- ── Controls ── -->
+    <div class="pt-10 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="搜尋標題、內容…"
+        class="text-sm text-main placeholder:text-main/35 bg-transparent border-b border-main/20 px-0 py-1.5 outline-none focus:border-main/50 transition-colors w-full md:w-56"
+      >
+      <div class="relative shrink-0">
+        <select
+          v-model="ordering"
+          class="w-28 text-sm text-main/60 bg-transparent border-b border-main/20 pl-1 pr-6 py-1.5 outline-none focus:border-main/50 transition-colors cursor-pointer appearance-none"
+        >
+          <option value="-created_at">最新發布</option>
+          <option value="created_at">最早發布</option>
+          <option value="-updated_at">最近更新</option>
+          <option value="updated_at">最早更新</option>
+        </select>
+        <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
+          <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+        </svg>
       </div>
     </div>
 
@@ -102,7 +93,13 @@ const changePage = (dir: number) => {
     <div v-else-if="posts.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
       找不到符合條件的文章。
     </div>
-    <div v-else class="flex flex-col mt-4">
+    <div v-else class="flex flex-col">
+
+      <!-- Count -->
+      <p v-if="totalPosts > 0" class="text-xs text-main/35 tracking-wide mb-1">
+        共 {{ totalPosts }} 篇文章
+      </p>
+
       <div
         v-for="post in posts"
         :key="post.id"
