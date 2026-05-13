@@ -31,9 +31,6 @@ const { isSpoilerProtected, toggleSpoiler } = useSpoiler()
           防劇透
         </button>
 
-        <button class="text-base font-medium text-main/60 hover:text-main transition-colors">
-          登入
-        </button>
       </div>
     </div>
   </header>
