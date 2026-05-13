@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
+import ConceptTag from '../components/ConceptTag.vue'
 
 const works = ref<any[]>([])
 const isLoading = ref(true)
@@ -165,14 +166,11 @@ onMounted(async () => {
           <div v-for="(tags, category) in recentConcepts" :key="category">
             <h3 class="text-sm font-medium tracking-widest uppercase text-main/40 mb-3">{{ category }}</h3>
             <div class="flex flex-wrap gap-1.5">
-              <router-link
+              <ConceptTag
                 v-for="tag in tags"
                 :key="tag.slug"
-                :to="`/concepts/${tag.slug}`"
-                class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-              >
-                {{ tag.name }}
-              </router-link>
+                :concept="tag"
+              />
             </div>
           </div>
         </div>

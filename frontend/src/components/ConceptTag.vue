@@ -15,7 +15,7 @@ withDefaults(defineProps<{
   <router-link
     :to="`/concepts/${concept.slug}`"
     :class="[
-      'inline-flex items-center border border-main/15 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline',
+      'inline-flex items-center border border-main/15 hover:text-primary hover:bg-primary/2 hover:border-primary/30 transition-all whitespace-nowrap no-underline',
       size === 'md' ? 'gap-2 text-sm text-main/60 px-3 py-1.5' : 'gap-1.5 text-xs text-main/60 px-2.5 py-1'
     ]"
   >
