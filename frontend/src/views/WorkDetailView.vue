@@ -54,6 +54,11 @@ const sortedCatalogues = computed(() => {
   return [...work.value.work_catalogues].sort((a, b) => (b.catalogue.year || 0) - (a.catalogue.year || 0))
 })
 
+const sortedPublications = computed(() => {
+  if (!work.value?.publications) return []
+  return [...work.value.publications].sort((a, b) => (b.year || 0) - (a.year || 0))
+})
+
 </script>
 
 <template>
@@ -171,7 +176,7 @@ const sortedCatalogues = computed(() => {
 
             <div class="flex flex-col">
               <div
-                v-for="pub in work.publications"
+                v-for="pub in sortedPublications"
                 :key="pub.manifestation_id || pub.id"
                 class="flex items-start gap-3 py-3 border-b border-main/10 last:border-0"
                 :class="{ 'cursor-pointer': pub.isbn }"
