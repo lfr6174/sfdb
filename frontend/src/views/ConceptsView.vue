@@ -70,39 +70,29 @@ const groupedConcepts = computed(() => {
 })
 
 </script>
-
 <template>
   <div class="max-w-4xl mx-auto">
 
-    <!-- ── Page Header ── -->
-    <div class="pt-10 pb-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
-        <div>
-          <h1 class="text-3xl font-normal text-main leading-tight mb-1">概念探索</h1>
-          <p class="text-base text-main/50">瀏覽全站所有的概念</p>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜尋概念名稱…"
-            class="text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
-          >
-          <div class="relative">
-            <select
-              v-model="sortBy"
-              class="text-base text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
-            >
-              <option value="alpha">字母排序</option>
-              <option value="count">作品數排序</option>
-              <option value="recent">最近更新</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-main/40" width="9" height="5" viewBox="0 0 10 6" fill="none">
-              <path d="M0 0l5 6 5-6z" fill="currentColor"/>
-            </svg>
-          </div>
-        </div>
+    <!-- ── Controls ── -->
+    <div class="pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="搜尋概念名稱…"
+        class="text-sm text-main placeholder:text-main/35 bg-transparent border-b border-main/20 px-0 py-1.5 outline-none focus:border-main/50 transition-colors w-full md:w-56"
+      >
+      <div class="relative shrink-0">
+        <select
+          v-model="sortBy"
+          class="w-28 text-sm text-main/60 bg-transparent border-b border-main/20 pl-1 pr-6 py-1.5 outline-none focus:border-main/50 transition-colors cursor-pointer appearance-none"
+        >
+          <option value="alpha">字母排序</option>
+          <option value="count">作品數排序</option>
+          <option value="recent">最近更新</option>
+        </select>
+        <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
+          <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+        </svg>
       </div>
     </div>
 
@@ -119,8 +109,8 @@ const groupedConcepts = computed(() => {
           :key="category"
           class="py-8"
         >
-          <!-- Category eyebrow inline with rule -->
-          <SectionTitle class="mb-5">{{ category }}</SectionTitle>
+          <!-- Category eyebrow, no rule -->
+          <span class="mb-5 block text-sm font-medium tracking-widest uppercase text-main/40">{{ category }}</span>
 
           <!-- Tag cloud -->
           <div class="flex flex-wrap gap-1.5">

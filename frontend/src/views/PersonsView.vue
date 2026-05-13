@@ -2,7 +2,6 @@
 import { ref, onMounted, watch } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
-import SectionTitle from '../components/SectionTitle.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 
 const persons = ref<any[]>([])
@@ -66,36 +65,27 @@ onMounted(() => {
 <template>
   <div class="max-w-4xl mx-auto">
 
-    <!-- ── Page Header ── -->
-    <div class="pt-10">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
-        <div>
-          <h1 class="text-3xl font-normal text-main leading-tight mb-1">人物</h1>
-          <p class="text-base text-main/50">瀏覽全站收錄的作品相關人物</p>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <input
-            v-model="searchQuery"
-            @input="onSearchInput"
-            type="text"
-            placeholder="搜尋姓名或別名…"
-            class="text-base text-main placeholder:text-main/40 bg-transparent border border-main/15 px-3 py-2 outline-none focus:border-primary/50 transition-colors w-48 md:w-56"
-          >
-          <div class="relative">
-            <select
-              v-model="sortBy"
-              class="text-base text-main/70 bg-transparent border border-main/15 px-3 py-2 pr-7 outline-none focus:border-primary/50 transition-colors cursor-pointer appearance-none"
-            >
-              <option value="-updated_at">最近更新</option>
-              <option value="name">字母排序</option>
-              <option value="-works_count">作品數排序</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-main/40" width="10" height="6" viewBox="0 0 10 6" fill="none">
-              <path d="M0 0l5 6 5-6z" fill="currentColor"/>
-            </svg>
-          </div>
-        </div>
+    <!-- ── Controls ── -->
+    <div class="pt-10 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <input
+        v-model="searchQuery"
+        @input="onSearchInput"
+        type="text"
+        placeholder="搜尋姓名或別名…"
+        class="text-sm text-main placeholder:text-main/35 bg-transparent border-b border-main/20 px-0 py-1.5 outline-none focus:border-main/50 transition-colors w-full md:w-56"
+      >
+      <div class="relative shrink-0">
+        <select
+          v-model="sortBy"
+          class="w-28 text-sm text-main/60 bg-transparent border-b border-main/20 pl-1 pr-6 py-1.5 outline-none focus:border-main/50 transition-colors cursor-pointer appearance-none"
+        >
+          <option value="-updated_at">最近更新</option>
+          <option value="name">字母排序</option>
+          <option value="-works_count">作品數排序</option>
+        </select>
+        <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
+          <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+        </svg>
       </div>
     </div>
 
@@ -108,7 +98,9 @@ onMounted(() => {
     <div v-else class="pb-20">
 
       <!-- Count -->
-      <SectionTitle v-if="totalCount > 0" class="mt-6 mb-1">共 {{ totalCount }} 位人物</SectionTitle>
+      <p v-if="totalCount > 0" class="text-xs text-main/35 tracking-wide mb-1">
+        共 {{ totalCount }} 位人物
+      </p>
 
       <!-- Person Rows -->
       <div
