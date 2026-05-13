@@ -513,8 +513,14 @@ const changePage = (dir: number) => {
           <div
             v-for="work in works"
             :key="work.id"
-            class="group flex flex-col md:flex-row md:items-start justify-between gap-3 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors"
+            class="group relative z-0 flex flex-col md:flex-row md:items-start justify-between gap-3 py-4 border-b border-main/10 last:border-0 transition-colors"
           >
+            <!-- Hover Background Overlay -->
+            <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+
+            <!-- Accent line -->
+            <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+
             <!-- Left: title + meta -->
             <div class="flex-1 min-w-0">
               <router-link

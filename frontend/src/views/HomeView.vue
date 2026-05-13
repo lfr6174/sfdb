@@ -123,8 +123,14 @@ onMounted(async () => {
             v-for="work in works"
             :key="work.id"
             :to="`/works/${work.id}`"
-            class="group flex flex-col gap-1 py-3.5 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors no-underline"
+            class="group relative z-0 flex flex-col gap-1 py-3.5 border-b border-main/10 last:border-0 transition-colors no-underline"
           >
+            <!-- Hover Background Overlay -->
+            <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+
+            <!-- Accent line -->
+            <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+
             <div class="flex items-start justify-between gap-4 w-full">
               <span class="text-base font-medium text-main group-hover:text-primary transition-colors block mb-1">
                 {{ work.title }}
@@ -183,7 +189,13 @@ onMounted(async () => {
       </SectionTitle>
       <ul class="flex flex-col">
         <li v-for="ann in announcements" :key="ann.id">
-          <router-link :to="`/posts/${ann.id}`" class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-3.5 border-b border-main/10 last:border-0 group cursor-pointer hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors no-underline">
+          <router-link :to="`/posts/${ann.id}`" class="group relative z-0 flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 py-3.5 border-b border-main/10 last:border-0 cursor-pointer transition-colors no-underline">
+            <!-- Hover Background Overlay -->
+            <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+
+            <!-- Accent line -->
+            <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+
             <span class="text-sm font-mono text-main/50 shrink-0 sm:w-28">{{ formatDate(ann.created_at) }}</span>
             <span class="text-base font-medium text-main group-hover:text-primary transition-colors leading-relaxed">{{ ann.title }}</span>
           </router-link>

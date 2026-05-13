@@ -106,8 +106,14 @@ const changePage = (dir: number) => {
       <div
         v-for="post in posts"
         :key="post.id"
-        class="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-6 py-4 border-b border-main/10 last:border-0 hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors"
+        class="group relative z-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-6 py-4 border-b border-main/10 last:border-0 transition-colors"
       >
+        <!-- Hover Background Overlay -->
+        <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+
+        <!-- Accent line -->
+        <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+
         <router-link
           :to="`/posts/${post.id}`"
           class="text-lg font-medium text-main group-hover:text-primary transition-colors no-underline block"

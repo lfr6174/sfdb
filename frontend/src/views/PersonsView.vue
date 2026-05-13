@@ -114,9 +114,15 @@ onMounted(() => {
       <div
         v-for="person in persons"
         :key="person.id"
-        class="group py-5 border-b border-main/10 cursor-pointer hover:bg-primary/5 hover:-mx-4 hover:px-4 transition-colors"
+        class="group relative z-0 py-5 border-b border-main/10 cursor-pointer transition-colors"
         @click="$router.push(`/persons/${person.id}`)"
       >
+        <!-- Hover Background Overlay -->
+        <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+
+        <!-- Accent line -->
+        <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+
         <!-- Name row -->
         <div class="flex flex-wrap items-baseline justify-between gap-3 mb-1.5">
           <div class="flex items-baseline gap-2.5 flex-wrap">
