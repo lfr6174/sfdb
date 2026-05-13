@@ -8,4 +8,10 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
+  server: {
+    // for wsl2 development
+    watch: {
+      usePolling: true,
+    },
+  },
 })
