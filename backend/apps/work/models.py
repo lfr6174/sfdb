@@ -234,6 +234,21 @@ class ManifestationAgent(models.Model):
 # ============================================================================
 
 
+class Series(TimeStampedModel):
+    """A collection of publications, like a book series or magazine"""
+
+    title = models.CharField(max_length=300, verbose_name="叢書名稱")
+    note = models.TextField(blank=True, verbose_name="備註")
+
+    class Meta:
+        ordering = ["title"]
+        verbose_name = "叢書"
+        verbose_name_plural = "叢書"
+
+    def __str__(self):
+        return self.title
+
+
 class PublicationMedia(models.TextChoices):
     BOOK = "book", "書籍"
     MAGAZINE = "magazine", "雜誌"
@@ -257,6 +272,16 @@ class Publication(TimeStampedModel):
         verbose_name="出版商",
     )
     title = models.CharField(max_length=300, verbose_name="名稱")
+    subtitle = models.CharField(max_length=300, blank=True, verbose_name="副標題")
+    series = models.ForeignKey(
+        Series,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="publications",
+        verbose_name="所屬叢書",
+    )
+    series_order = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="叢書順序")
     language = models.CharField(
         max_length=20, choices=Language.choices, default=Language.ZH_HANT, verbose_name="出版品語言"
     )

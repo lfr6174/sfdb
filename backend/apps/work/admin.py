@@ -10,6 +10,7 @@ from .models import (
     Publication,
     PublicationAgent,
     Role,
+    Series,
     Work,
     WorkAgent,
     WorkCatalogue,
@@ -106,6 +107,17 @@ class CycleAdmin(ModelAdmin):
     )
 
 
+@admin.register(Series)
+class SeriesAdmin(ModelAdmin):
+    list_display = ("title", "created_at", "updated_at")
+    search_fields = ("title",)
+    readonly_fields = ("created_at", "updated_at")
+    fieldsets = (
+        ("基本資訊 (Basic Info)", {"fields": ("title", "note")}),
+        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
+    )
+
+
 @admin.register(Work)
 class WorkAdmin(ModelAdmin):
     list_display = (
@@ -150,6 +162,7 @@ class PublicationAdmin(ModelAdmin):
         "get_contributions_display",
         "media",
         "get_works_display",
+        "series",
         "publisher",
         "language",
         "year",
@@ -163,18 +176,21 @@ class PublicationAdmin(ModelAdmin):
     )
     search_fields = (
         "title",
+        "subtitle",
         "isbn",
         "works__title",
         "contributions__agent__name",
         "contributions__agent__aliases__name",
     )
-    autocomplete_fields = ("publisher",)
+    autocomplete_fields = ("publisher", "series")
     inlines = [ManifestationInlineForPublication, PublicationAgentInline]
     readonly_fields = ("created_at", "updated_at")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("contributions__agent", "contributions__role", "works")
+        return qs.select_related("publisher", "series").prefetch_related(
+            "contributions__agent", "contributions__role", "works"
+        )
 
     def get_works_display(self, obj):
         works = obj.works.all()[:3]
