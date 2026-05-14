@@ -152,17 +152,19 @@ class WorkAdmin(ModelAdmin):
             return "佚名"
         return "、".join([f"{c.agent.name} ({c.role.noun})" for c in contributions])
 
-    get_contributions_display.short_description = "參與人員"
+    get_contributions_display.short_description = "作品創作者"
 
 
 @admin.register(Publication)
 class PublicationAdmin(ModelAdmin):
     list_display = (
         "title",
+        "subtitle",
         "get_contributions_display",
         "media",
         "get_works_display",
         "series",
+        "series_order",
         "publisher",
         "language",
         "year",
@@ -173,6 +175,7 @@ class PublicationAdmin(ModelAdmin):
         ("media", ChoicesDropdownFilter),
         ("year", RangeNumericFilter),
         ("publisher", RelatedDropdownFilter),
+        ("series", RelatedDropdownFilter),
     )
     search_fields = (
         "title",
@@ -181,6 +184,7 @@ class PublicationAdmin(ModelAdmin):
         "works__title",
         "contributions__agent__name",
         "contributions__agent__aliases__name",
+        "series__title",
     )
     autocomplete_fields = ("publisher", "series")
     inlines = [ManifestationInlineForPublication, PublicationAgentInline]
@@ -199,7 +203,7 @@ class PublicationAdmin(ModelAdmin):
             display += "..."
         return display or "-"
 
-    get_works_display.short_description = "收錄作品"
+    get_works_display.short_description = "收錄紀錄"
 
     def get_contributions_display(self, obj):
         contributions = obj.contributions.all()
@@ -214,7 +218,7 @@ class PublicationAdmin(ModelAdmin):
             return "-"
         return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in valid_agents])
 
-    get_contributions_display.short_description = "參與人員"
+    get_contributions_display.short_description = "出版品參與者"
 
 
 @admin.register(Manifestation)
@@ -234,7 +238,7 @@ class ManifestationAdmin(ModelAdmin):
             return "-"
         return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in contributions])
 
-    get_contributions_display.short_description = "單篇參與人員"
+    get_contributions_display.short_description = "收錄作品的參與者"
 
 
 # ============================================================================
