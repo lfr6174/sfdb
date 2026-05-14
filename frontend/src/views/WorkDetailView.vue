@@ -111,9 +111,9 @@ const sortedPublications = computed(() => {
               <span class="text-main/20">·</span>
               <span>{{ work.year || '未知年份' }}</span>
 
-              <template v-if="work.series">
+              <template v-if="work.cycle">
                 <span class="text-main/20">·</span>
-                <span>{{ work.series.title }}</span>
+                <span>{{ work.cycle.title }}</span>
               </template>
             </div>
 

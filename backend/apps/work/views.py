@@ -28,7 +28,7 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
     def get_queryset(self):
-        qs = Work.objects.select_related("series").order_by("-year", "title")
+        qs = Work.objects.select_related("cycle").order_by("-year", "title")
 
         if self.action == "list":
             return qs.prefetch_related("contributions__agent", "contributions__role", "work_concepts__concept")

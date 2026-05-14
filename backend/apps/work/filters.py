@@ -26,7 +26,7 @@ class WorkFilter(django_filters.FilterSet):
 
     class Meta:
         model = Work
-        fields = ["series"]
+        fields = ["cycle"]
 
     def filter_concepts_include(self, queryset, _name, value):
         """

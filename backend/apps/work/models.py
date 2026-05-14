@@ -8,8 +8,8 @@ from apps.core.models import TimeStampedModel
 # ============================================================================
 
 
-class Series(TimeStampedModel):
-    """A cohesive series of works, e.g. Foundation Series"."""
+class Cycle(TimeStampedModel):
+    """A collection of stories with similar themes or figures"""
 
     title = models.CharField(max_length=300, verbose_name="系列名稱")
     note = models.TextField(blank=True, verbose_name="備註")
@@ -59,15 +59,15 @@ class Work(TimeStampedModel):
     year = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name="發表年份")
     description = models.TextField(blank=True, verbose_name="無劇透概述 (Synopsis)")
 
-    series = models.ForeignKey(
-        Series,
+    cycle = models.ForeignKey(
+        Cycle,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="works",
         verbose_name="所屬系列",
     )
-    series_order = models.DecimalField(
+    cycle_order = models.DecimalField(
         max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="系列順序"
     )  # Use Decimal to support ordering like 1.5 for prequels or spin-offs
 

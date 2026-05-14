@@ -6,11 +6,11 @@ from apps.concept.serializers import ConceptMinimalSerializer
 
 from .models import (
     Catalogue,
+    Cycle,
     Manifestation,
     ManifestationAgent,
     Publication,
     PublicationAgent,
-    Series,
     Work,
     WorkAgent,
     WorkCatalogue,
@@ -47,11 +47,11 @@ class WorkMinimalSerializer(serializers.ModelSerializer):
 # ============================================================================
 
 
-class SeriesSerializer(serializers.ModelSerializer):
+class CycleSerializer(serializers.ModelSerializer):
     works_count = serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = Series
+        model = Cycle
         fields = ["id", "title", "note", "works_count", "created_at", "updated_at"]
 
 
@@ -209,7 +209,7 @@ class WorkSerializer(serializers.ModelSerializer):
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
 
-    series = SeriesSerializer(read_only=True)
+    cycle = CycleSerializer(read_only=True)
     contributions = WorkAgentSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
     publications = serializers.SerializerMethodField()
@@ -229,8 +229,8 @@ class WorkSerializer(serializers.ModelSerializer):
             "work_length_display",
             "year",
             "description",
-            "series",
-            "series_order",
+            "cycle",
+            "cycle_order",
             "contributions",
             "credit",
             "work_concepts",

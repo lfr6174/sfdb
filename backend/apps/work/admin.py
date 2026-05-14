@@ -4,12 +4,12 @@ from unfold.contrib.filters.admin import ChoicesDropdownFilter, RangeNumericFilt
 
 from .models import (
     Catalogue,
+    Cycle,
     Manifestation,
     ManifestationAgent,
     Publication,
     PublicationAgent,
     Role,
-    Series,
     Work,
     WorkAgent,
     WorkCatalogue,
@@ -95,8 +95,8 @@ class RoleAdmin(ModelAdmin):
     ordering = ("order", "code")
 
 
-@admin.register(Series)
-class SeriesAdmin(ModelAdmin):
+@admin.register(Cycle)
+class CycleAdmin(ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
@@ -116,7 +116,7 @@ class WorkAdmin(ModelAdmin):
         "provenance",
         "language",
         "year",
-        "series",
+        "cycle",
     )
     list_filter = (
         ("media_type", ChoicesDropdownFilter),
@@ -126,7 +126,7 @@ class WorkAdmin(ModelAdmin):
         ("year", RangeNumericFilter),
     )
     search_fields = ("title", "description", "contributions__agent__name", "contributions__agent__aliases__name")
-    autocomplete_fields = ("series",)
+    autocomplete_fields = ("cycle",)
     inlines = [WorkAgentInline, WorkConceptInline, ManifestationInlineForWork, WorkCatalogueInlineForWork]
     readonly_fields = ("created_at", "updated_at")
 
