@@ -12,7 +12,7 @@ class ConceptCategory(models.TextChoices):
 
 
 class Concept(TimeStampedModel):
-    """External links for a concept. Soft limit: 3 per concept."""
+    """Core concept in science fiction."""
 
     name = models.CharField(max_length=100, verbose_name="概念名稱")
     slug = models.SlugField(
@@ -35,7 +35,7 @@ class Concept(TimeStampedModel):
         ordering = ["category", "name"]
         verbose_name = "概念"
         verbose_name_plural = "概念"
-        # Allow same name in different categories, but enforce uniqueness within a category
+        # Enforce name uniqueness within a category
         unique_together = [["name", "category"]]
         indexes = [
             models.Index(fields=["category"]),

@@ -20,7 +20,9 @@ class AgentLinkSerializer(serializers.ModelSerializer):
         fields = ["id", "label", "url"]
 
 
-class AgentSerializer(serializers.ModelSerializer):
+class AgentListSerializer(serializers.ModelSerializer):
+    """Serializer for listing agents."""
+
     aliases = AgentAliasSerializer(many=True, read_only=True)
     links = AgentLinkSerializer(many=True, read_only=True)
 
@@ -37,14 +39,17 @@ class AgentSerializer(serializers.ModelSerializer):
         ]
 
 
-class AgentDetailSerializer(AgentSerializer):
+class AgentDetailSerializer(AgentListSerializer):
+    """Serializer for retrieving a single agent with related works and concepts."""
+
     participated_works = serializers.SerializerMethodField()
     participated_publications = serializers.SerializerMethodField()
     concepts = serializers.SerializerMethodField()
 
-    class Meta(AgentSerializer.Meta):
-        fields = AgentSerializer.Meta.fields + ["participated_works", "participated_publications", "concepts"]
+    class Meta(AgentListSerializer.Meta):
+        fields = AgentListSerializer.Meta.fields + ["participated_works", "participated_publications", "concepts"]
 
+    # NOTE: These methods hit the database, but this serializer is exclusively used for 'retrieve' actions.
     def get_participated_works(self, obj):
         return get_agent_works(obj)
 

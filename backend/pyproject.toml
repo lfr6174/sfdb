@@ -15,9 +15,8 @@ exclude = [
 ]
 
 [tool.ruff.lint]
-# E: pycodestyle errors, F: pyflakes, I: isort, W: pycodestyle warnings
+# E, W: pycodestyle, F: pyflakes, I: isort
 select = ["E", "F", "I", "W"]
-ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 # Ignore star imports (F403) and undefined variables from star imports (F405) in settings files

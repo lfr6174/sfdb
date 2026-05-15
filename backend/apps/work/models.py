@@ -131,7 +131,8 @@ class Work(TimeStampedModel):
         blank=True,
         verbose_name="系列中的順序",
         help_text="作品在系列中的正式編號或建議閱讀順序，例如第一冊填「1」。前傳或外傳可使用小數，例如「1.5」。可留空。",
-    )  # Use Decimal to support ordering like 1.5 for prequels or spin-offs
+    )
+    # NOTE: Use Decimal to support ordering like 1.5 for prequels or spin-offs
 
     agents = models.ManyToManyField(
         "agent.Agent",

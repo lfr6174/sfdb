@@ -2,16 +2,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
 from .models import Agent
-from .serializers import AgentDetailSerializer, AgentSerializer
+from .serializers import AgentDetailSerializer, AgentListSerializer
 
 
 class AgentViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API endpoint that allows agents to be viewed or edited.
-    """
+    """API endpoint that allows agents to be viewed."""
 
     queryset = Agent.objects.all().order_by("name").distinct()
-    serializer_class = AgentSerializer
+    serializer_class = AgentListSerializer
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "aliases__name", "about"]
@@ -24,15 +22,12 @@ class AgentViewSet(viewsets.ReadOnlyModelViewSet):
         return qs
 
     def get_serializer_class(self):
-        # Use detailed serializer with works list for single agent retrieve actions
         if self.action == "retrieve":
             return AgentDetailSerializer
-        return super().get_serializer_class()
+        return AgentListSerializer
 
 
 class PersonViewSet(AgentViewSet):
-    """
-    API endpoint that allows persons (Agents of type PERSON) to be viewed or edited.
-    """
+    """API endpoint that allows persons (Agents of type PERSON) to be viewed."""
 
     queryset = AgentViewSet.queryset.filter(agent_type=Agent.AgentType.PERSON)

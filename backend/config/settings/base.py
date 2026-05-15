@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 # SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASES, CORS_ALLOWED_ORIGINS
-# will be defined in environment-specific settings files (e.g., development.py, production.py)
+# will be defined in environment-specific settings files (e.g., dev.py, prod.py)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")

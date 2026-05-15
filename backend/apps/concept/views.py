@@ -15,7 +15,7 @@ from .services import get_random_concept_with_works
 class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
     """Concept API. Uses slug as the lookup field."""
 
-    lookup_field = "slug"  # Change the default /id/ URL to /slug/
+    lookup_field = "slug"
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["category"]

@@ -30,7 +30,13 @@ class PostDetailSerializer(serializers.ModelSerializer):
         return obj.author.display_name or "管理員"
 
 
-class PageSerializer(serializers.ModelSerializer):
+class PageListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ["id", "slug", "title", "updated_at"]
+
+
+class PageDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = ["id", "slug", "title", "body", "updated_at"]

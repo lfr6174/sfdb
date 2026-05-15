@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Page, Post, PostType
-from .serializers import PageSerializer, PostDetailSerializer, PostListSerializer
+from .serializers import PageDetailSerializer, PageListSerializer, PostDetailSerializer, PostListSerializer
 
 
 class PostViewSet(viewsets.ReadOnlyModelViewSet):
@@ -34,10 +34,12 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class PageViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Public read-only API for static pages.
-    """
+    """Public read-only API for static pages."""
 
     queryset = Page.objects.all()
-    serializer_class = PageSerializer
     lookup_field = "slug"
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PageListSerializer
+        return PageDetailSerializer

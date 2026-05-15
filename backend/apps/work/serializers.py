@@ -70,8 +70,8 @@ class WorkConceptSerializer(serializers.ModelSerializer):
         fields = ["id", "concept", "description"]
 
 
-class WorkBriefSerializer(serializers.ModelSerializer):
-    """Brief Work serializer for cards, lists, and homepage spotlights."""
+class WorkListSerializer(serializers.ModelSerializer):
+    """List Work serializer for cards, lists, and homepage spotlights."""
 
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
@@ -151,6 +151,8 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
+    # NOTE: Currently unused in ViewSets. Kept for future API extension.
+
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     publisher = AgentMinimalSerializer(read_only=True)
     media_display = serializers.CharField(source="get_media_display", read_only=True)
@@ -212,7 +214,7 @@ class WorkCatalogueSerializer(serializers.ModelSerializer):
 # ============================================================================
 
 
-class WorkSerializer(serializers.ModelSerializer):
+class WorkDetailSerializer(serializers.ModelSerializer):
     """
     The ultimate aggregator serializer that pulls together the Work,
     its credits, its concepts, and its physical publications.

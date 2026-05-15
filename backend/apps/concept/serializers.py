@@ -46,7 +46,7 @@ class ConceptDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_work_concepts(self, obj):
-        # Avoid importing work serializers to keep concept app self-contained
+        # NOTE: Manually construct dict to avoid circular dependency with work serializers
         return [
             {
                 "id": wc.id,

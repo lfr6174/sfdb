@@ -10,16 +10,9 @@ class WorkFilter(django_filters.FilterSet):
     Supports exact matches, year ranges, and 3-state concept tag filtering (Include/Exclude).
     """
 
-    # 1. Year Range
     year_min = django_filters.NumberFilter(field_name="year", lookup_expr="gte")
     year_max = django_filters.NumberFilter(field_name="year", lookup_expr="lte")
-
-    # 2. 3-state concept tag: Include (AND)
-    # Format: ?concepts_in=1,2,3
     concepts_in = django_filters.CharFilter(method="filter_concepts_include")
-
-    # 3. 3-state concept tag: Exclude (NOT)
-    # Format: ?concepts_ex=4,5
     concepts_ex = django_filters.CharFilter(method="filter_concepts_exclude")
 
     media_type = django_filters.CharFilter(method="filter_media_type")

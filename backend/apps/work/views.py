@@ -5,8 +5,8 @@ from rest_framework import filters, viewsets
 from .filters import WorkFilter
 from .models import Manifestation, Work
 from .serializers import (
-    WorkBriefSerializer,
-    WorkSerializer,
+    WorkDetailSerializer,
+    WorkListSerializer,
 )
 
 
@@ -17,7 +17,7 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     preventing the N+1 problem when fetching nested relationships.
     """
 
-    serializer_class = WorkSerializer
+    serializer_class = WorkDetailSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = WorkFilter
     search_fields = [
@@ -53,5 +53,5 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_serializer_class(self):
         if self.action == "list":
-            return WorkBriefSerializer
-        return super().get_serializer_class()
+            return WorkListSerializer
+        return WorkDetailSerializer
