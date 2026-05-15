@@ -21,11 +21,6 @@ class AgentViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.prefetch_related("aliases", "links")
-        if self.action == "retrieve":
-            qs = qs.prefetch_related(
-                "work_contributions__work__concepts",
-                "publication_contributions__publication__publisher",
-            )
         return qs
 
     def get_serializer_class(self):
