@@ -1,4 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from apps.core.models import TimeStampedModel
 
@@ -34,6 +36,21 @@ class WorkProvenance(models.TextChoices):
 
 
 # --- Models ---
+
+
+def validate_not_future_year(value):
+    """Ensure the year is not in the future."""
+    current_year = timezone.now().year
+    limit = current_year + 1
+    if value > limit:
+        raise ValidationError("年份不得超過 %(limit)s 年。", params={"limit": limit})
+
+
+def validate_isbn(value):
+    """Validate ISBN format (10 or 13 digits) to ensure data integrity."""
+    cleaned = value.replace("-", "").replace(" ", "")
+    if cleaned and not (len(cleaned) in (10, 13) and cleaned[:-1].isdigit()):
+        raise ValidationError("ISBN 長度必須為 10 或 13 碼純數字（可含連字號）。")
 
 
 class Cycle(TimeStampedModel):
@@ -90,6 +107,7 @@ class Work(TimeStampedModel):
     year = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
+        validators=[validate_not_future_year],
         verbose_name="首度發表年份",
         help_text="作品最早公開發表的年份，例如連載開始年或單行本初版年。不確定可留空。",
     )
@@ -137,6 +155,11 @@ class Work(TimeStampedModel):
     def __str__(self):
         year_str = f" ({self.year})" if self.year else ""
         return f"{self.title}{year_str}"
+
+    def clean(self):
+        super().clean()
+        if self.cycle_order is not None and self.cycle_id is None:
+            raise ValidationError({"cycle_order": "請先填寫所屬系列，再登記其順序。"})
 
 
 class Role(models.Model):
@@ -397,11 +420,16 @@ class Publication(TimeStampedModel):
     )
     media = models.CharField(max_length=20, choices=PublicationMedia.choices, verbose_name="出版形式")
     year = models.PositiveSmallIntegerField(
-        null=True, blank=True, verbose_name="發行年份", help_text="此出版品正式發行的年份。不確定可留空。"
+        null=True,
+        blank=True,
+        validators=[validate_not_future_year],
+        verbose_name="發行年份",
+        help_text="此出版品正式發行的年份。不確定可留空。",
     )
     isbn = models.CharField(
         max_length=50,
         blank=True,
+        validators=[validate_isbn],
         verbose_name="ISBN",
         help_text="書籍的 ISBN 編號，不含連字號。非書籍或不知道可留空。",
     )
@@ -424,6 +452,16 @@ class Publication(TimeStampedModel):
 
     def __str__(self):
         return f"{self.title} ({self.year})"
+
+    def clean(self):
+        super().clean()
+        if self.series_order is not None and self.series_id is None:
+            raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
+
+    def save(self, *args, **kwargs):
+        if self.isbn:
+            self.isbn = self.isbn.replace("-", "").replace(" ", "").upper()
+        super().save(*args, **kwargs)
 
 
 class PublicationAgent(models.Model):
@@ -508,6 +546,7 @@ class Catalogue(TimeStampedModel):
     year = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
+        validators=[validate_not_future_year],
         verbose_name="舉辦年份",
         help_text="不同年度舉辦的賽事各自獨立，所以要填寫獎項與書單的年份。偶發、不分年度的可留空。",
     )
@@ -560,3 +599,12 @@ class WorkCatalogue(TimeStampedModel):
 
     def __str__(self):
         return f"[{self.get_status_display()}] {self.work.title} in {self.catalogue.title}"
+
+    def clean(self):
+        super().clean()
+        if (
+            self.status == AwardStatus.WINNER
+            and self.catalogue_id
+            and self.catalogue.catalogue_type != CatalogueType.AWARD
+        ):
+            raise ValidationError({"status": "只有「獎項」類型的精選才能標記為「獲獎」，書單請維持「入選」。"})
