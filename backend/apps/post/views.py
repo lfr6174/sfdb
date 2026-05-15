@@ -17,7 +17,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ["post_type", "is_pinned"]
     ordering_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
-    queryset = Post.objects.all()
+    queryset = Post.objects.select_related("author").all()
 
     def get_serializer_class(self):
         if self.action == "list":
