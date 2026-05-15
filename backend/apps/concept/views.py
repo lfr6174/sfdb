@@ -68,5 +68,5 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
     def all(self, request):
         """Return all concepts without pagination."""
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = ConceptListSerializer(queryset, many=True)
         return Response(serializer.data)
