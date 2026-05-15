@@ -15,7 +15,15 @@ class ConceptMinimalSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "slug", "category"]
 
 
-class ConceptSerializer(serializers.ModelSerializer):
+class ConceptListSerializer(serializers.ModelSerializer):
+    works_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Concept
+        fields = ["id", "name", "slug", "category", "description", "works_count"]
+
+
+class ConceptDetailSerializer(serializers.ModelSerializer):
     links = ConceptLinkSerializer(many=True, read_only=True)
     related_concepts = ConceptMinimalSerializer(many=True, read_only=True)
     works_count = serializers.IntegerField(read_only=True)
@@ -47,5 +55,5 @@ class ConceptSerializer(serializers.ModelSerializer):
                 "year": wc.work.year,
                 "description": wc.description,
             }
-            for wc in obj.work_concepts.select_related("work").all()
+            for wc in getattr(obj, "prefetched_work_concepts", [])
         ]

@@ -37,6 +37,9 @@ class Concept(TimeStampedModel):
         verbose_name_plural = "概念"
         # Allow same name in different categories, but enforce uniqueness within a category
         unique_together = [["name", "category"]]
+        indexes = [
+            models.Index(fields=["category"]),
+        ]
 
     def __str__(self):
         return f"[{self.get_category_display()}] {self.name}"
