@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Count
 
 from .models import Work
 
@@ -35,10 +36,15 @@ class WorkFilter(django_filters.FilterSet):
         if not value:
             return queryset
 
-        concept_ids = [int(c_id) for c_id in value.split(",") if c_id.isdigit()]
-        for c_id in concept_ids:
-            queryset = queryset.filter(concepts__id=c_id)
-        return queryset.distinct()
+        concept_ids = list(set([int(c_id) for c_id in value.split(",") if c_id.isdigit()]))
+        if not concept_ids:
+            return queryset
+
+        return (
+            queryset.filter(concepts__id__in=concept_ids)
+            .annotate(matching_concepts=Count("concepts", distinct=True))
+            .filter(matching_concepts=len(concept_ids))
+        )
 
     def filter_concepts_exclude(self, queryset, _name, value):
         """
