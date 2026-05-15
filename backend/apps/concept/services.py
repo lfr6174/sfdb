@@ -17,7 +17,10 @@ def get_random_concept_with_works(max_works: int = 4):
     concept = Concept.objects.prefetch_related(
         Prefetch(
             "works",
-            queryset=Work.objects.order_by("?")[:max_works],
+            queryset=Work.objects.prefetch_related(
+                "contributions__agent",
+                "contributions__role",
+            ).order_by("?")[:max_works],
             to_attr="random_works",
         )
     ).get(id=random.choice(ids))

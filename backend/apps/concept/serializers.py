@@ -56,4 +56,5 @@ class ConceptDetailSerializer(serializers.ModelSerializer):
                 "description": wc.description,
             }
             for wc in getattr(obj, "prefetched_work_concepts", [])
+            if wc.description and wc.description.strip()
         ]

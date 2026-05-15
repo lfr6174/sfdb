@@ -32,7 +32,7 @@ onMounted(async () => {
   try {
     // Send four independent RESTful requests in parallel using Promise.allSettled
     const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.allSettled([
-      api.get('/works/'),
+      api.get('/works/', { params: { limit: 1 } }), // 優化：只為獲取總數，避免回傳整頁笨重資料
       api.get('/concepts/', { params: { ordering: '-updated_at' } }), // Fetch genuinely "recently added" concepts by sorting
       api.get('/posts/'),
       api.get('/concepts/random/') // Fetch a random concept on initial load

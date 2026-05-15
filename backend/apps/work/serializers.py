@@ -75,7 +75,6 @@ class WorkBriefSerializer(serializers.ModelSerializer):
 
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
-    byline = serializers.SerializerMethodField()
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
 
     class Meta:
@@ -86,12 +85,8 @@ class WorkBriefSerializer(serializers.ModelSerializer):
             "year",
             "media_type_display",
             "work_length_display",
-            "byline",
             "work_concepts",
         ]
-
-    def get_byline(self, obj):
-        return get_byline(obj.contributions.all())
 
 
 # ============================================================================
@@ -252,7 +247,6 @@ class WorkSerializer(serializers.ModelSerializer):
             "work_concepts",
             "publications",
             "work_catalogues",
-            "created_at",
             "updated_at",
         ]
 

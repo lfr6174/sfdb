@@ -33,7 +33,6 @@ class AgentSerializer(serializers.ModelSerializer):
             "about",
             "aliases",
             "links",
-            "created_at",
             "updated_at",
         ]
 

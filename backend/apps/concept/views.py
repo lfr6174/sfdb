@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.work.models import WorkConcept
+from apps.work.services import get_byline
 
 from .models import Concept
 from .serializers import ConceptDetailSerializer, ConceptListSerializer, ConceptMinimalSerializer
@@ -58,6 +59,7 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
                 "year": w.year,
                 "media_type_display": w.get_media_type_display(),
                 "work_length_display": w.get_work_length_display(),
+                "byline": get_byline(w.contributions.all()),
             }
             for w in getattr(concept, "random_works", [])
         ]

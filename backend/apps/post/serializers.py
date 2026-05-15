@@ -28,4 +28,4 @@ class PostDetailSerializer(serializers.ModelSerializer):
 class PageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
-        fields = ["id", "slug", "title", "body", "created_at", "updated_at"]
+        fields = ["id", "slug", "title", "body", "updated_at"]
