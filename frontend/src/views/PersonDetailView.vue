@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
-import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
@@ -196,8 +195,8 @@ const personAwards = computed(() => {
           <div>
             <SectionTitle class="mb-3">常見標籤</SectionTitle>
 
-            <div v-if="person.top_concepts && person.top_concepts.length > 0">
-              <ExpandableTagList :concepts="person.top_concepts" :limit="10" />
+            <div v-if="person.concepts && person.concepts.length > 0">
+              <ExpandableTagList :concepts="person.concepts" :limit="7" />
             </div>
             <div v-else class="text-sm text-main/40">尚未與任何概念建立關聯。</div>
           </div>

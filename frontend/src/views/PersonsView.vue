@@ -9,7 +9,7 @@ const isLoading = ref(true)
 
 // Search, sort, and pagination states
 const searchQuery = ref('')
-const sortBy = ref('-updated_at') // Default: recently updated
+const sortBy = ref('name') // Default: name
 const currentPage = ref(1)
 const totalPages = ref(1)
 const totalCount = ref(0)
@@ -71,7 +71,7 @@ onMounted(() => {
         v-model="searchQuery"
         @input="onSearchInput"
         type="text"
-        placeholder="搜尋姓名或別名…"
+        placeholder="搜尋姓名、別名或簡介…"
         class="text-sm text-main placeholder:text-main/35 bg-transparent border-b border-main/20 px-0 py-1.5 outline-none focus:border-main/50 transition-colors w-full md:w-56"
       >
       <div class="relative shrink-0">
@@ -79,9 +79,8 @@ onMounted(() => {
           v-model="sortBy"
           class="w-28 text-sm text-main/60 bg-transparent border-b border-main/20 pl-1 pr-6 py-1.5 outline-none focus:border-main/50 transition-colors cursor-pointer appearance-none"
         >
-          <option value="-updated_at">最近更新</option>
           <option value="name">字母排序</option>
-          <option value="-works_count">作品數排序</option>
+          <option value="-updated_at">最近更新</option>
         </select>
         <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
           <path d="M0 0l5 6 5-6z" fill="currentColor"/>
@@ -123,26 +122,12 @@ onMounted(() => {
               {{ person.aliases.map(a => a.name).join(' · ') }}
             </span>
           </div>
-          <span class="font-mono text-sm text-main/40 shrink-0">{{ person.works_count || 0 }} 部作品</span>
         </div>
 
         <!-- Bio -->
         <p class="text-base text-main/70 leading-relaxed mb-3.5 line-clamp-2">
-          {{ person.about || '暫無簡歷提供。' }}
+          {{ person.excerpt || person.about || '暫無簡歷提供。' }}
         </p>
-
-        <!-- Concept Tags -->
-        <div v-if="person.top_concepts && person.top_concepts.length > 0" class="flex flex-wrap gap-1.5">
-          <router-link
-            v-for="concept in person.top_concepts.slice(0, 5)"
-            :key="concept.slug"
-            :to="`/concepts/${concept.slug}`"
-            class="inline-flex items-center text-xs text-main/60 border border-main/15 px-2.5 py-1 hover:text-primary hover:bg-primary/5 hover:border-primary/30 transition-all whitespace-nowrap no-underline"
-            @click.stop
-          >
-            {{ concept.name }}
-          </router-link>
-        </div>
       </div>
 
       <!-- Pagination -->

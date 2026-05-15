@@ -1,18 +1,18 @@
 from django.db.models import Count, Prefetch, Q
 
 from apps.concept.models import Concept
-from apps.work.models import Publication, PublicationAgent, Work, WorkAgent
+from apps.work.models import Publication, PublicationAgent, Work, WorkAgent, WorkCatalogue
 
 
-def get_agent_top_concepts(agent, limit: int = 7):
-    """Return concepts related to agent's works, ordered by work count."""
+def get_agent_concepts(agent):
+    """Return all concepts related to agent's works, ordered by work count."""
     qs = (
         Concept.objects.filter(works__agents=agent)
         .annotate(works_count=Count("works", filter=Q(works__agents=agent), distinct=True))
-        .order_by("-works_count")
+        .order_by("-works_count", "name")
     )
 
-    return [{"id": c.id, "name": c.name, "slug": c.slug, "works_count": c.works_count} for c in qs[:limit]]
+    return [{"id": c.id, "name": c.name, "slug": c.slug, "works_count": c.works_count} for c in qs]
 
 
 def get_agent_works(agent):
@@ -21,9 +21,17 @@ def get_agent_works(agent):
     works = (
         Work.objects.filter(agents=agent)
         .prefetch_related(
-            Prefetch("contributions", queryset=WorkAgent.objects.filter(agent=agent), to_attr="agent_contributions"),
+            Prefetch(
+                "contributions",
+                queryset=WorkAgent.objects.filter(agent=agent).select_related("role"),
+                to_attr="agent_contributions",
+            ),
             "concepts",
-            "work_catalogues__catalogue",
+            Prefetch(
+                "work_catalogues",
+                queryset=WorkCatalogue.objects.filter(catalogue__catalogue_type="award").select_related("catalogue"),
+                to_attr="award_catalogues",
+            ),
         )
         .distinct()
         .order_by("-year")
@@ -46,8 +54,7 @@ def get_agent_works(agent):
                     "category": wc.category,
                     "status": wc.get_status_display(),
                 }
-                for wc in w.work_catalogues.all()
-                if wc.catalogue.catalogue_type == "award"
+                for wc in getattr(w, "award_catalogues", [])
             ],
         }
         for w in works
@@ -61,7 +68,9 @@ def get_agent_publications(agent):
         Publication.objects.filter(agents=agent)
         .prefetch_related(
             Prefetch(
-                "contributions", queryset=PublicationAgent.objects.filter(agent=agent), to_attr="agent_contributions"
+                "contributions",
+                queryset=PublicationAgent.objects.filter(agent=agent).select_related("role"),
+                to_attr="agent_contributions",
             )
         )
         .distinct()

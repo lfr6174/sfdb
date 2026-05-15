@@ -61,6 +61,9 @@ class AgentAlias(models.Model):
         verbose_name = "人物/組織別名"
         verbose_name_plural = "人物/組織別名"
         unique_together = [["agent", "name"]]
+        indexes = [
+            models.Index(fields=["name"]),
+        ]
 
     def __str__(self):
         return f"{self.name} ({self.agent.name})"
