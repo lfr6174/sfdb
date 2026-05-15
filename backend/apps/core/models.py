@@ -10,7 +10,9 @@ class User(AbstractUser):
     Future fields like 'avatar' or 'phone_number' can be added here.
     """
 
-    pass
+    display_name = models.CharField(
+        max_length=50, blank=True, verbose_name="顯示名稱", help_text="前端顯示的作者名稱，以避免暴露登入帳號。"
+    )
 
 
 class TimeStampedModel(models.Model):

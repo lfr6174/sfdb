@@ -10,7 +10,7 @@ class PostListSerializer(serializers.ModelSerializer):
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    author_name = serializers.CharField(source="author.username", default="管理員", read_only=True)
+    author_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -23,6 +23,11 @@ class PostDetailSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+    def get_author_name(self, obj):
+        if not obj.author:
+            return "管理員"
+        return obj.author.display_name or "管理員"
 
 
 class PageSerializer(serializers.ModelSerializer):
