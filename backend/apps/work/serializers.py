@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.agent.models import Agent
-from apps.agent.serializers import AgentSerializer
 from apps.concept.serializers import ConceptMinimalSerializer
 
 from .models import (
@@ -48,11 +47,9 @@ class WorkMinimalSerializer(serializers.ModelSerializer):
 
 
 class CycleSerializer(serializers.ModelSerializer):
-    works_count = serializers.IntegerField(read_only=True)
-
     class Meta:
         model = Cycle
-        fields = ["id", "title", "note", "works_count", "created_at", "updated_at"]
+        fields = ["id", "title", "note", "created_at", "updated_at"]
 
 
 class WorkAgentSerializer(serializers.ModelSerializer):
@@ -79,7 +76,6 @@ class WorkBriefSerializer(serializers.ModelSerializer):
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
     byline = serializers.SerializerMethodField()
-    contributions = WorkAgentSerializer(many=True, read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
 
     class Meta:
@@ -91,7 +87,6 @@ class WorkBriefSerializer(serializers.ModelSerializer):
             "media_type_display",
             "work_length_display",
             "byline",
-            "contributions",
             "work_concepts",
         ]
 
@@ -137,9 +132,32 @@ class PublicationAgentSerializer(serializers.ModelSerializer):
         fields = ["id", "agent", "display_name", "role", "role_display", "order"]
 
 
+class PublicationInWorkSerializer(serializers.ModelSerializer):
+    """Publication serializer for use inside WorkSerializer - excludes manifestations to avoid redundancy."""
+
+    language_display = serializers.CharField(source="get_language_display", read_only=True)
+    publisher = AgentMinimalSerializer(read_only=True)
+    media_display = serializers.CharField(source="get_media_display", read_only=True)
+    contributions = PublicationAgentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Publication
+        fields = [
+            "id",
+            "title",
+            "media_display",
+            "language_display",
+            "year",
+            "isbn",
+            "note",
+            "publisher",
+            "contributions",
+        ]
+
+
 class PublicationSerializer(serializers.ModelSerializer):
     language_display = serializers.CharField(source="get_language_display", read_only=True)
-    publisher = AgentSerializer(read_only=True)
+    publisher = AgentMinimalSerializer(read_only=True)
     media_display = serializers.CharField(source="get_media_display", read_only=True)
     contributions = PublicationAgentSerializer(many=True, read_only=True)
     manifestations = ManifestationSerializer(many=True, read_only=True)
@@ -178,11 +196,11 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 class CatalogueBriefSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    agent_curator = AgentMinimalSerializer(read_only=True)
+    curators = AgentMinimalSerializer(many=True, read_only=True, source="agents")
 
     class Meta:
         model = Catalogue
-        fields = ["id", "title", "catalogue_type_display", "year", "agent_curator"]
+        fields = ["id", "title", "catalogue_type_display", "year", "curators"]
 
 
 class WorkCatalogueSerializer(serializers.ModelSerializer):
@@ -214,7 +232,6 @@ class WorkSerializer(serializers.ModelSerializer):
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
     publications = serializers.SerializerMethodField()
     work_catalogues = WorkCatalogueSerializer(many=True, read_only=True)
-    credit = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
@@ -232,7 +249,6 @@ class WorkSerializer(serializers.ModelSerializer):
             "cycle",
             "cycle_order",
             "contributions",
-            "credit",
             "work_concepts",
             "publications",
             "work_catalogues",
@@ -240,18 +256,20 @@ class WorkSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
-    def get_credit(self, obj):
-        return get_credits(obj.contributions.all())
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        contributions = instance.contributions.all()
+        ret["byline"] = get_byline(contributions)
+        ret["credit"] = get_credits(contributions)
+        return ret
 
     def get_publications(self, obj):
-        # Rely on prefetch_related from ViewSet to avoid N+1 queries.
-        manifestations = obj.manifestations.all()
+        manifestations = getattr(obj, "prefetched_manifestations", obj.manifestations.all())
         if not manifestations:
             return []
 
-        # Batch serialize publications to avoid serialization overhead in loops.
         publications = [man.publication for man in manifestations]
-        pub_data_list = PublicationSerializer(publications, many=True, context=self.context).data
+        pub_data_list = PublicationInWorkSerializer(publications, many=True, context=self.context).data
 
         # Merge manifestation-specific metadata back into the serialized publication data.
         for man, pub_data in zip(manifestations, pub_data_list):
@@ -260,33 +278,7 @@ class WorkSerializer(serializers.ModelSerializer):
             pub_data["manifestation_display_name"] = man.name if man.name else man.publication.title
 
             man_credit = get_credits(man.contributions.all())
-            pub_credit = pub_data.get("credit", [])
+            pub_credit = get_credits(man.publication.contributions.all())
             pub_data["credit"] = man_credit + pub_credit
 
         return pub_data_list
-
-
-# ============================================================================
-# CATALOGUE SERIALIZERS
-# ============================================================================
-
-
-class CatalogueSerializer(serializers.ModelSerializer):
-    catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    agent_curator = AgentMinimalSerializer(read_only=True)
-    works_count = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Catalogue
-        fields = [
-            "id",
-            "title",
-            "catalogue_type",
-            "catalogue_type_display",
-            "agent_curator",
-            "year",
-            "note",
-            "works_count",
-            "created_at",
-            "updated_at",
-        ]

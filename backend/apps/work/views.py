@@ -1,8 +1,9 @@
+from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
 from .filters import WorkFilter
-from .models import Work
+from .models import Manifestation, Work
 from .serializers import (
     WorkBriefSerializer,
     WorkSerializer,
@@ -28,7 +29,7 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ["year", "title", "created_at", "updated_at"]
 
     def get_queryset(self):
-        qs = Work.objects.select_related("cycle").order_by("-year", "title")
+        qs = Work.objects.select_related("cycle").order_by("-year", "title").distinct()
 
         if self.action == "list":
             return qs.prefetch_related("contributions__agent", "contributions__role", "work_concepts__concept")
@@ -37,15 +38,17 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
             "contributions__agent",
             "contributions__role",
             "work_concepts__concept",
-            "publications",
-            "publications__works",
-            "publications__publisher",
-            "publications__contributions__agent",
-            "publications__contributions__role",
-            "publications__manifestations__work",
-            "publications__manifestations__contributions__agent",
-            "publications__manifestations__contributions__role",
-            "work_catalogues__catalogue",
+            Prefetch(
+                "manifestations",
+                queryset=Manifestation.objects.select_related("publication__publisher").prefetch_related(
+                    "publication__contributions__agent",
+                    "publication__contributions__role",
+                    "contributions__agent",
+                    "contributions__role",
+                ),
+                to_attr="prefetched_manifestations",
+            ),
+            "work_catalogues__catalogue__agents",
         )
 
     def get_serializer_class(self):
