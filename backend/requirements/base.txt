@@ -5,3 +5,5 @@ django-filter
 drf-spectacular
 python-decouple
 django-unfold
+django-axes
+django-csp
