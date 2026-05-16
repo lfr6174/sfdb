@@ -55,29 +55,20 @@ class WorkAgentSerializer(serializers.ModelSerializer):
         fields = ["id", "agent", "role", "role_display", "order"]
 
 
+class WorkConceptListSerializer(serializers.ModelSerializer):
+    concept = ConceptMinimalSerializer(read_only=True)
+
+    class Meta:
+        model = WorkConcept
+        fields = ["id", "concept"]
+
+
 class WorkConceptSerializer(serializers.ModelSerializer):
     concept = ConceptMinimalSerializer(read_only=True)
 
     class Meta:
         model = WorkConcept
         fields = ["id", "concept", "description"]
-
-
-class WorkListSerializer(serializers.ModelSerializer):
-    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
-    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
-    work_concepts = WorkConceptSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Work
-        fields = [
-            "id",
-            "title",
-            "year",
-            "media_type_display",
-            "work_length_display",
-            "work_concepts",
-        ]
 
 
 # ============================================================================
@@ -203,6 +194,28 @@ class WorkCatalogueSerializer(serializers.ModelSerializer):
 # ============================================================================
 # MAIN WORK SERIALIZER (The Aggregator)
 # ============================================================================
+
+
+class WorkListSerializer(serializers.ModelSerializer):
+    byline = serializers.SerializerMethodField()
+    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
+    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    work_concepts = WorkConceptListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Work
+        fields = [
+            "id",
+            "title",
+            "year",
+            "byline",
+            "media_type_display",
+            "work_length_display",
+            "work_concepts",
+        ]
+
+    def get_byline(self, obj):
+        return get_byline(obj.contributions.all())
 
 
 class WorkDetailSerializer(serializers.ModelSerializer):
