@@ -137,14 +137,16 @@ const personAwards = computed(() => {
                   <span class="text-base font-medium text-main group-hover:text-primary transition-colors">
                     {{ work.title }}
                   </span>
-                  <span class="text-sm text-main/50">
+
+                </div>
+                <div>
+                  <span class="text-sm text-main/50 pr-3">
                     {{ [work.work_length, work.media_type].filter(Boolean).join('') }}
                   </span>
+                  <span class="shrink-0 text-sm font-medium text-primary text-right">
+                    {{ work.roles.join('、') }}
+                  </span>
                 </div>
-
-                <span class="shrink-0 text-sm font-medium text-primary text-right">
-                  {{ work.roles.join('、') }}
-                </span>
               </router-link>
             </div>
             <div v-else class="text-base text-main/40 py-3">尚無關聯的歷年作品。</div>
@@ -164,12 +166,13 @@ const personAwards = computed(() => {
 
                 <div class="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
                   <span class="text-base font-medium text-main">{{ pub.title }}</span>
-                  <span v-if="pub.publisher" class="text-sm text-main/50">{{ pub.publisher }}</span>
                 </div>
-
-                <span class="shrink-0 text-sm font-medium text-primary text-right">
-                  {{ pub.roles.join('、') }}
-                </span>
+                <div>
+                  <span v-if="pub.publisher" class="text-sm text-main/50 pr-3">{{ pub.publisher }}</span>
+                  <span class="shrink-0 text-sm font-medium text-primary text-right">
+                    {{ pub.roles.join('、') }}
+                  </span>
+                </div>
               </div>
             </div>
           </section>
