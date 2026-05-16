@@ -19,51 +19,30 @@ select = [
     "F",    # pyflakes: unused variables, imports, undefined names
     "I",    # isort: import ordering
     "B",    # flake8-bugbear: common bug patterns and design smells
-    "C90",  # McCabe complexity: warn on overly complex functions
-    "SIM",  # flake8-simplify: suggest simpler equivalents
-    "D",    # pydocstyle: docstring format conventions
+    "C90",  # McCabe complexity
+    "DJ",   # flake8-django: Django-specific anti-patterns
+    "T20",  # no print() / pprint() left in code
     "RUF",  # Ruff-native rules
 ]
 
 ignore = [
-    # --- Docstrings: not required everywhere, but must be formatted if present ---
-    "D100",  # Missing docstring in public module
-    "D101",  # Missing docstring in public class
-    "D102",  # Missing docstring in public method
-    "D103",  # Missing docstring in public function
-    "D104",  # Missing docstring in public package
-    "D105",  # Missing docstring in magic method
-    "D107",  # Missing docstring in __init__
-
-    # --- D212 and D213 are mutually exclusive; keep D213 (numpy convention) ---
-    "D212",
-
-    # --- Small-team relaxations ---
-    "B008",   # Allow function calls as default args (e.g. FastAPI Depends, Django)
-    "SIM108", # Ternary expressions are not always more readable
+    "B008",   # Allow function calls as default args (Django form defaults etc.)
+    "RUF001", # Full-width punctuation is fine in Chinese help_text / verbose_name
+    "RUF012", # Django Meta class attributes are intentionally mutable class vars
 ]
-
-[tool.ruff.lint.pydocstyle]
-# numpy convention enforces D213:
-# One-liner  → """Summary on the same line."""
-# Multi-line → opening """ on its own line, summary on the next, closing """ on its own line
-convention = "numpy"
-
-[tool.ruff.lint.mccabe]
-max-complexity = 10  # Functions exceeding 10 branches should be refactored
-
-[tool.ruff.lint.per-file-ignores]
-"config/settings/*.py" = ["F403", "F405"]
-"tests/**/*.py" = [
-    "D",     # No docstring requirements in tests
-    "S101",  # Allow assert statements
-]
-"**/management/commands/*.py" = ["D"]  # Relax docstring rules for Django management commands
 
 fixable = ["ALL"]
 unfixable = []
 
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"config/settings/*.py" = ["F403", "F405"]
+"tests/**/*.py"        = ["T20"]  # print() is acceptable in tests
+"**/management/commands/*.py" = ["T20"]  # print() is the output mechanism here
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-docstring-code-format = true  # Auto-format code blocks inside docstrings
+docstring-code-format = true

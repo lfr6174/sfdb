@@ -5,10 +5,7 @@ from .models import Work
 
 
 class WorkFilter(django_filters.FilterSet):
-    """
-    Advanced Faceted Search Filter for Work.
-    Supports exact matches, year ranges, and 3-state concept tag filtering (Include/Exclude).
-    """
+    """Advanced Faceted Search Filter for Work. Supports exact matches and year ranges."""
 
     year_min = django_filters.NumberFilter(field_name="year", lookup_expr="gte")
     year_max = django_filters.NumberFilter(field_name="year", lookup_expr="lte")

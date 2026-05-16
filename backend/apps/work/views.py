@@ -11,12 +11,6 @@ from .serializers import (
 
 
 class WorkViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API endpoint for Works.
-    Uses select_related and prefetch_related to heavily optimize SQL queries,
-    preventing the N+1 problem when fetching nested relationships.
-    """
-
     serializer_class = WorkDetailSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = WorkFilter

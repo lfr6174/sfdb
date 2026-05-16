@@ -8,10 +8,6 @@ from .serializers import PageDetailSerializer, PageListSerializer, PostDetailSer
 
 
 class PostViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Public read-only API. Content is managed via Django Admin.
-    """
-
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["title"]
     filterset_fields = ["post_type", "is_pinned"]
@@ -34,8 +30,6 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class PageViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only API for static pages."""
-
     queryset = Page.objects.all()
     lookup_field = "slug"
 

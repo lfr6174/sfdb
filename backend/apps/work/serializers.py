@@ -23,19 +23,12 @@ from .services import get_byline, get_credits
 
 
 class AgentMinimalSerializer(serializers.ModelSerializer):
-    """
-    A lightweight serializer for Agent to prevent circular imports
-    and overly bloated JSON payloads when serializing nested relationships.
-    """
-
     class Meta:
         model = Agent
         fields = ["id", "name", "agent_type"]
 
 
 class WorkMinimalSerializer(serializers.ModelSerializer):
-    """Absolute minimal serializer, useful for dropdowns and option lists."""
-
     class Meta:
         model = Work
         fields = ["id", "title"]
@@ -71,8 +64,6 @@ class WorkConceptSerializer(serializers.ModelSerializer):
 
 
 class WorkListSerializer(serializers.ModelSerializer):
-    """List Work serializer for cards, lists, and homepage spotlights."""
-
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
@@ -215,11 +206,6 @@ class WorkCatalogueSerializer(serializers.ModelSerializer):
 
 
 class WorkDetailSerializer(serializers.ModelSerializer):
-    """
-    The ultimate aggregator serializer that pulls together the Work,
-    its credits, its concepts, and its physical publications.
-    """
-
     media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
@@ -268,7 +254,7 @@ class WorkDetailSerializer(serializers.ModelSerializer):
         pub_data_list = PublicationInWorkSerializer(publications, many=True, context=self.context).data
 
         # Merge manifestation-specific metadata back into the serialized publication data.
-        for man, pub_data in zip(manifestations, pub_data_list):
+        for man, pub_data in zip(manifestations, pub_data_list, strict=True):
             pub_data["manifestation_id"] = man.id
             pub_data["manifestation_name"] = man.name
             pub_data["manifestation_display_name"] = man.name if man.name else man.publication.title

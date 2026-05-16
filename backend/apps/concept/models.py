@@ -4,16 +4,12 @@ from apps.core.models import TimeStampedModel
 
 
 class ConceptCategory(models.TextChoices):
-    """Main categories of sf concepts."""
-
     NOVUM = "novum", "新異 (Novum)"
     NARRATIVE = "narrative", "敘事 (Narrative)"
     THEME = "theme", "主題 (Theme)"
 
 
 class Concept(TimeStampedModel):
-    """Core concept in science fiction."""
-
     name = models.CharField(max_length=100, verbose_name="概念名稱")
     slug = models.SlugField(
         max_length=150,
@@ -46,10 +42,7 @@ class Concept(TimeStampedModel):
 
 
 class ConceptLink(models.Model):
-    """
-    External reference links for a concept (e.g., The Encyclopedia of Science Fiction).
-    UI spec recommends a soft limit of 3 links per concept.
-    """
+    """External reference links for a concept (e.g., The Encyclopedia of Science Fiction)."""
 
     concept = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name="links", verbose_name="概念")
     title = models.CharField(max_length=200, help_text="e.g., SFE Entry, Wikipedia", verbose_name="連結標題")

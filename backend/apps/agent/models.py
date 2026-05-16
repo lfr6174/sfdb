@@ -40,9 +40,7 @@ class Agent(TimeStampedModel):
 
 
 class AgentAlias(models.Model):
-    """
-    Other common names for a person or organization, such as pen names
-    """
+    """Other common names for a person or organization, such as pen names."""
 
     agent = models.ForeignKey(
         Agent,
@@ -70,10 +68,7 @@ class AgentAlias(models.Model):
 
 
 class AgentLink(models.Model):
-    """
-    External links for a person or organization, such as Wikipedia pages,
-    official websites, or social media profiles.
-    """
+    """External links for a person or organization, such as Wikipedia pages or social media profiles."""
 
     agent = models.ForeignKey(Agent, on_delete=models.CASCADE, related_name="links", verbose_name="人物/組織")
     label = models.CharField(

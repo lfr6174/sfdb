@@ -6,8 +6,6 @@ from .serializers import AgentDetailSerializer, AgentListSerializer
 
 
 class AgentViewSet(viewsets.ReadOnlyModelViewSet):
-    """API endpoint that allows agents to be viewed."""
-
     queryset = Agent.objects.all().order_by("name").distinct()
     serializer_class = AgentListSerializer
 
@@ -28,6 +26,4 @@ class AgentViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class PersonViewSet(AgentViewSet):
-    """API endpoint that allows persons (Agents of type PERSON) to be viewed."""
-
     queryset = AgentViewSet.queryset.filter(agent_type=Agent.AgentType.PERSON)
