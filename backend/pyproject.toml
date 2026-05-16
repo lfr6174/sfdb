@@ -1,8 +1,6 @@
 [tool.ruff]
-# Set line length to 119 (Django's default recommendation) or 88 (Black's default)
 line-length = 119
 
-# Exclude commonly ignored directories and Django migrations
 exclude = [
     ".git",
     ".mypy_cache",
@@ -11,22 +9,61 @@ exclude = [
     "venv",
     "env",
     "__pycache__",
-    "*/migrations/*",  # Ignore Django auto-generated migrations
+    "*/migrations/*",
 ]
 
 [tool.ruff.lint]
-# E, W: pycodestyle, F: pyflakes, I: isort
-select = ["E", "F", "I", "W"]
+select = [
+    "E",    # pycodestyle: indentation, spacing, blank lines
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes: unused variables, imports, undefined names
+    "I",    # isort: import ordering
+    "B",    # flake8-bugbear: common bug patterns and design smells
+    "C90",  # McCabe complexity: warn on overly complex functions
+    "SIM",  # flake8-simplify: suggest simpler equivalents
+    "D",    # pydocstyle: docstring format conventions
+    "RUF",  # Ruff-native rules
+]
+
+ignore = [
+    # --- Docstrings: not required everywhere, but must be formatted if present ---
+    "D100",  # Missing docstring in public module
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D103",  # Missing docstring in public function
+    "D104",  # Missing docstring in public package
+    "D105",  # Missing docstring in magic method
+    "D107",  # Missing docstring in __init__
+
+    # --- D212 and D213 are mutually exclusive; keep D213 (numpy convention) ---
+    "D212",
+
+    # --- Small-team relaxations ---
+    "B008",   # Allow function calls as default args (e.g. FastAPI Depends, Django)
+    "SIM108", # Ternary expressions are not always more readable
+]
+
+[tool.ruff.lint.pydocstyle]
+# numpy convention enforces D213:
+# One-liner  → """Summary on the same line."""
+# Multi-line → opening """ on its own line, summary on the next, closing """ on its own line
+convention = "numpy"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10  # Functions exceeding 10 branches should be refactored
 
 [tool.ruff.lint.per-file-ignores]
-# Ignore star imports (F403) and undefined variables from star imports (F405) in settings files
 "config/settings/*.py" = ["F403", "F405"]
+"tests/**/*.py" = [
+    "D",     # No docstring requirements in tests
+    "S101",  # Allow assert statements
+]
+"**/management/commands/*.py" = ["D"]  # Relax docstring rules for Django management commands
 
-# Allow autofix for all enabled rules (when `--fix` is used)
 fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.format]
-# Like Black, use double quotes for strings.
 quote-style = "double"
 indent-style = "space"
+docstring-code-format = true  # Auto-format code blocks inside docstrings
