@@ -131,6 +131,7 @@ class WorkAdmin(ModelAdmin):
         "cycle",
     )
     list_filter = (
+        ("description", admin.EmptyFieldListFilter),
         ("media_type", ChoicesDropdownFilter),
         ("work_length", ChoicesDropdownFilter),
         ("provenance", ChoicesDropdownFilter),
@@ -209,7 +210,6 @@ class PublicationAdmin(ModelAdmin):
         contributions = obj.contributions.all()
         valid_agents = []
         for c in contributions:
-            # 如果是原作者且沒填寫別名，就不顯示在列表摘要中
             if c.role.code in ["author", "co_author", "story", "art"] and not c.display_name:
                 continue
             valid_agents.append(c)
