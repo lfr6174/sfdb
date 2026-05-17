@@ -228,6 +228,8 @@ class WorkDetailSerializer(serializers.ModelSerializer):
     work_concepts = WorkConceptSerializer(many=True, read_only=True)
     publications = serializers.SerializerMethodField()
     work_catalogues = WorkCatalogueSerializer(many=True, read_only=True)
+    byline = serializers.SerializerMethodField()
+    credit = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
@@ -248,15 +250,16 @@ class WorkDetailSerializer(serializers.ModelSerializer):
             "work_concepts",
             "publications",
             "work_catalogues",
+            "byline",
+            "credit",
             "updated_at",
         ]
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        contributions = instance.contributions.all()
-        ret["byline"] = get_byline(contributions)
-        ret["credit"] = get_credits(contributions)
-        return ret
+    def get_byline(self, obj):
+        return get_byline(obj.contributions.all())
+
+    def get_credit(self, obj):
+        return get_credits(obj.contributions.all())
 
     def get_publications(self, obj):
         manifestations = getattr(obj, "prefetched_manifestations", obj.manifestations.all())
