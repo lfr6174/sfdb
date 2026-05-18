@@ -23,5 +23,11 @@ export function useSpoiler() {
     revealedSpoilers.value.clear()
   }
 
-  return { isSpoilerProtected, toggleSpoiler, revealedSpoilers, revealSpoiler, clearRevealedSpoilers }
+  return {
+    isSpoilerProtected,
+    toggleSpoiler,
+    revealedSpoilers,
+    revealSpoiler,
+    clearRevealedSpoilers
+  }
 }

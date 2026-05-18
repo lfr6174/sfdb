@@ -31,31 +31,45 @@ const formatDate = (dateStr: string) => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto pb-20">
-    <div v-if="isLoading" class="py-16 text-center text-main/50 text-sm font-medium">
+  <div class="mx-auto max-w-4xl pb-20">
+    <div
+      v-if="isLoading"
+      class="text-main/50 py-16 text-center text-sm font-medium"
+    >
       正在讀取文章資料...
     </div>
 
     <template v-else-if="post">
       <!-- Back Link -->
-      <div class="pt-10 mb-9">
-        <BackLink to="/posts" text="返回文章列表" />
+      <div class="mb-9 pt-10">
+        <BackLink
+          to="/posts"
+          text="返回文章列表"
+        />
       </div>
 
       <article class="flex flex-col">
-        <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-4">{{ post.title }}</h1>
+        <h1 class="text-main mb-4 text-3xl leading-snug font-normal md:text-4xl">
+          {{ post.title }}
+        </h1>
 
-        <div class="text-base text-main/50 flex items-center gap-2 mb-8">
+        <div class="text-main/50 mb-8 flex items-center gap-2 text-base">
           <span>{{ post.author_name || '管理員' }}</span>
           <span class="text-main/20">·</span>
           <time class="font-mono">{{ formatDate(post.created_at) }}</time>
         </div>
 
         <!-- content -->
-        <div class="prose prose-stone max-w-none text-base lg:text-lg text-main/80 leading-loose whitespace-pre-wrap">{{ post.body || '無內容' }}</div>
+        <div
+          class="prose prose-stone text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg"
+        >
+          {{ post.body || '無內容' }}
+        </div>
 
-        <div class="mt-16 pt-6 border-t border-main/10 flex justify-end">
-          <span class="text-xs font-mono text-main/40">最後更新於 {{ formatDate(post.updated_at) }}</span>
+        <div class="border-main/10 mt-16 flex justify-end border-t pt-6">
+          <span class="text-main/40 font-mono text-xs">
+            最後更新於 {{ formatDate(post.updated_at) }}
+          </span>
         </div>
       </article>
     </template>

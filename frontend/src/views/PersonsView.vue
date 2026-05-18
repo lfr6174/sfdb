@@ -31,7 +31,6 @@ const fetchPersons = async () => {
     // Calculate total pages based on backend's default page size (e.g., 20)
     const pageSize = 20 // Adjust if your DRF default page_size is different
     totalPages.value = Math.ceil(totalCount.value / pageSize) || 1
-
   } catch (error) {
     console.error('Failed to fetch persons:', error)
   } finally {
@@ -63,41 +62,57 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto">
-
+  <div class="mx-auto max-w-4xl">
     <!-- ── Controls ── -->
-    <div class="pt-10 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col justify-between gap-4 pt-10 pb-8 md:flex-row md:items-center">
       <input
         v-model="searchQuery"
-        @input="onSearchInput"
         type="text"
         placeholder="搜尋姓名、別名或簡介…"
-        class="text-sm text-main placeholder:text-main/35 bg-transparent border-b border-main/20 px-0 py-1.5 outline-none focus:border-main/50 transition-colors w-full md:w-56"
-      >
+        class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
+        @input="onSearchInput"
+      />
       <div class="relative shrink-0">
         <select
           v-model="sortBy"
-          class="w-28 text-sm text-main/60 bg-transparent border-b border-main/20 pl-1 pr-6 py-1.5 outline-none focus:border-main/50 transition-colors cursor-pointer appearance-none"
+          class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
         >
           <option value="name">字母排序</option>
           <option value="-updated_at">最近更新</option>
         </select>
-        <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
-          <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+        <svg
+          class="text-main/35 pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2"
+          width="9"
+          height="5"
+          viewBox="0 0 10 6"
+          fill="none"
+        >
+          <path
+            d="M0 0l5 6 5-6z"
+            fill="currentColor"
+          />
         </svg>
       </div>
     </div>
 
     <!-- ── Loading ── -->
-    <div v-if="isLoading && persons.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
+    <div
+      v-if="isLoading && persons.length === 0"
+      class="text-main/50 py-16 text-center text-base font-medium"
+    >
       正在讀取人物列表...
     </div>
 
     <!-- ── List ── -->
-    <div v-else class="pb-20">
-
+    <div
+      v-else
+      class="pb-20"
+    >
       <!-- Count -->
-      <p v-if="totalCount > 0" class="text-xs text-main/35 tracking-wide mb-1">
+      <p
+        v-if="totalCount > 0"
+        class="text-main/35 mb-1 text-xs tracking-wide"
+      >
         共 {{ totalCount }} 位人物
       </p>
 
@@ -105,27 +120,36 @@ onMounted(() => {
       <div
         v-for="person in persons"
         :key="person.id"
-        class="group relative z-0 py-5 border-b border-main/10 cursor-pointer transition-colors"
+        class="group border-main/10 relative z-0 cursor-pointer border-b py-5 transition-colors"
         @click="$router.push(`/persons/${person.id}`)"
       >
         <!-- Hover Background Overlay -->
-        <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+        <div
+          class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
+        ></div>
 
         <!-- Accent line -->
-        <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+        <div
+          class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
+        ></div>
 
         <!-- Name row -->
-        <div class="flex flex-wrap items-baseline justify-between gap-3 mb-1.5">
-          <div class="flex items-baseline gap-2.5 flex-wrap">
-            <span class="text-xl font-medium text-main group-hover:text-primary transition-colors">{{ person.name }}</span>
-            <span v-if="person.aliases && person.aliases.length > 0" class="text-base text-main/40">
-              {{ person.aliases.map(a => a.name).join(' · ') }}
+        <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-3">
+          <div class="flex flex-wrap items-baseline gap-2.5">
+            <span class="text-main group-hover:text-primary text-xl font-medium transition-colors">
+              {{ person.name }}
+            </span>
+            <span
+              v-if="person.aliases && person.aliases.length > 0"
+              class="text-main/40 text-base"
+            >
+              {{ person.aliases.map((a) => a.name).join(' · ') }}
             </span>
           </div>
         </div>
 
         <!-- Bio -->
-        <p class="text-base text-main/70 leading-relaxed mb-3.5 line-clamp-2">
+        <p class="text-main/70 mb-3.5 line-clamp-2 text-base leading-relaxed">
           {{ person.excerpt || person.about || '暫無簡歷提供。' }}
         </p>
       </div>
@@ -140,6 +164,5 @@ onMounted(() => {
         @change-page="changePage"
       />
     </div>
-
   </div>
 </template>

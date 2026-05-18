@@ -27,7 +27,6 @@ onMounted(() => {
   fetchPersonDetail()
 })
 
-
 const totalWorksCount = computed(() => {
   return person.value?.participated_works?.length || 0
 })
@@ -67,47 +66,55 @@ const personAwards = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto">
-
-    <div v-if="isLoading" class="text-center py-16 text-main/50 text-sm font-medium">
+  <div class="mx-auto max-w-4xl">
+    <div
+      v-if="isLoading"
+      class="text-main/50 py-16 text-center text-sm font-medium"
+    >
       正在讀取人物資料...
     </div>
 
     <template v-else-if="person">
-
       <!-- Back Link -->
-      <div class="pt-10 mb-9">
-        <BackLink to="/persons" text="返回人物列表" />
+      <div class="mb-9 pt-10">
+        <BackLink
+          to="/persons"
+          text="返回人物列表"
+        />
       </div>
 
-      <div class="flex flex-col md:flex-row gap-10 lg:gap-16 items-start pb-20">
-
+      <div class="flex flex-col items-start gap-10 pb-20 md:flex-row lg:gap-16">
         <!-- ── Main Column ── -->
-        <div class="w-full md:w-7/12 lg:w-8/12 flex flex-col">
-
+        <div class="flex w-full flex-col md:w-7/12 lg:w-8/12">
           <!-- Personal Info -->
           <section>
-            <h1 class="text-3xl md:text-4xl font-normal leading-snug text-main mb-2">
+            <h1 class="text-main mb-2 text-3xl leading-snug font-normal md:text-4xl">
               {{ person.name }}
             </h1>
 
-            <div v-if="person.aliases && person.aliases.length > 0" class="text-base text-main/40 mb-5">
+            <div
+              v-if="person.aliases && person.aliases.length > 0"
+              class="text-main/40 mb-5 text-base"
+            >
               {{ person.aliases.map((a) => a.name).join(' · ') }}
             </div>
 
-            <p class="text-base text-main/80 leading-relaxed whitespace-pre-wrap mb-5">
+            <p class="text-main/80 mb-5 text-base leading-relaxed whitespace-pre-wrap">
               {{ person.about || '暫無簡歷提供。' }}
             </p>
 
             <!-- External Links -->
-            <div v-if="person.links && person.links.length > 0" class="flex flex-wrap gap-4">
+            <div
+              v-if="person.links && person.links.length > 0"
+              class="flex flex-wrap gap-4"
+            >
               <a
                 v-for="link in person.links"
                 :key="link.id"
                 :href="link.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-base text-primary hover:opacity-70 transition-opacity no-underline"
+                class="text-primary text-base no-underline transition-opacity hover:opacity-70"
               >
                 ↗ {{ link.label }}
               </a>
@@ -118,80 +125,105 @@ const personAwards = computed(() => {
           <section class="mt-10">
             <SectionTitle class="mb-2">歷年作品</SectionTitle>
 
-          <div v-if="person.participated_works && person.participated_works.length > 0" class="flex flex-col">
+            <div
+              v-if="person.participated_works && person.participated_works.length > 0"
+              class="flex flex-col"
+            >
               <router-link
-              v-for="work in person.participated_works"
+                v-for="work in person.participated_works"
                 :key="work.id"
                 :to="`/works/${work.id}`"
-                class="group relative z-0 flex items-baseline gap-4 py-3 border-b border-main/10 last:border-0 transition-colors no-underline"
+                class="group border-main/10 relative z-0 flex items-baseline gap-4 border-b py-3 no-underline transition-colors last:border-0"
               >
                 <!-- Hover Background Overlay -->
-                <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+                <div
+                  class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
+                ></div>
 
                 <!-- Accent line -->
-                <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+                <div
+                  class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
+                ></div>
 
-                <span class="font-mono text-sm text-main/50 w-10 shrink-0">{{ work.year || '-' }}</span>
+                <span class="text-main/50 w-10 shrink-0 font-mono text-sm">
+                  {{ work.year || '-' }}
+                </span>
 
-                <div class="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <span class="text-base font-medium text-main group-hover:text-primary transition-colors">
+                <div class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span
+                    class="text-main group-hover:text-primary text-base font-medium transition-colors"
+                  >
                     {{ work.title }}
                   </span>
-
                 </div>
                 <div>
-                  <span class="text-sm text-main/50 pr-3">
+                  <span class="text-main/50 pr-3 text-sm">
                     {{ [work.work_length, work.media_type].filter(Boolean).join('') }}
                   </span>
-                  <span class="shrink-0 text-sm font-medium text-primary text-right">
+                  <span class="text-primary shrink-0 text-right text-sm font-medium">
                     {{ work.roles.join('、') }}
                   </span>
                 </div>
               </router-link>
             </div>
-            <div v-else class="text-base text-main/40 py-3">尚無關聯的歷年作品。</div>
+            <div
+              v-else
+              class="text-main/40 py-3 text-base"
+            >
+              尚無關聯的歷年作品。
+            </div>
           </section>
 
           <!-- ── Participated Publications ── -->
-          <section v-if="person.participated_publications && person.participated_publications.length > 0" class="mt-10">
+          <section
+            v-if="person.participated_publications && person.participated_publications.length > 0"
+            class="mt-10"
+          >
             <SectionTitle class="mb-2">出版與其他參與</SectionTitle>
 
             <div class="flex flex-col">
               <div
                 v-for="pub in person.participated_publications"
                 :key="pub.id"
-                class="flex items-baseline gap-4 py-3 border-b border-main/10 last:border-0"
+                class="border-main/10 flex items-baseline gap-4 border-b py-3 last:border-0"
               >
-                <span class="font-mono text-sm text-main/50 w-10 shrink-0">{{ pub.year || '-' }}</span>
+                <span class="text-main/50 w-10 shrink-0 font-mono text-sm">
+                  {{ pub.year || '-' }}
+                </span>
 
-                <div class="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <span class="text-base font-medium text-main">{{ pub.title }}</span>
+                <div class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <span class="text-main text-base font-medium">{{ pub.title }}</span>
                 </div>
                 <div>
-                  <span v-if="pub.publisher" class="text-sm text-main/50 pr-3">{{ pub.publisher }}</span>
-                  <span class="shrink-0 text-sm font-medium text-primary text-right">
+                  <span
+                    v-if="pub.publisher"
+                    class="text-main/50 pr-3 text-sm"
+                  >
+                    {{ pub.publisher }}
+                  </span>
+                  <span class="text-primary shrink-0 text-right text-sm font-medium">
                     {{ pub.roles.join('、') }}
                   </span>
                 </div>
               </div>
             </div>
           </section>
-
         </div>
 
         <!-- ── Sidebar ── -->
-        <aside class="w-full md:w-5/12 lg:w-4/12 shrink-0 flex flex-col gap-8 md:sticky md:top-8 mt-6 md:mt-0">
-
+        <aside
+          class="mt-6 flex w-full shrink-0 flex-col gap-8 md:sticky md:top-8 md:mt-0 md:w-5/12 lg:w-4/12"
+        >
           <!-- Work count -->
           <div>
             <SectionTitle class="mb-2">作品總數</SectionTitle>
-            <span class="font-mono text-xl text-main">{{ totalWorksCount }}</span>
+            <span class="text-main font-mono text-xl">{{ totalWorksCount }}</span>
           </div>
 
           <!-- Active years -->
           <div>
             <SectionTitle class="mb-2">活躍年份</SectionTitle>
-            <span class="font-mono text-base text-main">{{ activeYears }}</span>
+            <span class="text-main font-mono text-base">{{ activeYears }}</span>
           </div>
 
           <!-- Top Concepts -->
@@ -199,9 +231,17 @@ const personAwards = computed(() => {
             <SectionTitle class="mb-3">常見標籤</SectionTitle>
 
             <div v-if="person.concepts && person.concepts.length > 0">
-              <ExpandableTagList :concepts="person.concepts" :limit="7" />
+              <ExpandableTagList
+                :concepts="person.concepts"
+                :limit="7"
+              />
             </div>
-            <div v-else class="text-sm text-main/40">尚未與任何概念建立關聯。</div>
+            <div
+              v-else
+              class="text-main/40 text-sm"
+            >
+              尚未與任何概念建立關聯。
+            </div>
           </div>
 
           <!-- Awards -->
@@ -211,17 +251,20 @@ const personAwards = computed(() => {
               <span
                 v-for="award in personAwards"
                 :key="award.id"
-                class="inline-flex items-center gap-1.5 text-xs text-main/60 border border-main/15 px-2.5 py-1 whitespace-nowrap cursor-default"
+                class="text-main/60 border-main/15 inline-flex cursor-default items-center gap-1.5 border px-2.5 py-1 text-xs whitespace-nowrap"
               >
                 <span>{{ award.title }}</span>
-                <span v-if="award.count > 1" class="font-mono text-[10px] text-main/40">{{ award.count }}</span>
+                <span
+                  v-if="award.count > 1"
+                  class="text-main/40 font-mono text-[10px]"
+                >
+                  {{ award.count }}
+                </span>
               </span>
             </div>
           </div>
-
         </aside>
       </div>
     </template>
-
   </div>
 </template>

@@ -23,7 +23,7 @@ const fetchPosts = async () => {
   try {
     const params: any = {
       page: currentPage.value,
-      ordering: ordering.value,
+      ordering: ordering.value
     }
     if (searchQuery.value) params.search = searchQuery.value
 
@@ -60,64 +60,87 @@ const changePage = (dir: number) => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto pb-20">
-
+  <div class="mx-auto max-w-4xl pb-20">
     <!-- ── Controls ── -->
-    <div class="pt-10 pb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex flex-col justify-between gap-4 pt-10 pb-8 md:flex-row md:items-center">
       <input
         v-model="searchQuery"
         type="text"
         placeholder="搜尋標題、內容…"
-        class="text-sm text-main placeholder:text-main/35 bg-transparent border-b border-main/20 px-0 py-1.5 outline-none focus:border-main/50 transition-colors w-full md:w-56"
-      >
+        class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
+      />
       <div class="relative shrink-0">
         <select
           v-model="ordering"
-          class="w-28 text-sm text-main/60 bg-transparent border-b border-main/20 pl-1 pr-6 py-1.5 outline-none focus:border-main/50 transition-colors cursor-pointer appearance-none"
+          class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
         >
           <option value="-created_at">最新發布</option>
           <option value="created_at">最早發布</option>
           <option value="-updated_at">最近更新</option>
           <option value="updated_at">最早更新</option>
         </select>
-        <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-main/35" width="9" height="5" viewBox="0 0 10 6" fill="none">
-          <path d="M0 0l5 6 5-6z" fill="currentColor"/>
+        <svg
+          class="text-main/35 pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2"
+          width="9"
+          height="5"
+          viewBox="0 0 10 6"
+          fill="none"
+        >
+          <path
+            d="M0 0l5 6 5-6z"
+            fill="currentColor"
+          />
         </svg>
       </div>
     </div>
 
     <!-- ── List ── -->
-    <div v-if="isLoading" class="text-center py-16 text-main/50 text-base font-medium">
+    <div
+      v-if="isLoading"
+      class="text-main/50 py-16 text-center text-base font-medium"
+    >
       正在讀取文章列表...
     </div>
-    <div v-else-if="posts.length === 0" class="text-center py-16 text-main/50 text-base font-medium">
+    <div
+      v-else-if="posts.length === 0"
+      class="text-main/50 py-16 text-center text-base font-medium"
+    >
       找不到符合條件的文章。
     </div>
-    <div v-else class="flex flex-col">
-
+    <div
+      v-else
+      class="flex flex-col"
+    >
       <!-- Count -->
-      <p v-if="totalPosts > 0" class="text-xs text-main/35 tracking-wide mb-1">
+      <p
+        v-if="totalPosts > 0"
+        class="text-main/35 mb-1 text-xs tracking-wide"
+      >
         共 {{ totalPosts }} 篇文章
       </p>
 
       <div
         v-for="post in posts"
         :key="post.id"
-        class="group relative z-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-6 py-4 border-b border-main/10 last:border-0 transition-colors"
+        class="group border-main/10 relative z-0 flex flex-col justify-between gap-2 border-b py-4 transition-colors last:border-0 sm:flex-row sm:items-center sm:gap-6"
       >
         <!-- Hover Background Overlay -->
-        <div class="absolute inset-y-0 -inset-x-3 bg-transparent group-hover:bg-white/5 transition-colors pointer-events-none -z-10 rounded-sm"></div>
+        <div
+          class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
+        ></div>
 
         <!-- Accent line -->
-        <div class="absolute -left-3 top-0 bottom-0 w-0.5 bg-transparent group-hover:bg-primary transition-colors pointer-events-none"></div>
+        <div
+          class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
+        ></div>
 
         <router-link
           :to="`/posts/${post.id}`"
-          class="text-lg font-medium text-main group-hover:text-primary transition-colors no-underline block"
+          class="text-main group-hover:text-primary block text-lg font-medium no-underline transition-colors"
         >
           {{ post.title }}
         </router-link>
-        <span class="font-mono text-base text-main/50 shrink-0">
+        <span class="text-main/50 shrink-0 font-mono text-base">
           {{ formatDate(post.created_at) }}
         </span>
       </div>
@@ -134,6 +157,5 @@ const changePage = (dir: number) => {
         />
       </div>
     </div>
-
   </div>
 </template>

@@ -2,12 +2,15 @@
 import { ref, computed } from 'vue'
 import ConceptTag from './ConceptTag.vue'
 
-const props = withDefaults(defineProps<{
-  concepts: any[];
-  limit?: number;
-}>(), {
-  limit: 10
-})
+const props = withDefaults(
+  defineProps<{
+    concepts: any[]
+    limit?: number
+  }>(),
+  {
+    limit: 10
+  }
+)
 
 const isExpanded = ref(false)
 
@@ -29,8 +32,8 @@ const hiddenCount = computed(() => Math.max(0, props.concepts.length - props.lim
 
     <button
       v-if="hiddenCount > 0"
+      class="text-primary border-primary/30 hover:bg-primary/5 inline-flex items-center border border-dashed px-2.5 py-1 text-xs whitespace-nowrap transition-all"
       @click="isExpanded = !isExpanded"
-      class="inline-flex items-center text-xs text-primary border border-dashed border-primary/30 px-2.5 py-1 hover:bg-primary/5 transition-all whitespace-nowrap"
     >
       {{ isExpanded ? '− 收合' : `+ ${hiddenCount} 更多` }}
     </button>

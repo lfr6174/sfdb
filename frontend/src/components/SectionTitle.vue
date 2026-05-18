@@ -4,10 +4,10 @@
 
 <template>
   <div class="flex items-center gap-3">
-    <span class="text-sm font-medium tracking-widest uppercase text-main/40 whitespace-nowrap">
+    <span class="text-main/40 text-sm font-medium tracking-widest whitespace-nowrap uppercase">
       <slot></slot>
     </span>
-    <div class="flex-1 border-t border-main/10"></div>
+    <div class="border-main/10 flex-1 border-t"></div>
     <!-- Optional right-side actions -->
     <slot name="action"></slot>
   </div>
