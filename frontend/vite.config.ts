@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     // for wsl2 development
     watch: {
-      usePolling: true
-    }
-  }
+      usePolling: true,
+    },
+  },
 })

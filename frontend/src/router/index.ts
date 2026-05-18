@@ -16,59 +16,59 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
       path: '/concepts',
       name: 'concepts',
-      component: ConceptsView
+      component: ConceptsView,
     },
     {
       path: '/concepts/:slug',
       name: 'concept-detail',
       component: ConceptDetailView,
-      props: true
+      props: true,
     },
     {
       path: '/persons',
       name: 'persons',
-      component: PersonsView
+      component: PersonsView,
     },
     {
       path: '/persons/:id',
       name: 'person-detail',
       component: PersonDetailView,
-      props: true
+      props: true,
     },
     {
       path: '/works',
       name: 'works',
-      component: WorksView
+      component: WorksView,
     },
     {
       path: '/works/:id',
       name: 'work-detail',
       component: WorkDetailView,
-      props: true
+      props: true,
     },
     {
       path: '/posts',
       name: 'posts',
-      component: PostsView
+      component: PostsView,
     },
     {
       path: '/posts/:id',
       name: 'post-detail',
       component: PostDetailView,
-      props: true
+      props: true,
     },
     {
       path: '/pages/:slug',
       name: 'page-detail',
       component: PageDetailView,
-      props: true
-    }
-  ]
+      props: true,
+    },
+  ],
 })
 
 export default router

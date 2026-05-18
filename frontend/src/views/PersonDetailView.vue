@@ -53,7 +53,7 @@ const personAwards = computed(() => {
           awardsMap.set(award.title, {
             id: award.title,
             title: award.title,
-            count: 0
+            count: 0,
           })
         }
         awardsMap.get(award.title).count += 1

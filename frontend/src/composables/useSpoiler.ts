@@ -28,6 +28,6 @@ export function useSpoiler() {
     toggleSpoiler,
     revealedSpoilers,
     revealSpoiler,
-    clearRevealedSpoilers
+    clearRevealedSpoilers,
   }
 }

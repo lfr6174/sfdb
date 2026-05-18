@@ -21,8 +21,8 @@ const fetchPersons = async () => {
       params: {
         page: currentPage.value,
         search: searchQuery.value,
-        ordering: sortBy.value
-      }
+        ordering: sortBy.value,
+      },
     })
 
     persons.value = response.data.results || []

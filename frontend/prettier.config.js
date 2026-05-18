@@ -6,5 +6,5 @@ export default {
   singleAttributePerLine: true,
   htmlWhitespaceSensitivity: 'ignore',
   trailingComma: 'all',
-  plugins: ['prettier-plugin-tailwindcss']
+  plugins: ['prettier-plugin-tailwindcss'],
 }

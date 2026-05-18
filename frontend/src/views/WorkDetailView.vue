@@ -52,7 +52,7 @@ const sortedCatalogues = computed(() => {
   if (!work.value?.work_catalogues) return []
   // Sort by year descending
   return [...work.value.work_catalogues].sort(
-    (a, b) => (b.catalogue.year || 0) - (a.catalogue.year || 0)
+    (a, b) => (b.catalogue.year || 0) - (a.catalogue.year || 0),
   )
 })
 
@@ -205,7 +205,7 @@ const sortedPublications = computed(() => {
                   :class="[
                     isSpoilerProtected && !revealedSpoilers.has(wc.id)
                       ? 'text-main/40 cursor-pointer blur-sm transition-all duration-200 select-none hover:blur-[2px]'
-                      : 'text-main/65'
+                      : 'text-main/65',
                   ]"
                   @click="
                     isSpoilerProtected && !revealedSpoilers.has(wc.id) && revealSpoiler(wc.id)

@@ -13,7 +13,7 @@ const sortBy = ref('alpha')
 const categoryMap: Record<string, string> = {
   novum: '新異 Novum',
   narrative: '敘事 Narrative',
-  theme: '主題 Theme'
+  theme: '主題 Theme',
 }
 
 const fetchAllConcepts = async () => {

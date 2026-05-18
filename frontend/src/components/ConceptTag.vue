@@ -9,8 +9,8 @@ withDefaults(
     size?: 'sm' | 'md'
   }>(),
   {
-    size: 'sm' // Default to 'sm' for sidebars or inline lists
-  }
+    size: 'sm', // Default to 'sm' for sidebars or inline lists
+  },
 )
 </script>
 
@@ -21,7 +21,7 @@ withDefaults(
       'border-main/15 hover:text-primary hover:bg-primary/2 hover:border-primary/30 inline-flex items-center border whitespace-nowrap no-underline transition-all',
       size === 'md'
         ? 'text-main/60 gap-2 px-3 py-1.5 text-sm'
-        : 'text-main/60 gap-1.5 px-2.5 py-1 text-xs'
+        : 'text-main/60 gap-1.5 px-2.5 py-1 text-xs',
     ]"
   >
     <span>{{ concept.name }}</span>

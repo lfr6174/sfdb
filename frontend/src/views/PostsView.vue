@@ -23,7 +23,7 @@ const fetchPosts = async () => {
   try {
     const params: any = {
       page: currentPage.value,
-      ordering: ordering.value
+      ordering: ordering.value,
     }
     if (searchQuery.value) params.search = searchQuery.value
 

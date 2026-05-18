@@ -8,8 +8,8 @@ const props = withDefaults(
     limit?: number
   }>(),
   {
-    limit: 10
-  }
+    limit: 10,
+  },
 )
 
 const isExpanded = ref(false)

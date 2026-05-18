@@ -10,17 +10,17 @@ import { useDebounceFn } from '../composables/useDebounce'
 // Filter Constants
 const MEDIA_OPTIONS = [
   { value: 'novel', label: '小說' },
-  { value: 'comic', label: '漫畫' }
+  { value: 'comic', label: '漫畫' },
 ]
 const LENGTH_OPTIONS = [
   { value: 'long', label: '長篇' },
-  { value: 'short', label: '中短篇' }
+  { value: 'short', label: '中短篇' },
 ]
 const CATEGORIES = ['新異 Novum', '敘事 Narrative', '主題 Theme', '未分類']
 const CATEGORY_MAP: Record<string, string> = {
   novum: '新異 Novum',
   narrative: '敘事 Narrative',
-  theme: '主題 Theme'
+  theme: '主題 Theme',
 }
 const PAGE_SIZE = 20 // FIX: needed to compute totalPages
 
@@ -67,7 +67,7 @@ const fetchWorks = async () => {
   try {
     const params: any = {
       page: currentPage.value,
-      ordering: ordering.value
+      ordering: ordering.value,
     }
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedMedia.value.length) params.media_type = selectedMedia.value.join(',')
@@ -101,7 +101,7 @@ watch(
   () => {
     triggerFetch()
   },
-  { deep: true }
+  { deep: true },
 )
 
 onMounted(async () => {
@@ -127,7 +127,7 @@ onMounted(async () => {
 const mappedConcepts = computed(() => {
   return allConcepts.value.map((c) => ({
     ...c,
-    mappedCategory: CATEGORY_MAP[c.category] || '未分類'
+    mappedCategory: CATEGORY_MAP[c.category] || '未分類',
   }))
 })
 
@@ -137,7 +137,7 @@ const leftPanelConcepts = computed(() => {
   const grouped: Record<string, any[]> = {
     '新異 Novum': [],
     '敘事 Narrative': [],
-    '主題 Theme': []
+    '主題 Theme': [],
   }
 
   mappedConcepts.value.forEach((c) => {
@@ -206,6 +206,11 @@ const toggleTempConcept = (concept: any) => {
 const applyModalConcepts = () => {
   selectedConcepts.value = [...tempSelectedConcepts.value]
   isModalOpen.value = false
+}
+
+const clearYearFilter = () => {
+  yearMin.value = ''
+  yearMax.value = ''
 }
 
 const clearAllFilters = () => {
@@ -576,10 +581,7 @@ const changePage = (dir: number) => {
               {{ yearMin || '…' }}–{{ yearMax || '…' }}
               <button
                 class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="
-                  yearMin = ''
-                  yearMax = ''
-                "
+                @click="clearYearFilter"
               >
                 &times;
               </button>

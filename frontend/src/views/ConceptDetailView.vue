@@ -29,7 +29,7 @@ const fetchConceptDetail = async () => {
 const validWorkConcepts = computed(() => {
   if (!concept.value?.work_concepts) return []
   return concept.value.work_concepts.filter(
-    (item: any) => item.description && item.description.trim() !== ''
+    (item: any) => item.description && item.description.trim() !== '',
   )
 })
 
@@ -60,7 +60,7 @@ watch(
       fetchConceptDetail()
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-  }
+  },
 )
 
 onMounted(() => {

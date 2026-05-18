@@ -35,7 +35,7 @@ onMounted(async () => {
       api.get('/works/', { params: { limit: 1 } }), // 優化：只為獲取總數，避免回傳整頁笨重資料
       api.get('/concepts/', { params: { ordering: '-updated_at' } }), // Fetch genuinely "recently added" concepts by sorting
       api.get('/posts/'),
-      api.get('/concepts/random/') // Fetch a random concept on initial load
+      api.get('/concepts/random/'), // Fetch a random concept on initial load
     ])
 
     // 1. Statistics
