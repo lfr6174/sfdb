@@ -53,9 +53,7 @@ onMounted(() => {
 
         <div class="border-main/10 mb-8 border-b"></div>
 
-        <div
-          class="prose prose-stone text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg"
-        >
+        <div class="text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg">
           {{ pageData.body || '無內容' }}
         </div>
 
