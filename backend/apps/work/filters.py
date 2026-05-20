@@ -10,7 +10,6 @@ class WorkFilter(django_filters.FilterSet):
     year_min = django_filters.NumberFilter(field_name="year", lookup_expr="gte")
     year_max = django_filters.NumberFilter(field_name="year", lookup_expr="lte")
     concepts_in = django_filters.CharFilter(method="filter_concepts_include")
-    concepts_ex = django_filters.CharFilter(method="filter_concepts_exclude")
 
     media_type = django_filters.CharFilter(method="filter_media_type")
     work_length = django_filters.CharFilter(method="filter_work_length")
@@ -35,16 +34,6 @@ class WorkFilter(django_filters.FilterSet):
             .annotate(matching_concepts=Count("concepts", distinct=True))
             .filter(matching_concepts=len(concept_ids))
         )
-
-    def filter_concepts_exclude(self, queryset, _name, value):
-        """
-        Ensure the work contains NONE of the specified concept IDs (NOT logic).
-        """
-        if not value:
-            return queryset
-
-        concept_ids = [int(c_id) for c_id in value.split(",") if c_id.isdigit()]
-        return queryset.exclude(concepts__id__in=concept_ids)
 
     def filter_media_type(self, queryset, _name, value):
         if not value:
