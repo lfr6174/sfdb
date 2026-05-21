@@ -45,7 +45,7 @@ onMounted(() => {
       </div>
 
       <article class="flex flex-col">
-        <h1 class="text-main mb-4 text-3xl leading-snug font-normal md:text-4xl">
+        <h1 class="text-main mb-6 text-2xl font-medium md:text-3xl">
           {{ post.title }}
         </h1>
 

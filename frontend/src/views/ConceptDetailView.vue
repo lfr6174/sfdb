@@ -91,7 +91,7 @@ onMounted(() => {
         <div class="flex w-full flex-col md:w-7/12 lg:w-8/12">
           <!-- Concept Info -->
           <section>
-            <h1 class="text-main mb-5 text-3xl leading-snug font-normal md:text-4xl">
+            <h1 class="text-main mb-6 text-2xl leading-snug font-normal md:text-3xl">
               {{ concept.name }}
             </h1>
 

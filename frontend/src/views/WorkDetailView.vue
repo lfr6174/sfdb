@@ -97,7 +97,7 @@ const sortedPublications = computed(() => {
             </div>
 
             <!-- Title -->
-            <h1 class="text-main mb-4 text-3xl leading-snug font-normal md:text-4xl">
+            <h1 class="text-main mb-6 text-2xl leading-snug font-normal md:text-3xl">
               {{ work.title }}
             </h1>
 

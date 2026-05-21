@@ -88,7 +88,7 @@ const personAwards = computed(() => {
         <div class="flex w-full flex-col md:w-7/12 lg:w-8/12">
           <!-- Personal Info -->
           <section>
-            <h1 class="text-main mb-2 text-3xl leading-snug font-normal md:text-4xl">
+            <h1 class="text-main mb-4 text-2xl leading-snug font-normal md:text-3xl">
               {{ person.name }}
             </h1>
 
