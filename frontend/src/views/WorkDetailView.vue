@@ -6,10 +6,13 @@ import { useSpoiler } from '../composables/useSpoiler'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
 const work = ref<any>(null)
 const isLoading = ref(true)
+
+useDocumentTitle(() => work.value?.title)
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
 

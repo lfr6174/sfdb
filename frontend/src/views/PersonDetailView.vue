@@ -5,10 +5,12 @@ import api from '../api/axios'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
 
 const person = ref<any>(null)
+useDocumentTitle(() => person.value?.name)
 const isLoading = ref(true)
 
 const fetchPersonDetail = async () => {

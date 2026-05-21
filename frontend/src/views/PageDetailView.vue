@@ -4,9 +4,11 @@ import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
 const pageData = ref<any>(null)
+useDocumentTitle(() => pageData.value?.title)
 const isLoading = ref(true)
 const hasError = ref(false)
 

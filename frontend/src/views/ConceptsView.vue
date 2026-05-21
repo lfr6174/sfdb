@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
 import api from '../api/axios'
 import ConceptTag from '../components/ConceptTag.vue'
+
+useDocumentTitle('概念探索')
 
 const allConcepts = ref<any[]>([])
 const isLoading = ref(true)

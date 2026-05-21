@@ -4,6 +4,9 @@ import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
+
+useDocumentTitle(null)
 
 const works = ref<any[]>([])
 const isLoading = ref(true)

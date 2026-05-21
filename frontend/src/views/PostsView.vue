@@ -4,6 +4,9 @@ import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
 import { formatDate } from '../utils/formatters'
 import { useDebounceFn } from '../composables/useDebounce'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
+
+useDocumentTitle('最新資訊')
 
 const PAGE_SIZE = 20
 const posts = ref<any[]>([])

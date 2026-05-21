@@ -6,6 +6,9 @@ import PaginationControls from '../components/PaginationControls.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import { useDebounceFn } from '../composables/useDebounce'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
+
+useDocumentTitle('作品列表')
 
 // Filter Constants
 const MEDIA_OPTIONS = [

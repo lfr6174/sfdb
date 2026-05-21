@@ -3,6 +3,9 @@ import { ref, onMounted, watch } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
 import { useDebounceFn } from '../composables/useDebounce'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
+
+useDocumentTitle('人物列表')
 
 const persons = ref<any[]>([])
 const isLoading = ref(true)

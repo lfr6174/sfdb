@@ -6,11 +6,14 @@ import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
+import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
 
 const concept = ref<any>(null)
 const isLoading = ref(true)
+
+useDocumentTitle(() => concept.value?.name)
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
 
