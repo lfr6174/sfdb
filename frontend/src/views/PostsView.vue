@@ -119,10 +119,11 @@ const changePage = (dir: number) => {
         共 {{ totalPosts }} 篇文章
       </p>
 
-      <div
+      <router-link
         v-for="post in posts"
         :key="post.id"
-        class="group border-main/10 relative z-0 flex flex-col justify-between gap-2 border-b py-4 transition-colors last:border-0 sm:flex-row sm:items-center sm:gap-6"
+        :to="`/posts/${post.id}`"
+        class="group border-main/10 relative z-0 flex flex-col gap-1 border-b py-4 no-underline transition-colors last:border-0"
       >
         <!-- Hover Background Overlay -->
         <div
@@ -134,16 +135,13 @@ const changePage = (dir: number) => {
           class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
         ></div>
 
-        <router-link
-          :to="`/posts/${post.id}`"
-          class="text-main group-hover:text-primary block text-lg font-medium no-underline transition-colors"
-        >
-          {{ post.title }}
-        </router-link>
-        <span class="text-main/50 shrink-0 text-base">
+        <span class="text-main/40 text-xs">
           {{ formatDate(post.created_at) }}
         </span>
-      </div>
+        <span class="text-main group-hover:text-primary block text-lg font-medium transition-colors">
+          {{ post.title }}
+        </span>
+      </router-link>
 
       <div class="mt-6">
         <!-- Pagination -->

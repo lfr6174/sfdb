@@ -5,7 +5,7 @@ const { isSpoilerProtected, toggleSpoiler } = useSpoiler()
 </script>
 
 <template>
-  <header class="bg-bg/90 border-main/10 sticky top-0 z-50 border-b shadow-sm backdrop-blur-md">
+  <header class="bg-bg/90 border-main/10 sticky top-0 z-50 border-b backdrop-blur-md">
     <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
       <div class="flex h-full items-center gap-8">
         <router-link
@@ -51,10 +51,10 @@ const { isSpoilerProtected, toggleSpoiler } = useSpoiler()
         <button
           :class="
             isSpoilerProtected
-              ? 'bg-primary/10 text-primary border-primary/30'
+              ? 'border-primary/30 text-primary bg-bg'
               : 'bg-bg text-main/60 border-main/10 hover:border-primary/30 hover:text-primary'
           "
-          class="flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200"
+          class="flex items-center gap-2 border px-3 py-1.5 text-sm font-medium transition-all duration-200"
           @click="toggleSpoiler"
         >
           <span
