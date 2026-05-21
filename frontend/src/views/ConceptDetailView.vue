@@ -137,7 +137,7 @@ onMounted(() => {
                   >
                     {{ item.work_title || '未知作品' }}
                   </router-link>
-                  <span class="text-main/35 shrink-0 font-mono text-xs">
+                  <span class="text-main/35 shrink-0 text-xs">
                     {{ item.year || '-' }}
                   </span>
                 </div>
@@ -184,16 +184,16 @@ onMounted(() => {
           <!-- Works count -->
           <div>
             <SectionTitle class="mb-2">收錄作品數</SectionTitle>
-            <span class="text-main font-mono text-xl">{{ concept.works_count || 0 }}</span>
+            <span class="text-main text-xl">{{ concept.works_count || 0 }}</span>
           </div>
 
           <!-- Year range -->
           <div>
             <SectionTitle class="mb-2">出現年份</SectionTitle>
             <div class="flex items-baseline gap-2">
-              <span class="text-main font-mono text-base">{{ earliestYear }}</span>
+              <span class="text-main text-base">{{ earliestYear }}</span>
               <span class="text-main/30 text-xs">—</span>
-              <span class="text-main font-mono text-base">{{ latestYear }}</span>
+              <span class="text-main text-base">{{ latestYear }}</span>
             </div>
           </div>
 

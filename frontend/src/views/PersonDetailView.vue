@@ -145,7 +145,7 @@ const personAwards = computed(() => {
                   class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
                 ></div>
 
-                <span class="text-main/50 w-10 shrink-0 font-mono text-sm">
+                <span class="text-main/50 w-10 shrink-0 text-sm">
                   {{ work.year || '-' }}
                 </span>
 
@@ -187,7 +187,7 @@ const personAwards = computed(() => {
                 :key="pub.id"
                 class="border-main/10 flex items-baseline gap-4 border-b py-3 last:border-0"
               >
-                <span class="text-main/50 w-10 shrink-0 font-mono text-sm">
+                <span class="text-main/50 w-10 shrink-0 text-sm">
                   {{ pub.year || '-' }}
                 </span>
 
@@ -217,13 +217,13 @@ const personAwards = computed(() => {
           <!-- Work count -->
           <div>
             <SectionTitle class="mb-2">作品總數</SectionTitle>
-            <span class="text-main font-mono text-xl">{{ totalWorksCount }}</span>
+            <span class="text-main text-xl">{{ totalWorksCount }}</span>
           </div>
 
           <!-- Active years -->
           <div>
             <SectionTitle class="mb-2">活躍年份</SectionTitle>
-            <span class="text-main font-mono text-base">{{ activeYears }}</span>
+            <span class="text-main text-base">{{ activeYears }}</span>
           </div>
 
           <!-- Top Concepts -->

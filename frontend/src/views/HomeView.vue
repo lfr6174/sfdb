@@ -265,7 +265,7 @@ onMounted(async () => {
               class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
             ></div>
 
-            <span class="text-main/50 shrink-0 font-mono text-sm sm:w-28">
+            <span class="text-main/50 shrink-0 text-sm sm:w-28">
               {{ formatDate(ann.created_at) }}
             </span>
             <span

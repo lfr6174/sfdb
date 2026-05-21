@@ -62,9 +62,7 @@ onMounted(() => {
             to="/"
             text="返回首頁"
           />
-          <span class="text-main/40 font-mono text-xs">
-            最後更新於 {{ formatDate(pageData.updated_at) }}
-          </span>
+          <span class="text-main/40 text-xs">最後更新於 {{ formatDate(pageData.updated_at) }}</span>
         </div>
       </article>
     </template>

@@ -52,7 +52,7 @@ onMounted(() => {
         <div class="text-main/50 mb-8 flex items-center gap-2 text-base">
           <span>{{ post.author_name || '管理員' }}</span>
           <span class="text-main/20">·</span>
-          <time class="font-mono">{{ formatDate(post.created_at) }}</time>
+          <time>{{ formatDate(post.created_at) }}</time>
         </div>
 
         <!-- content -->
@@ -61,9 +61,7 @@ onMounted(() => {
         </div>
 
         <div class="border-main/10 mt-16 flex justify-end border-t pt-6">
-          <span class="text-main/40 font-mono text-xs">
-            最後更新於 {{ formatDate(post.updated_at) }}
-          </span>
+          <span class="text-main/40 text-xs">最後更新於 {{ formatDate(post.updated_at) }}</span>
         </div>
       </article>
     </template>

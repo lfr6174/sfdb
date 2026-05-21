@@ -599,7 +599,7 @@ const changePage = (dir: number) => {
           <div class="flex items-center justify-between">
             <span class="text-main/50 text-sm">
               共
-              <span class="text-primary font-mono">{{ totalWorks }}</span>
+              <span class="text-primary">{{ totalWorks }}</span>
               部作品
             </span>
 

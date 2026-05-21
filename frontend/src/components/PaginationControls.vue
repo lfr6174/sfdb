@@ -25,7 +25,7 @@ const emit = defineEmits<{
     >
       上一頁
     </button>
-    <span class="text-main/50 font-mono text-base">
+    <span class="text-main/50 text-base">
       第
       <span class="text-main font-bold">{{ currentPage }}</span>
       /

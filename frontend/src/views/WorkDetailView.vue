@@ -236,7 +236,7 @@ const sortedPublications = computed(() => {
               >
                 <!-- Left: year + media badge -->
                 <div class="flex w-11 shrink-0 flex-col items-start gap-1.5 pt-0.5">
-                  <span class="text-main/50 font-mono text-xs">{{ pub.year || '-' }}</span>
+                  <span class="text-main/50 text-xs">{{ pub.year || '-' }}</span>
                   <!-- Gray filled badge — visually distinct from concept tags -->
                   <span
                     v-if="pub.media_display"
@@ -312,7 +312,7 @@ const sortedPublications = computed(() => {
                 class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
               >
                 <div class="flex w-11 shrink-0 flex-col items-start gap-1.5 pt-0.5">
-                  <span class="text-main/50 font-mono text-xs">
+                  <span class="text-main/50 text-xs">
                     {{ entry.catalogue.year || '-' }}
                   </span>
                   <span

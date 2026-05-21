@@ -140,7 +140,7 @@ const changePage = (dir: number) => {
         >
           {{ post.title }}
         </router-link>
-        <span class="text-main/50 shrink-0 font-mono text-base">
+        <span class="text-main/50 shrink-0 text-base">
           {{ formatDate(post.created_at) }}
         </span>
       </div>
