@@ -243,14 +243,16 @@ const changePage = (dir: number) => {
           v-model="searchQuery"
           type="text"
           placeholder="搜尋標題、作者…"
-          class="text-main placeholder:text-main/40 border-main/15 focus:border-primary/50 w-full border bg-transparent px-3 py-2 text-base transition-colors outline-none"
+          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
         />
-        <button
-          class="text-main/50 border-main/10 hover:text-primary hover:border-primary/30 mt-2 w-full border py-2 text-sm font-medium tracking-wide transition-colors"
-          @click="isAdvancedMode = !isAdvancedMode"
-        >
-          {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
-        </button>
+        <div class="mt-2 flex justify-start">
+          <button
+            class="text-main/50 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-sm font-medium tracking-wide underline underline-offset-4 transition-colors"
+            @click="isAdvancedMode = !isAdvancedMode"
+          >
+            {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
+          </button>
+        </div>
       </div>
 
       <!-- Media Type -->
@@ -356,7 +358,7 @@ const changePage = (dir: number) => {
         </div>
 
         <button
-          class="text-primary border-primary/30 hover:bg-primary/5 mt-5 w-full border border-dashed py-2 text-xs font-medium transition-colors"
+          class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 mt-5 w-full text-left text-sm underline underline-offset-4 transition-colors"
           @click="openModal"
         >
           展開所有標籤
@@ -392,7 +394,7 @@ const changePage = (dir: number) => {
               v-model="searchQuery"
               type="text"
               placeholder="標題、作者、筆名等"
-              class="text-main placeholder:text-main/40 border-main/15 focus:border-primary/50 w-full border bg-transparent px-3 py-2 text-base transition-colors outline-none"
+              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
             />
           </div>
 
@@ -405,14 +407,14 @@ const changePage = (dir: number) => {
                 v-model="yearMin"
                 type="number"
                 placeholder="YYYY"
-                class="text-main placeholder:text-main/40 border-main/15 focus:border-primary/50 w-full border bg-transparent px-3 py-2 text-base transition-colors outline-none"
+                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
               />
               <span class="text-main/40 shrink-0 text-xs">至</span>
               <input
                 v-model="yearMax"
                 type="number"
                 placeholder="YYYY"
-                class="text-main placeholder:text-main/40 border-main/15 focus:border-primary/50 w-full border bg-transparent px-3 py-2 text-base transition-colors outline-none"
+                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
               />
             </div>
           </div>
@@ -473,7 +475,7 @@ const changePage = (dir: number) => {
               概念標籤
             </label>
             <button
-              class="border-primary/30 text-primary hover:bg-primary/5 w-full border border-dashed px-3 py-2 text-left text-base transition-colors"
+              class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 w-full text-left text-base underline underline-offset-4 transition-colors"
               @click="openModal"
             >
               + 點擊選取概念標籤
@@ -596,7 +598,7 @@ const changePage = (dir: number) => {
           </div>
 
           <!-- Count + Sort -->
-          <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-4">
             <span class="text-main/50 text-sm">
               共
               <span class="text-primary">{{ totalWorks }}</span>
@@ -604,11 +606,10 @@ const changePage = (dir: number) => {
             </span>
 
             <div class="flex items-center gap-2">
-              <span class="text-main/40 text-xs">排序</span>
               <div class="relative">
                 <select
                   v-model="ordering"
-                  class="text-main/70 border-main/10 focus:border-primary/50 cursor-pointer appearance-none border bg-transparent py-1 pr-6 pl-2.5 text-sm transition-colors outline-none"
+                  class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
                 >
                   <option value="-year">年份（新到舊）</option>
                   <option value="year">年份（舊到新）</option>
@@ -762,7 +763,7 @@ const changePage = (dir: number) => {
           v-model="modalSearchQuery"
           type="text"
           placeholder="搜尋標籤…"
-          class="text-main placeholder:text-main/40 border-main/15 focus:border-primary/50 w-full border bg-transparent px-3 py-2 text-base transition-colors outline-none"
+          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
         />
 
         <!-- Selected in modal -->
