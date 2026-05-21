@@ -114,7 +114,7 @@ const changePage = (dir: number) => {
       <!-- Count -->
       <p
         v-if="totalPosts > 0"
-        class="text-main/35 mb-1 text-xs tracking-wide"
+        class="text-main/45 mb-1 text-sm tracking-wide"
       >
         共 {{ totalPosts }} 篇文章
       </p>

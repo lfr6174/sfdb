@@ -111,7 +111,7 @@ onMounted(() => {
       <!-- Count -->
       <p
         v-if="totalCount > 0"
-        class="text-main/35 mb-1 text-xs tracking-wide"
+        class="text-main/45 mb-1 text-sm tracking-wide"
       >
         共 {{ totalCount }} 位人物
       </p>
