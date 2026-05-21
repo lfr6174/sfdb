@@ -18,10 +18,10 @@ withDefaults(
   <router-link
     :to="`/concepts/${concept.slug}`"
     :class="[
-      'border-main/15 hover:text-primary hover:bg-primary/2 hover:border-primary/30 inline-flex items-center border whitespace-nowrap no-underline transition-all',
+      'border-main/12 hover:text-primary hover:bg-primary/3 hover:border-primary/20 inline-flex items-center border whitespace-nowrap no-underline transition-all',
       size === 'md'
-        ? 'text-main/60 gap-2 px-3 py-1.5 text-sm'
-        : 'text-main/60 gap-1.5 px-2.5 py-1 text-xs',
+        ? 'text-main/50 gap-2 px-3 py-1.5 text-sm'
+        : 'text-main/50 gap-1.5 px-2.5 py-1 text-xs',
     ]"
   >
     <span>{{ concept.name }}</span>

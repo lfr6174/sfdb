@@ -487,7 +487,7 @@ const changePage = (dir: number) => {
               <span
                 v-for="concept in selectedConcepts"
                 :key="concept.id"
-                class="text-primary bg-primary/10 border-primary/20 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+                class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
               >
                 {{ concept.name }}
                 <button
@@ -537,7 +537,7 @@ const changePage = (dir: number) => {
             <span
               v-for="m in selectedMedia"
               :key="m"
-              class="text-primary bg-primary/10 border-primary/20 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
             >
               {{ MEDIA_OPTIONS.find((o) => o.value === m)?.label }}
               <button
@@ -551,7 +551,7 @@ const changePage = (dir: number) => {
             <span
               v-for="l in selectedLengths"
               :key="l"
-              class="text-primary bg-primary/10 border-primary/20 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
             >
               {{ LENGTH_OPTIONS.find((o) => o.value === l)?.label }}
               <button
@@ -565,7 +565,7 @@ const changePage = (dir: number) => {
             <span
               v-for="c in selectedConcepts"
               :key="c.id"
-              class="text-primary bg-primary/10 border-primary/20 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
             >
               {{ c.name }}
               <button
@@ -578,7 +578,7 @@ const changePage = (dir: number) => {
 
             <span
               v-if="yearMin || yearMax"
-              class="text-primary bg-primary/10 border-primary/20 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
             >
               {{ yearMin || '…' }}–{{ yearMax || '…' }}
               <button
@@ -780,7 +780,7 @@ const changePage = (dir: number) => {
           <span
             v-for="concept in tempSelectedConcepts"
             :key="concept.id"
-            class="text-primary bg-primary/10 border-primary/20 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+            class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
           >
             {{ concept.name }}
             <button
