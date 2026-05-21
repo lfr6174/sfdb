@@ -120,7 +120,7 @@ onMounted(() => {
       <div
         v-for="person in persons"
         :key="person.id"
-        class="group border-main/10 relative z-0 cursor-pointer border-b py-5 transition-colors"
+        class="group border-main/10 relative z-0 cursor-pointer border-b py-4 transition-colors"
         @click="$router.push(`/persons/${person.id}`)"
       >
         <!-- Hover Background Overlay -->

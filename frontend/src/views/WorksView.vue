@@ -698,15 +698,16 @@ const changePage = (dir: number) => {
 
                 <span class="text-main/20">·</span>
                 <span>{{ work.year || '未知' }}</span>
-                <span class="text-main/20">·</span>
-                <!-- Gray metadata badges -->
-                <span class="text-main/50 bg-main/5 px-1.5 py-0.5 font-mono text-[10px]">
-                  {{
-                    [work.work_length_display, work.media_type_display]
-                      .filter(Boolean)
-                      .join(' · ') || '-'
-                  }}
-                </span>
+                <template
+                  v-if="[work.work_length_display, work.media_type_display].filter(Boolean).length"
+                >
+                  <span class="text-main/20">·</span>
+                  <span>
+                    {{
+                      [work.work_length_display, work.media_type_display].filter(Boolean).join('')
+                    }}
+                  </span>
+                </template>
               </div>
             </div>
 

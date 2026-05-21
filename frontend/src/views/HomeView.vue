@@ -157,7 +157,7 @@ onMounted(async () => {
             v-for="work in works"
             :key="work.id"
             :to="`/works/${work.id}`"
-            class="group border-main/10 relative z-0 flex flex-col gap-1 border-b py-3.5 no-underline transition-colors last:border-0"
+            class="group border-main/10 relative z-0 flex flex-col gap-1 border-b py-4 no-underline transition-colors last:border-0"
           >
             <!-- Hover Background Overlay -->
             <div
@@ -175,14 +175,6 @@ onMounted(async () => {
               >
                 {{ work.title }}
               </span>
-              <span
-                class="text-main/50 bg-main/5 mt-0.5 shrink-0 px-1.5 py-0.5 font-mono text-xs tracking-wide"
-              >
-                {{
-                  [work.work_length_display, work.media_type_display].filter(Boolean).join('') ||
-                  '-'
-                }}
-              </span>
             </div>
             <div class="text-main/50 text-sm">
               <template v-if="work.byline && work.byline.length">
@@ -197,6 +189,14 @@ onMounted(async () => {
               <span v-else>佚名</span>
               <span class="text-main/20 mx-1.5">·</span>
               <span>{{ work.year || '未知年份' }}</span>
+              <template
+                v-if="[work.work_length_display, work.media_type_display].filter(Boolean).length"
+              >
+                <span class="text-main/20 mx-1.5">·</span>
+                <span>
+                  {{ [work.work_length_display, work.media_type_display].filter(Boolean).join('') }}
+                </span>
+              </template>
             </div>
           </router-link>
         </div>
@@ -253,7 +253,7 @@ onMounted(async () => {
         >
           <router-link
             :to="`/posts/${ann.id}`"
-            class="group border-main/10 relative z-0 flex cursor-pointer flex-col gap-2 border-b py-3.5 no-underline transition-colors last:border-0 sm:flex-row sm:items-baseline sm:gap-6"
+            class="group border-main/10 relative z-0 flex cursor-pointer flex-col gap-2 border-b py-4 no-underline transition-colors last:border-0 sm:flex-row sm:items-baseline sm:gap-6"
           >
             <!-- Hover Background Overlay -->
             <div
