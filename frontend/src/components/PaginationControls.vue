@@ -18,7 +18,7 @@ const emit = defineEmits<{
       class="rounded-none border px-6 py-2 text-base font-medium transition-colors"
       :class="
         hasPrev
-          ? 'border-main/20 text-main/70 hover:bg-hover hover:text-main bg-bg'
+          ? 'border-main/20 text-main/70 hover:bg-hover hover:text-primary bg-bg'
           : 'border-main/10 text-main/30 cursor-not-allowed bg-transparent'
       "
       @click="emit('changePage', -1)"
@@ -37,7 +37,7 @@ const emit = defineEmits<{
       class="rounded-none border px-6 py-2 text-base font-medium transition-colors"
       :class="
         hasNext
-          ? 'border-main/20 text-main/70 hover:bg-hover hover:text-main bg-bg'
+          ? 'border-main/20 text-main/70 hover:bg-hover hover:text-primary bg-bg'
           : 'border-main/10 text-main/30 cursor-not-allowed bg-transparent'
       "
       @click="emit('changePage', 1)"

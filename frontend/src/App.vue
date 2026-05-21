@@ -32,7 +32,7 @@ onMounted(async () => {
         {{ globalAnnouncement }}
       </span>
       <button
-        class="text-primary hover:text-primary/70 absolute right-4 transition-colors"
+        class="text-primary/70 hover:text-primary absolute right-4 transition-colors"
         aria-label="關閉公告"
         @click="showBanner = false"
       >

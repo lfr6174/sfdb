@@ -815,7 +815,7 @@ const changePage = (dir: number) => {
                     @change="toggleTempConcept(concept)"
                   />
                   <span
-                    class="text-main/60 group-hover:text-main/80 truncate text-sm transition-colors"
+                    class="text-main/60 group-hover:text-primary truncate text-sm transition-colors"
                   >
                     {{ concept.name }}
                   </span>

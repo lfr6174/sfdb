@@ -113,7 +113,7 @@ onMounted(async () => {
           與
           <router-link
             :to="`/concepts/${currentConcept.slug}`"
-            class="text-primary hover:text-primary/70 no-underline transition-colors"
+            class="text-primary/70 hover:text-primary no-underline transition-colors"
           >
             {{ currentConcept.name }}
           </router-link>

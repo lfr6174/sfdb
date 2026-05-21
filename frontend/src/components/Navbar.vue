@@ -18,28 +18,28 @@ const { isSpoilerProtected, toggleSpoiler } = useSpoiler()
         <nav class="hidden h-full gap-6 md:flex">
           <router-link
             to="/concepts"
-            class="text-main/60 hover:text-main inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
+            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
             active-class="!border-primary !text-primary"
           >
             概念
           </router-link>
           <router-link
             to="/works"
-            class="text-main/60 hover:text-main inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
+            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
             active-class="!border-primary !text-primary"
           >
             作品
           </router-link>
           <router-link
             to="/persons"
-            class="text-main/60 hover:text-main inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
+            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
             active-class="!border-primary !text-primary"
           >
             人物
           </router-link>
           <router-link
             to="/pages/about"
-            class="text-main/60 hover:text-main inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
+            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
             active-class="!border-primary !text-primary"
           >
             關於
@@ -52,7 +52,7 @@ const { isSpoilerProtected, toggleSpoiler } = useSpoiler()
           :class="
             isSpoilerProtected
               ? 'bg-primary/10 text-primary border-primary/30'
-              : 'bg-bg text-main/60 border-main/10 hover:bg-main/5 hover:text-main'
+              : 'bg-bg text-main/60 border-main/10 hover:border-primary/30 hover:text-primary'
           "
           class="flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200"
           @click="toggleSpoiler"
