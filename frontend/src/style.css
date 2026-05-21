@@ -1,10 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+TC:wght@400;500&display=swap');
 @import "tailwindcss";
 
+/* Semantic opacity reference — target scale for consolidation:
+   primary:   100%  → text-main        (headings, primary content)
+   secondary:  70%  → text-main/70     (body text, descriptions)
+   tertiary:   45%  → text-main/45     (captions, labels, timestamps)
+   muted:      20%  → text-main/20     (dividers, decorative borders)
+   ghost:      10%  → border-main/10   (subtle separators, bg tints)
+*/
+
 @theme {
   --color-primary: #ae5630;
   --color-main: #2d2016;
-  --color-bg: #ffffff;
+  --color-bg: #F8F8F6;
   --color-hover: #f5f0e8;
 
   --font-sans: 'IBM Plex Sans TC', ui-sans-serif, system-ui, sans-serif;

@@ -22,17 +22,18 @@ onMounted(async () => {
 
 <template>
   <!-- Editorial theme: Deep beige outer bg, warm black text -->
-  <div class="flex min-h-screen flex-col bg-[#F8F8F6] font-sans text-[#2d2016]">
+  <div class="bg-bg text-main flex min-h-screen flex-col font-sans">
     <!-- Global Announcement Banner -->
     <div
       v-if="showBanner && globalAnnouncement"
-      class="relative flex items-center justify-center border-b border-[#ae5630]/20 bg-[#ae5630]/10 px-4 py-2.5"
+      class="border-primary/20 bg-primary/10 relative flex items-center justify-center border-b px-4 py-2.5"
     >
-      <span class="text-[13px] font-medium text-[#ae5630]">
+      <span class="text-primary text-xs font-medium">
         {{ globalAnnouncement }}
       </span>
       <button
-        class="absolute right-4 text-[#ae5630] transition-colors hover:text-[#ae5630]/70"
+        class="text-primary hover:text-primary/70 absolute right-4 transition-colors"
+        aria-label="關閉公告"
         @click="showBanner = false"
       >
         <!-- Close Icon (X) -->

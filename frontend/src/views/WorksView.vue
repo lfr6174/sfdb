@@ -434,7 +434,7 @@ const changePage = (dir: number) => {
                     v-model="selectedMedia"
                     type="checkbox"
                     :value="opt.value"
-                    class="text-primary border-main/25 h-4 w-4 rounded-none focus:ring-0 focus:ring-offset-0"
+                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                   />
                   <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
                     {{ opt.label }}
@@ -458,7 +458,7 @@ const changePage = (dir: number) => {
                     v-model="selectedLengths"
                     type="checkbox"
                     :value="opt.value"
-                    class="text-primary border-main/25 h-4 w-4 rounded-none focus:ring-0 focus:ring-offset-0"
+                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                   />
                   <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
                     {{ opt.label }}

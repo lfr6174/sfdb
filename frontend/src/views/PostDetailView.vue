@@ -56,9 +56,7 @@ onMounted(() => {
         </div>
 
         <!-- content -->
-        <div
-          class="prose prose-stone text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg"
-        >
+        <div class="text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg">
           {{ post.body || '無內容' }}
         </div>
 
