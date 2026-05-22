@@ -1,42 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { fetchPageDetail } from '../api/pages'
+import { useApiDetail } from '../composables/useApiDetail'
 
-const route = useRoute()
-const router = useRouter()
-const pageData = ref<any>(null)
+const {
+  data: pageData,
+  isLoading,
+  hasError,
+} = useApiDetail((params) => fetchPageDetail(params.slug as string))
 useDocumentTitle(() => pageData.value?.title)
-const isLoading = ref(true)
-const hasError = ref(false)
-
-const fetchPageDetail = async () => {
-  isLoading.value = true
-  hasError.value = false
-  try {
-    const response = await api.get(`/pages/${route.params.slug}/`)
-    pageData.value = response.data
-  } catch (error: any) {
-    console.error('Failed to fetch page details:', error)
-    if (error.response?.status === 404) {
-      router.replace({
-        name: 'not-found',
-        params: { pathMatch: route.path.substring(1).split('/') },
-      })
-    } else {
-      hasError.value = true
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchPageDetail()
-})
 </script>
 
 <template>

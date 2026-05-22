@@ -1,42 +1,29 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../api/axios'
+import { ref, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { fetchConceptDetail } from '../api/concepts'
+import { useApiDetail } from '../composables/useApiDetail'
 
 const route = useRoute()
-const router = useRouter()
-
-const concept = ref<any>(null)
-const isLoading = ref(true)
+const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
 const isExamplesExpanded = ref(false)
 
+const {
+  data: concept,
+  isLoading,
+  refetch,
+} = useApiDetail((params) => fetchConceptDetail(params.slug as string), {
+  onRefetch: () => {
+    isExamplesExpanded.value = false
+  },
+})
+
 useDocumentTitle(() => concept.value?.name)
-
-const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
-
-const fetchConceptDetail = async () => {
-  isLoading.value = true
-  isExamplesExpanded.value = false
-  try {
-    const response = await api.get(`/concepts/${route.params.slug}/`)
-    concept.value = response.data
-  } catch (error: any) {
-    console.error('Failed to fetch concept details:', error)
-    if (error.response?.status === 404) {
-      router.replace({
-        name: 'not-found',
-        params: { pathMatch: route.path.substring(1).split('/') },
-      })
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
 
 const validWorkConcepts = computed(() => {
   if (!concept.value?.work_concepts) return []
@@ -69,15 +56,11 @@ watch(
   (newSlug, oldSlug) => {
     if (newSlug && newSlug !== oldSlug) {
       clearRevealedSpoilers()
-      fetchConceptDetail()
+      refetch()
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   },
 )
-
-onMounted(() => {
-  fetchConceptDetail()
-})
 </script>
 
 <template>

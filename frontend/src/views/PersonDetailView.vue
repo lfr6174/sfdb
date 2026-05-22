@@ -1,40 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../api/axios'
+import { computed } from 'vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { fetchPersonDetail } from '../api/persons'
+import { useApiDetail } from '../composables/useApiDetail'
 
-const route = useRoute()
-const router = useRouter()
-
-const person = ref<any>(null)
+const { data: person, isLoading } = useApiDetail((params) => fetchPersonDetail(params.id as string))
 useDocumentTitle(() => person.value?.name)
-const isLoading = ref(true)
-
-const fetchPersonDetail = async () => {
-  isLoading.value = true
-  try {
-    const response = await api.get(`/persons/${route.params.id}/`)
-    person.value = response.data
-  } catch (error: any) {
-    console.error('Failed to fetch person details:', error)
-    if (error.response?.status === 404) {
-      router.replace({
-        name: 'not-found',
-        params: { pathMatch: route.path.substring(1).split('/') },
-      })
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchPersonDetail()
-})
 
 const totalWorksCount = computed(() => {
   return person.value?.participated_works?.length || 0

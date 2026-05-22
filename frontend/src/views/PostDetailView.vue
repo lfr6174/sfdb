@@ -1,38 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { fetchPostDetail } from '../api/posts'
+import { useApiDetail } from '../composables/useApiDetail'
 
-const route = useRoute()
-const router = useRouter()
-const post = ref<any>(null)
+const { data: post, isLoading } = useApiDetail((params) => fetchPostDetail(params.id as string))
 useDocumentTitle(() => post.value?.title)
-const isLoading = ref(true)
-
-const fetchPostDetail = async () => {
-  isLoading.value = true
-  try {
-    const response = await api.get(`/posts/${route.params.id}/`)
-    post.value = response.data
-  } catch (error: any) {
-    console.error('Failed to fetch post details:', error)
-    if (error.response?.status === 404) {
-      router.replace({
-        name: 'not-found',
-        params: { pathMatch: route.path.substring(1).split('/') },
-      })
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchPostDetail()
-})
 </script>
 
 <template>

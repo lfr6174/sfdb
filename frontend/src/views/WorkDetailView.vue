@@ -1,39 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../api/axios'
+import { ref, computed } from 'vue'
 import { useSpoiler } from '../composables/useSpoiler'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { fetchWorkDetail } from '../api/works'
+import { useApiDetail } from '../composables/useApiDetail'
 
-const route = useRoute()
-const router = useRouter()
-const work = ref<any>(null)
-const isLoading = ref(true)
-
+const { data: work, isLoading } = useApiDetail((params) => fetchWorkDetail(params.id as string))
 useDocumentTitle(() => work.value?.title)
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
-
-const fetchWorkDetail = async () => {
-  isLoading.value = true
-  try {
-    const response = await api.get(`/works/${route.params.id}/`)
-    work.value = response.data
-  } catch (error: any) {
-    console.error('Failed to fetch work details:', error)
-    if (error.response?.status === 404) {
-      router.replace({
-        name: 'not-found',
-        params: { pathMatch: route.path.substring(1).split('/') },
-      })
-    }
-  } finally {
-    isLoading.value = false
-  }
-}
 
 const visibleIsbns = ref<Set<number>>(new Set())
 const toggleIsbn = (id: number) => {
@@ -43,10 +21,6 @@ const toggleIsbn = (id: number) => {
     visibleIsbns.value.add(id)
   }
 }
-
-onMounted(() => {
-  fetchWorkDetail()
-})
 
 // Map relational objects to simple concept objects for the tag list component
 const plainConcepts = computed(() => {
