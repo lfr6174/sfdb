@@ -87,7 +87,7 @@ onMounted(async () => {
 <template>
   <div class="mx-auto max-w-4xl space-y-0 pb-20">
     <!-- Hero -->
-    <section class="pt-10 pb-14">
+    <section class="pt-6 md:pt-10 pb-14">
       <h1 class="text-main mb-2 text-2xl font-normal">能依概念檢索的科幻書目資料庫</h1>
       <p class="text-main/40 mb-7 text-sm">
         收錄 {{ stats.works }} 件台灣原創作品與 {{ stats.concepts }} 種概念

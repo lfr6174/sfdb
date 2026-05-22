@@ -56,7 +56,7 @@ onMounted(async () => {
     <Navbar />
 
     <!-- Main Content Area: dynamically rendered by Vue Router -->
-    <main class="flex-grow p-4 md:py-8">
+    <main class="flex-grow px-5 py-4 md:px-8 md:py-8">
       <router-view></router-view>
     </main>
   </div>

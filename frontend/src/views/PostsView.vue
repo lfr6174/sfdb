@@ -65,7 +65,7 @@ const changePage = (dir: number) => {
 <template>
   <div class="mx-auto max-w-4xl pb-20">
     <!-- ── Controls ── -->
-    <div class="flex flex-col justify-between gap-4 pt-10 pb-8 md:flex-row md:items-center">
+    <div class="flex flex-col justify-between gap-4 pt-6 md:pt-10 pb-8 md:flex-row md:items-center">
       <input
         v-model="searchQuery"
         type="text"

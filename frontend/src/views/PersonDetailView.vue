@@ -78,7 +78,7 @@ const personAwards = computed(() => {
 
     <template v-else-if="person">
       <!-- Back Link -->
-      <div class="mb-9 pt-10">
+      <div class="mb-9 pt-6 md:pt-10">
         <BackLink
           to="/persons"
           text="返回人物列表"

@@ -48,7 +48,7 @@ onMounted(() => {
     </div>
 
     <template v-else-if="pageData">
-      <article class="pt-10">
+      <article class="pt-6 md:pt-10">
         <h1 class="text-main mb-6 text-2xl leading-snug font-normal md:text-3xl">
           {{ pageData.title }}
         </h1>

@@ -39,7 +39,7 @@ onMounted(() => {
 
     <template v-else-if="post">
       <!-- Back Link -->
-      <div class="mb-9 pt-10">
+      <div class="mb-9 pt-6 md:pt-10">
         <BackLink
           to="/posts"
           text="返回文章列表"

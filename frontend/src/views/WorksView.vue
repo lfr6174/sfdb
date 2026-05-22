@@ -238,7 +238,7 @@ const changePage = (dir: number) => {
   <div class="mx-auto flex max-w-4xl flex-col items-start gap-0 pb-20 lg:flex-row lg:gap-12">
     <!-- ══ Left Sidebar ══ -->
     <aside
-      class="lg:border-main/10 w-full shrink-0 pt-10 lg:sticky lg:top-8 lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
+      class="lg:border-main/10 w-full shrink-0 pt-6 md:pt-10 lg:sticky lg:top-8 lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
     >
       <!-- Search -->
       <div class="mb-7">
@@ -370,7 +370,7 @@ const changePage = (dir: number) => {
     </aside>
 
     <!-- ══ Main Panel ══ -->
-    <main class="min-w-0 flex-1 pt-10">
+    <main class="min-w-0 flex-1 pt-6 md:pt-10">
       <!-- ── Advanced Search ── -->
       <section
         v-if="isAdvancedMode"

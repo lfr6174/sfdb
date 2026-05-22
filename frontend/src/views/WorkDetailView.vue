@@ -76,7 +76,7 @@ const sortedPublications = computed(() => {
 
     <template v-else-if="work">
       <!-- Back Link -->
-      <div class="mb-9 pt-10">
+      <div class="mb-9 pt-6 md:pt-10">
         <BackLink
           to="/works"
           text="返回作品列表"
