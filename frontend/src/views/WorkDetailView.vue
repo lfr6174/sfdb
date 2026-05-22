@@ -230,7 +230,7 @@ const sortedPublications = computed(() => {
 
         <!-- ── Sidebar ── -->
         <aside
-          class="mt-6 flex w-full shrink-0 flex-col gap-10 md:sticky md:top-8 md:mt-0 md:w-5/12 lg:w-4/12"
+          class="mt-6 flex w-full shrink-0 flex-col gap-10 md:sticky md:top-24 md:mt-0 md:w-5/12 lg:w-4/12"
         >
           <!-- Publications -->
           <section v-if="work.publications && work.publications.length > 0">
