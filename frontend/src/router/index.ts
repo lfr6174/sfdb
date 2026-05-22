@@ -1,15 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import ConceptsView from '../views/ConceptsView.vue'
-import PersonsView from '../views/PersonsView.vue'
-import PersonDetailView from '../views/PersonDetailView.vue'
-import ConceptDetailView from '../views/ConceptDetailView.vue'
-import WorksView from '../views/WorksView.vue'
-import WorkDetailView from '../views/WorkDetailView.vue'
-import PostsView from '../views/PostsView.vue'
-import PostDetailView from '../views/PostDetailView.vue'
-import PageDetailView from '../views/PageDetailView.vue'
-import NotFoundView from '../views/NotFoundView.vue'
+
+// Lazy-loaded routes
+const ConceptsView = () => import('../views/ConceptsView.vue')
+const PersonsView = () => import('../views/PersonsView.vue')
+const PersonDetailView = () => import('../views/PersonDetailView.vue')
+const ConceptDetailView = () => import('../views/ConceptDetailView.vue')
+const WorksView = () => import('../views/WorksView.vue')
+const WorkDetailView = () => import('../views/WorkDetailView.vue')
+const PostsView = () => import('../views/PostsView.vue')
+const PostDetailView = () => import('../views/PostDetailView.vue')
+const PageDetailView = () => import('../views/PageDetailView.vue')
+const NotFoundView = () => import('../views/NotFoundView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
