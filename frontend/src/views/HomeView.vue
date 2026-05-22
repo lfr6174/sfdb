@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import api from '../api/axios'
+import { fetchWorks as fetchWorksApi } from '../api/works'
+import {
+  fetchConcepts as fetchConceptsApi,
+  fetchRandomConcept as fetchRandomConceptApi,
+} from '../api/concepts'
+import { fetchPosts as fetchPostsApi } from '../api/posts'
+import type { Work, Concept, Post } from '../types'
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
@@ -9,18 +15,18 @@ import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 useDocumentTitle(null)
 
-const works = ref<any[]>([])
+const works = ref<Work[]>([])
 const isLoading = ref(true)
 
 const stats = ref({ works: 0, concepts: 0 })
-const currentConcept = ref<any>({})
+const currentConcept = ref<Concept | Record<string, any>>({})
 const recentConcepts = ref<Record<string, { name: string; slug: string }[]>>({})
-const announcements = ref<any[]>([])
+const announcements = ref<Post[]>([])
 
 const refreshRandomConcept = async () => {
   isLoading.value = true
   try {
-    const response = await api.get('/concepts/random/')
+    const response = await fetchRandomConceptApi()
     if (response.status === 200 && response.data) {
       currentConcept.value = response.data
       works.value = response.data.random_works || []
@@ -36,10 +42,10 @@ onMounted(async () => {
   try {
     // Send four independent RESTful requests in parallel using Promise.allSettled
     const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.allSettled([
-      api.get('/works/', { params: { limit: 1 } }), // 優化：只為獲取總數，避免回傳整頁笨重資料
-      api.get('/concepts/', { params: { ordering: '-updated_at' } }), // Fetch genuinely "recently added" concepts by sorting
-      api.get('/posts/'),
-      api.get('/concepts/random/'), // Fetch a random concept on initial load
+      fetchWorksApi({ limit: 1 }), // 優化：只為獲取總數，避免回傳整頁笨重資料
+      fetchConceptsApi({ ordering: '-updated_at' }), // Fetch genuinely "recently added" concepts by sorting
+      fetchPostsApi(),
+      fetchRandomConceptApi(), // Fetch a random concept on initial load
     ])
 
     // 1. Statistics
@@ -54,7 +60,7 @@ onMounted(async () => {
 
       // Group recent concepts by category
       const recent: Record<string, { name: string; slug: string }[]> = {}
-      allConcepts.forEach((c: any) => {
+      allConcepts.forEach((c: Concept) => {
         const catName = c.category || '未分類' // If DRF returns category_display, consider using c.category_display instead
         if (!recent[catName]) recent[catName] = []
         if (recent[catName].length < 5) recent[catName].push({ name: c.name, slug: c.slug })

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import api from '../api/axios'
+import { fetchWorks as fetchWorksApi } from '../api/works'
+import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
+import type { Work, Concept } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
@@ -33,21 +35,21 @@ const PAGE_SIZE = 20 // FIX: needed to compute totalPages
 const searchQuery = ref('')
 const selectedMedia = ref<string[]>([])
 const selectedLengths = ref<string[]>([])
-const selectedConcepts = ref<any[]>([])
+const selectedConcepts = ref<Concept[]>([])
 const yearMin = ref<number | ''>('')
 const yearMax = ref<number | ''>('')
 const ordering = ref('-year')
 
-const works = ref<any[]>([])
+const works = ref<Work[]>([])
 const totalWorks = ref(0)
 const isLoading = ref(false)
 const currentPage = ref(1)
 const hasNext = ref(false)
 const hasPrev = ref(false)
 
-const allConcepts = ref<any[]>([])
+const allConcepts = ref<Concept[]>([])
 const isModalOpen = ref(false)
-const tempSelectedConcepts = ref<any[]>([])
+const tempSelectedConcepts = ref<Concept[]>([])
 const modalSearchQuery = ref('')
 
 const isAdvancedMode = ref(false)
@@ -60,7 +62,7 @@ const totalPages = computed(() => Math.max(1, Math.ceil(totalWorks.value / PAGE_
 // Data Fetching
 const fetchAllConcepts = async () => {
   try {
-    const res = await api.get('/concepts/all/')
+    const res = await fetchAllConceptsApi()
     allConcepts.value = res.data || []
   } catch (err) {
     console.error('Failed to fetch concepts', err)
@@ -70,7 +72,7 @@ const fetchAllConcepts = async () => {
 const fetchWorks = async () => {
   isLoading.value = true
   try {
-    const params: any = {
+    const params: Record<string, any> = {
       page: currentPage.value,
       ordering: ordering.value,
     }
@@ -82,7 +84,7 @@ const fetchWorks = async () => {
     if (yearMin.value) params.year_min = yearMin.value
     if (yearMax.value) params.year_max = yearMax.value
 
-    const res = await api.get('/works/', { params })
+    const res = await fetchWorksApi(params)
     works.value = res.data.results || []
     totalWorks.value = res.data.count || 0
     hasNext.value = !!res.data.next

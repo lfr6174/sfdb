@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import api from '../api/axios'
+import { fetchPosts as fetchPostsApi } from '../api/posts'
+import type { Post } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
@@ -11,7 +12,7 @@ import { useDocumentTitle } from '../composables/useDocumentTitle'
 useDocumentTitle('最新資訊')
 
 const PAGE_SIZE = 20
-const posts = ref<any[]>([])
+const posts = ref<Post[]>([])
 const totalPosts = ref(0)
 const isLoading = ref(false)
 const currentPage = ref(1)
@@ -26,13 +27,13 @@ const totalPages = computed(() => Math.max(1, Math.ceil(totalPosts.value / PAGE_
 const fetchPosts = async () => {
   isLoading.value = true
   try {
-    const params: any = {
+    const params: Record<string, any> = {
       page: currentPage.value,
       ordering: ordering.value,
     }
     if (searchQuery.value) params.search = searchQuery.value
 
-    const res = await api.get('/posts/', { params })
+    const res = await fetchPostsApi(params)
     posts.value = res.data.results || []
     totalPosts.value = res.data.count || 0
     hasNext.value = !!res.data.next

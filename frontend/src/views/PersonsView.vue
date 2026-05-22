@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import api from '../api/axios'
+import { fetchPersons as fetchPersonsApi } from '../api/persons'
+import type { Person } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
@@ -9,7 +10,7 @@ import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 useDocumentTitle('人物列表')
 
-const persons = ref<any[]>([])
+const persons = ref<Person[]>([])
 const isLoading = ref(true)
 
 // Search, sort, and pagination states
@@ -22,12 +23,10 @@ const totalCount = ref(0)
 const fetchPersons = async () => {
   isLoading.value = true
   try {
-    const response = await api.get('/persons/', {
-      params: {
-        page: currentPage.value,
-        search: searchQuery.value,
-        ordering: sortBy.value,
-      },
+    const response = await fetchPersonsApi({
+      page: currentPage.value,
+      search: searchQuery.value,
+      ordering: sortBy.value,
     })
 
     persons.value = response.data.results || []

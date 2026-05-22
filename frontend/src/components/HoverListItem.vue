@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps<{
   to?: string | object
@@ -8,7 +9,7 @@ const props = defineProps<{
 
 const resolvedTag = computed(() => {
   if (props.tag) return props.tag
-  return props.to ? 'router-link' : 'div'
+  return props.to ? RouterLink : 'div'
 })
 </script>
 

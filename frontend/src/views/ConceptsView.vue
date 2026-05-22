@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
-import api from '../api/axios'
+import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
+import type { Concept } from '../types'
 import ConceptTag from '../components/ConceptTag.vue'
 import SortSelect from '../components/SortSelect.vue'
 
 useDocumentTitle('概念探索')
 
-const allConcepts = ref<any[]>([])
+const allConcepts = ref<Concept[]>([])
 const isLoading = ref(true)
 
 const searchQuery = ref('')
@@ -23,7 +24,7 @@ const categoryMap: Record<string, string> = {
 const fetchAllConcepts = async () => {
   isLoading.value = true
   try {
-    const response = await api.get('/concepts/all/')
+    const response = await fetchAllConceptsApi()
     allConcepts.value = response.data || []
   } catch (error) {
     console.error('Failed to fetch concepts:', error)
@@ -47,7 +48,7 @@ const groupedConcepts = computed(() => {
   }
 
   // Inter-group sorting
-  const groups: Record<string, any[]> = {}
+  const groups: Record<string, Concept[]> = {}
   GROUP_ORDER.forEach((cat) => {
     groups[cat] = []
   })
