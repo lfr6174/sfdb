@@ -141,7 +141,9 @@ const changePage = (dir: number) => {
         <span class="text-main/40 text-xs">
           {{ formatDate(post.created_at) }}
         </span>
-        <span class="text-main group-hover:text-primary block text-lg font-medium transition-colors">
+        <span
+          class="text-main group-hover:text-primary block text-lg font-medium transition-colors"
+        >
           {{ post.title }}
         </span>
       </router-link>
