@@ -13,6 +13,7 @@ const router = useRouter()
 
 const concept = ref<any>(null)
 const isLoading = ref(true)
+const isExamplesExpanded = ref(false)
 
 useDocumentTitle(() => concept.value?.name)
 
@@ -20,6 +21,7 @@ const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoile
 
 const fetchConceptDetail = async () => {
   isLoading.value = true
+  isExamplesExpanded.value = false
   try {
     const response = await api.get(`/concepts/${route.params.slug}/`)
     concept.value = response.data
@@ -136,7 +138,8 @@ onMounted(() => {
               class="flex flex-col"
             >
               <div
-                v-for="item in validWorkConcepts"
+                v-for="(item, index) in validWorkConcepts"
+                v-show="index < 5 || isExamplesExpanded"
                 :key="item.id"
                 class="border-main/10 flex flex-col gap-1.5 border-b py-4 last:border-0"
               >
@@ -167,6 +170,15 @@ onMounted(() => {
                   {{ item.description }}
                 </p>
               </div>
+
+              <!-- Expand Button -->
+              <button
+                v-if="validWorkConcepts.length > 5 && !isExamplesExpanded"
+                class="bg-main/3 hover:bg-primary/3 hover:text-primary text-main/60 w-full py-3 text-center text-sm transition-colors"
+                @click="isExamplesExpanded = true"
+              >
+                ↓ 展開其餘 {{ validWorkConcepts.length - 5 }} 個應用範例
+              </button>
             </div>
             <div
               v-else
@@ -176,7 +188,7 @@ onMounted(() => {
             </div>
 
             <!-- Link to all works -->
-            <div class="mt-7">
+            <div class="mt-6">
               <router-link
                 :to="{ path: '/works', query: { concept: concept.slug } }"
                 class="text-primary text-base no-underline transition-opacity hover:opacity-70"
