@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
+const router = useRouter()
 const post = ref<any>(null)
 useDocumentTitle(() => post.value?.title)
 const isLoading = ref(true)
@@ -16,8 +17,14 @@ const fetchPostDetail = async () => {
   try {
     const response = await api.get(`/posts/${route.params.id}/`)
     post.value = response.data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch post details:', error)
+    if (error.response?.status === 404) {
+      router.replace({
+        name: 'not-found',
+        params: { pathMatch: route.path.substring(1).split('/') },
+      })
+    }
   } finally {
     isLoading.value = false
   }

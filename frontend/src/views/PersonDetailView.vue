@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api/axios'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
@@ -8,6 +8,7 @@ import ExpandableTagList from '../components/ExpandableTagList.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
+const router = useRouter()
 
 const person = ref<any>(null)
 useDocumentTitle(() => person.value?.name)
@@ -18,8 +19,14 @@ const fetchPersonDetail = async () => {
   try {
     const response = await api.get(`/persons/${route.params.id}/`)
     person.value = response.data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch person details:', error)
+    if (error.response?.status === 404) {
+      router.replace({
+        name: 'not-found',
+        params: { pathMatch: route.path.substring(1).split('/') },
+      })
+    }
   } finally {
     isLoading.value = false
   }

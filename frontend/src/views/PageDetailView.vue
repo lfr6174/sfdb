@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
+const router = useRouter()
 const pageData = ref<any>(null)
 useDocumentTitle(() => pageData.value?.title)
 const isLoading = ref(true)
@@ -18,9 +19,16 @@ const fetchPageDetail = async () => {
   try {
     const response = await api.get(`/pages/${route.params.slug}/`)
     pageData.value = response.data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch page details:', error)
-    hasError.value = true
+    if (error.response?.status === 404) {
+      router.replace({
+        name: 'not-found',
+        params: { pathMatch: route.path.substring(1).split('/') },
+      })
+    } else {
+      hasError.value = true
+    }
   } finally {
     isLoading.value = false
   }

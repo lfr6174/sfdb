@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api/axios'
 import { useSpoiler } from '../composables/useSpoiler'
 import BackLink from '../components/BackLink.vue'
@@ -9,6 +9,7 @@ import ExpandableTagList from '../components/ExpandableTagList.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 const route = useRoute()
+const router = useRouter()
 const work = ref<any>(null)
 const isLoading = ref(true)
 
@@ -21,8 +22,14 @@ const fetchWorkDetail = async () => {
   try {
     const response = await api.get(`/works/${route.params.id}/`)
     work.value = response.data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to fetch work details:', error)
+    if (error.response?.status === 404) {
+      router.replace({
+        name: 'not-found',
+        params: { pathMatch: route.path.substring(1).split('/') },
+      })
+    }
   } finally {
     isLoading.value = false
   }

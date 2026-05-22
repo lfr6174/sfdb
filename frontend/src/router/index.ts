@@ -9,6 +9,7 @@ import WorkDetailView from '../views/WorkDetailView.vue'
 import PostsView from '../views/PostsView.vue'
 import PostDetailView from '../views/PostDetailView.vue'
 import PageDetailView from '../views/PageDetailView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +68,11 @@ const router = createRouter({
       name: 'page-detail',
       component: PageDetailView,
       props: true,
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: NotFoundView,
     },
   ],
 })
