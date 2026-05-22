@@ -4,6 +4,7 @@ import api from '../api/axios'
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
+import HoverListItem from '../components/HoverListItem.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 useDocumentTitle(null)
@@ -156,22 +157,12 @@ onMounted(async () => {
           class="flex flex-col"
         >
           <!-- Works List -->
-          <router-link
+          <HoverListItem
             v-for="work in works"
             :key="work.id"
             :to="`/works/${work.id}`"
-            class="group border-main/10 relative z-0 flex flex-col gap-1 border-b py-4 no-underline transition-colors last:border-0"
+            class="flex flex-col gap-1 no-underline"
           >
-            <!-- Hover Background Overlay -->
-            <div
-              class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-            ></div>
-
-            <!-- Accent line -->
-            <div
-              class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-            ></div>
-
             <div class="flex w-full items-start justify-between gap-4">
               <span
                 class="text-main group-hover:text-primary mb-1 block text-base font-medium transition-colors"
@@ -201,7 +192,7 @@ onMounted(async () => {
                 </span>
               </template>
             </div>
-          </router-link>
+          </HoverListItem>
         </div>
 
         <div
@@ -254,20 +245,10 @@ onMounted(async () => {
           v-for="ann in announcements"
           :key="ann.id"
         >
-          <router-link
+          <HoverListItem
             :to="`/posts/${ann.id}`"
-            class="group border-main/10 relative z-0 flex cursor-pointer flex-col gap-2 border-b py-4 no-underline transition-colors last:border-0 sm:flex-row sm:items-baseline sm:gap-6"
+            class="flex cursor-pointer flex-col gap-2 no-underline sm:flex-row sm:items-baseline sm:gap-6"
           >
-            <!-- Hover Background Overlay -->
-            <div
-              class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-            ></div>
-
-            <!-- Accent line -->
-            <div
-              class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-            ></div>
-
             <span class="text-main/50 shrink-0 text-sm sm:w-28">
               {{ formatDate(ann.created_at) }}
             </span>
@@ -276,7 +257,7 @@ onMounted(async () => {
             >
               {{ ann.title }}
             </span>
-          </router-link>
+          </HoverListItem>
         </li>
       </ul>
     </section>

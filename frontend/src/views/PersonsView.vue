@@ -2,6 +2,8 @@
 import { ref, onMounted, watch } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
+import HoverListItem from '../components/HoverListItem.vue'
+import SortSelect from '../components/SortSelect.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
@@ -75,26 +77,15 @@ onMounted(() => {
         class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
         @input="onSearchInput"
       />
-      <div class="relative shrink-0">
-        <select
+      <div class="relative w-28 shrink-0">
+        <SortSelect
           v-model="sortBy"
-          class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
-        >
-          <option value="name">字母排序</option>
-          <option value="-updated_at">最近更新</option>
-        </select>
-        <svg
-          class="text-main/35 pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2"
-          width="9"
-          height="5"
-          viewBox="0 0 10 6"
-          fill="none"
-        >
-          <path
-            d="M0 0l5 6 5-6z"
-            fill="currentColor"
-          />
-        </svg>
+          select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
+          :options="[
+            { value: 'name', label: '字母排序' },
+            { value: '-updated_at', label: '最近更新' },
+          ]"
+        />
       </div>
     </div>
 
@@ -120,22 +111,12 @@ onMounted(() => {
       </p>
 
       <!-- Person Rows -->
-      <div
+      <HoverListItem
         v-for="person in persons"
         :key="person.id"
-        class="group border-main/10 relative z-0 cursor-pointer border-b py-4 transition-colors"
-        @click="$router.push(`/persons/${person.id}`)"
+        :to="`/persons/${person.id}`"
+        class="cursor-pointer"
       >
-        <!-- Hover Background Overlay -->
-        <div
-          class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-        ></div>
-
-        <!-- Accent line -->
-        <div
-          class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-        ></div>
-
         <!-- Name row -->
         <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-3">
           <div class="flex flex-wrap items-baseline gap-2.5">
@@ -155,7 +136,7 @@ onMounted(() => {
         <p class="text-main/70 mb-3.5 line-clamp-2 text-base leading-relaxed">
           {{ person.excerpt || person.about || '暫無簡歷提供。' }}
         </p>
-      </div>
+      </HoverListItem>
 
       <!-- Pagination -->
       <PaginationControls

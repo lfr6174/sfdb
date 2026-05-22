@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import api from '../api/axios'
 import ConceptTag from '../components/ConceptTag.vue'
+import SortSelect from '../components/SortSelect.vue'
 
 useDocumentTitle('概念探索')
 
@@ -82,27 +83,16 @@ const groupedConcepts = computed(() => {
         placeholder="搜尋概念名稱…"
         class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
       />
-      <div class="relative shrink-0">
-        <select
+      <div class="relative w-28 shrink-0">
+        <SortSelect
           v-model="sortBy"
-          class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
-        >
-          <option value="alpha">字母排序</option>
-          <option value="count">作品數排序</option>
-          <option value="recent">最近更新</option>
-        </select>
-        <svg
-          class="text-main/35 pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2"
-          width="9"
-          height="5"
-          viewBox="0 0 10 6"
-          fill="none"
-        >
-          <path
-            d="M0 0l5 6 5-6z"
-            fill="currentColor"
-          />
-        </svg>
+          select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
+          :options="[
+            { value: 'alpha', label: '字母排序' },
+            { value: 'count', label: '作品數排序' },
+            { value: 'recent', label: '最近更新' },
+          ]"
+        />
       </div>
     </div>
 

@@ -3,6 +3,8 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
+import HoverListItem from '../components/HoverListItem.vue'
+import SortSelect from '../components/SortSelect.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import { useDebounceFn } from '../composables/useDebounce'
@@ -609,29 +611,16 @@ const changePage = (dir: number) => {
             </span>
 
             <div class="flex items-center gap-2">
-              <div class="relative">
-                <select
-                  v-model="ordering"
-                  class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
-                >
-                  <option value="-year">年份（新到舊）</option>
-                  <option value="year">年份（舊到新）</option>
-                  <option value="title">標題</option>
-                  <option value="-updated_at">最近更新</option>
-                </select>
-                <svg
-                  class="text-main/40 pointer-events-none absolute top-1/2 right-2 -translate-y-1/2"
-                  width="9"
-                  height="5"
-                  viewBox="0 0 10 6"
-                  fill="none"
-                >
-                  <path
-                    d="M0 0l5 6 5-6z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </div>
+              <SortSelect
+                v-model="ordering"
+                select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
+                :options="[
+                  { value: '-year', label: '年份（新到舊）' },
+                  { value: 'year', label: '年份（舊到新）' },
+                  { value: 'title', label: '標題' },
+                  { value: '-updated_at', label: '最近更新' },
+                ]"
+              />
             </div>
           </div>
         </div>
@@ -654,21 +643,12 @@ const changePage = (dir: number) => {
           v-else
           class="flex flex-col"
         >
-          <div
+          <HoverListItem
             v-for="work in works"
             :key="work.id"
-            class="group border-main/10 relative z-0 flex flex-col justify-between gap-3 border-b py-4 transition-colors last:border-0 md:flex-row md:items-start"
+            tag="div"
+            class="flex flex-col justify-between gap-3 md:flex-row md:items-start"
           >
-            <!-- Hover Background Overlay -->
-            <div
-              class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-            ></div>
-
-            <!-- Accent line -->
-            <div
-              class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-            ></div>
-
             <!-- Left: title + meta -->
             <div class="min-w-0 flex-1">
               <router-link
@@ -726,7 +706,7 @@ const changePage = (dir: number) => {
                 :concept="wc.concept"
               />
             </div>
-          </div>
+          </HoverListItem>
         </div>
 
         <PaginationControls

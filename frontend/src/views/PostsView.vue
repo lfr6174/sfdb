@@ -2,6 +2,8 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import api from '../api/axios'
 import PaginationControls from '../components/PaginationControls.vue'
+import HoverListItem from '../components/HoverListItem.vue'
+import SortSelect from '../components/SortSelect.vue'
 import { formatDate } from '../utils/formatters'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
@@ -72,28 +74,17 @@ const changePage = (dir: number) => {
         placeholder="搜尋標題、內容…"
         class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
       />
-      <div class="relative shrink-0">
-        <select
+      <div class="relative w-28 shrink-0">
+        <SortSelect
           v-model="ordering"
-          class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
-        >
-          <option value="-created_at">最新發布</option>
-          <option value="created_at">最早發布</option>
-          <option value="-updated_at">最近更新</option>
-          <option value="updated_at">最早更新</option>
-        </select>
-        <svg
-          class="text-main/35 pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2"
-          width="9"
-          height="5"
-          viewBox="0 0 10 6"
-          fill="none"
-        >
-          <path
-            d="M0 0l5 6 5-6z"
-            fill="currentColor"
-          />
-        </svg>
+          select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
+          :options="[
+            { value: '-created_at', label: '最新發布' },
+            { value: 'created_at', label: '最早發布' },
+            { value: '-updated_at', label: '最近更新' },
+            { value: 'updated_at', label: '最早更新' },
+          ]"
+        />
       </div>
     </div>
 
@@ -122,22 +113,12 @@ const changePage = (dir: number) => {
         共 {{ totalPosts }} 篇文章
       </p>
 
-      <router-link
+      <HoverListItem
         v-for="post in posts"
         :key="post.id"
         :to="`/posts/${post.id}`"
-        class="group border-main/10 relative z-0 flex flex-col gap-1 border-b py-4 no-underline transition-colors last:border-0"
+        class="flex flex-col gap-1 no-underline"
       >
-        <!-- Hover Background Overlay -->
-        <div
-          class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-        ></div>
-
-        <!-- Accent line -->
-        <div
-          class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-        ></div>
-
         <span class="text-main/40 text-xs">
           {{ formatDate(post.created_at) }}
         </span>
@@ -146,7 +127,7 @@ const changePage = (dir: number) => {
         >
           {{ post.title }}
         </span>
-      </router-link>
+      </HoverListItem>
 
       <div class="mt-6">
         <!-- Pagination -->
