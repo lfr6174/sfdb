@@ -242,10 +242,10 @@ const changePage = (dir: number) => {
   <div class="mx-auto flex max-w-4xl flex-col items-start gap-0 pb-20 lg:flex-row lg:gap-12">
     <!-- ══ Left Sidebar ══ -->
     <aside
-      class="lg:border-main/10 w-full shrink-0 pt-6 md:pt-10 lg:sticky lg:top-24 lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
+      class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:sticky lg:top-24 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
     >
-      <!-- Search -->
-      <div class="mb-7">
+      <!-- Search (Desktop) -->
+      <div class="mb-7 hidden lg:block">
         <input
           v-model="searchQuery"
           type="text"
@@ -375,6 +375,42 @@ const changePage = (dir: number) => {
 
     <!-- ══ Main Panel ══ -->
     <main class="min-w-0 flex-1 pt-6 md:pt-10">
+      <!-- Search and Filter (Mobile) -->
+      <div class="mb-6 flex items-center gap-3 lg:hidden">
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="搜尋標題、作者…"
+          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 min-w-0 flex-1 border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+        />
+        <button
+          :class="
+            isAdvancedMode
+              ? 'border-primary/60 text-primary bg-primary/5'
+              : 'border-main/20 text-main'
+          "
+          class="hover:border-primary/50 flex h-10 w-10 shrink-0 items-center justify-center rounded border bg-transparent transition-colors"
+          title="進階搜尋"
+          aria-label="進階搜尋"
+          :aria-pressed="isAdvancedMode"
+          @click="isAdvancedMode = !isAdvancedMode"
+        >
+          <svg
+            aria-hidden="true"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+        </button>
+      </div>
+
       <!-- ── Advanced Search ── -->
       <section
         v-if="isAdvancedMode"
