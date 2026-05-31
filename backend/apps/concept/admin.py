@@ -9,6 +9,8 @@ class ConceptLinkInline(TabularInline):
     model = ConceptLink
     extra = 0
     classes = ["collapse"]
+    ordering_field = "order"
+    hide_ordering_field = True
 
 
 @admin.register(Concept)

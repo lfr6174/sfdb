@@ -27,6 +27,8 @@ class WorkAgentInline(TabularInline):
     extra = 0
     autocomplete_fields = ("agent", "role")
     classes = ["collapse"]
+    ordering_field = "order"
+    hide_ordering_field = True
 
 
 class WorkConceptInline(TabularInline):
@@ -34,6 +36,8 @@ class WorkConceptInline(TabularInline):
     extra = 0
     autocomplete_fields = ("concept",)
     classes = ["collapse"]
+    ordering_field = "order"
+    hide_ordering_field = True
 
 
 class PublicationAgentInline(TabularInline):
@@ -42,6 +46,8 @@ class PublicationAgentInline(TabularInline):
     fields = ("agent", "display_name", "role", "order")
     autocomplete_fields = ("agent", "role")
     classes = ["collapse"]
+    ordering_field = "order"
+    hide_ordering_field = True
 
 
 class ManifestationAgentInline(TabularInline):
@@ -50,6 +56,8 @@ class ManifestationAgentInline(TabularInline):
     fields = ("agent", "display_name", "role", "order")
     autocomplete_fields = ("agent", "role")
     classes = ["collapse"]
+    ordering_field = "order"
+    hide_ordering_field = True
 
 
 class ManifestationInlineForWork(TabularInline):
@@ -94,6 +102,8 @@ class RoleAdmin(ModelAdmin):
     list_display = ("code", "noun", "verb", "description", "order")
     search_fields = ("code", "noun", "verb")
     ordering = ("order", "code")
+    ordering_field = "order"
+    hide_ordering_field = True
 
 
 @admin.register(Cycle)

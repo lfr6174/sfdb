@@ -258,9 +258,11 @@ class WorkConcept(models.Model):
         verbose_name="在此作品中的應用方式",
         help_text="說明這個概念在作品中如何呈現，例如「時間旅行：以冬眠技術度過兩千年時光」。可留空。",
     )
+    order = models.PositiveSmallIntegerField(default=0, verbose_name="顯示順序")
 
     class Meta:
         unique_together = [("work", "concept")]
+        ordering = ["order"]
         verbose_name = "作品相關概念"
         verbose_name_plural = "作品相關概念"
 
