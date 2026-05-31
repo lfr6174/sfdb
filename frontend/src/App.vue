@@ -33,7 +33,7 @@ onMounted(async () => {
       </span>
       <button
         class="text-primary/70 hover:text-primary absolute right-4 transition-colors"
-        aria-label="關閉公告"
+        aria-label="Close announcement"
         @click="showBanner = false"
       >
         <!-- Close Icon (X) -->
@@ -59,5 +59,35 @@ onMounted(async () => {
     <main class="flex-grow px-5 py-4 md:px-8 md:py-8">
       <router-view></router-view>
     </main>
+
+    <!-- Footer -->
+    <footer class="border-main/10 mt-auto border-t py-8">
+      <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 sm:flex-row text-main/60 text-sm">
+
+        <!-- Left: Creative Commons Declaration -->
+        <div>
+          本站內容採用
+          <a
+            href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-Hant"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary hover:text-primary/80 underline decoration-primary/30 underline-offset-4 transition-colors font-medium"
+          >
+            CC BY-NC-SA 4.0 授權條款
+          </a>
+        </div>
+
+        <!-- Right: Page Links -->
+        <div class="flex gap-6">
+          <router-link to="/pages/about" class="hover:text-main transition-colors">
+            關於我們
+          </router-link>
+          <router-link to="/pages/privacy" class="hover:text-main transition-colors">
+            隱私政策
+          </router-link>
+        </div>
+
+      </div>
+    </footer>
   </div>
 </template>
