@@ -6,8 +6,6 @@ from apps.concept.serializers import ConceptMinimalSerializer
 from .models import (
     Catalogue,
     Cycle,
-    Manifestation,
-    ManifestationAgent,
     Publication,
     PublicationAgent,
     Work,
@@ -26,12 +24,6 @@ class AgentMinimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agent
         fields = ["id", "name", "agent_type"]
-
-
-class WorkMinimalSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Work
-        fields = ["id", "title"]
 
 
 # ============================================================================
@@ -76,29 +68,6 @@ class WorkConceptSerializer(serializers.ModelSerializer):
 # ============================================================================
 
 
-class ManifestationAgentSerializer(serializers.ModelSerializer):
-    agent = AgentMinimalSerializer(read_only=True)
-    role = serializers.SlugRelatedField(slug_field="code", read_only=True)
-    role_display = serializers.CharField(source="role.noun", read_only=True)
-
-    class Meta:
-        model = ManifestationAgent
-        fields = ["id", "agent", "display_name", "role", "role_display", "order"]
-
-
-class ManifestationSerializer(serializers.ModelSerializer):
-    work = WorkMinimalSerializer(read_only=True)
-    contributions = ManifestationAgentSerializer(many=True, read_only=True)
-    display_name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Manifestation
-        fields = ["id", "work", "name", "display_name", "contributions"]
-
-    def get_display_name(self, obj):
-        return obj.name if obj.name else obj.publication.title
-
-
 class PublicationAgentSerializer(serializers.ModelSerializer):
     agent = AgentMinimalSerializer(read_only=True)
     role = serializers.SlugRelatedField(slug_field="code", read_only=True)
@@ -130,42 +99,6 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
             "publisher",
             "contributions",
         ]
-
-
-class PublicationSerializer(serializers.ModelSerializer):
-    # NOTE: Currently unused in ViewSets. Kept for future API extension.
-
-    language_display = serializers.CharField(source="get_language_display", read_only=True)
-    publisher = AgentMinimalSerializer(read_only=True)
-    media_display = serializers.CharField(source="get_media_display", read_only=True)
-    contributions = PublicationAgentSerializer(many=True, read_only=True)
-    manifestations = ManifestationSerializer(many=True, read_only=True)
-    works = WorkMinimalSerializer(many=True, read_only=True)
-    credit = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Publication
-        fields = [
-            "id",
-            "works",
-            "publisher",
-            "title",
-            "media",
-            "media_display",
-            "language",
-            "language_display",
-            "year",
-            "isbn",
-            "note",
-            "manifestations",
-            "contributions",
-            "credit",
-            "created_at",
-            "updated_at",
-        ]
-
-    def get_credit(self, obj):
-        return get_credits(obj.contributions.all())
 
 
 # ============================================================================
