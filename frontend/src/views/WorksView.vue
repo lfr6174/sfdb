@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchWorks as fetchWorksApi } from '../api/works'
 import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Work, Concept } from '../types'
@@ -39,6 +39,9 @@ const selectedConcepts = ref<Concept[]>([])
 const yearMin = ref<number | ''>('')
 const yearMax = ref<number | ''>('')
 const ordering = ref('-year')
+const selectedPublicationId = ref('')
+const selectedPublicationTitle = ref('')
+const selectedCatalogueTitle = ref('')
 
 const works = ref<Work[]>([])
 const totalWorks = ref(0)
@@ -55,6 +58,7 @@ const modalSearchQuery = ref('')
 const isAdvancedMode = ref(false)
 
 const route = useRoute()
+const router = useRouter()
 
 // FIX: Compute total pages for pagination display
 const totalPages = computed(() => Math.max(1, Math.ceil(totalWorks.value / PAGE_SIZE)))
@@ -83,6 +87,8 @@ const fetchWorks = async () => {
       params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
     if (yearMin.value) params.year_min = yearMin.value
     if (yearMax.value) params.year_max = yearMax.value
+    if (selectedPublicationId.value) params.publication = selectedPublicationId.value
+    if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
 
     const res = await fetchWorksApi(params)
     works.value = res.data.results || []
@@ -111,6 +117,17 @@ watch(
   { deep: true },
 )
 
+watch(
+  () => route.query,
+  (q) => {
+    selectedPublicationId.value = (q.publication as string) || ''
+    selectedPublicationTitle.value = (q.publication_title as string) || ''
+    selectedCatalogueTitle.value = (q.catalogue as string) || ''
+    triggerFetch()
+  },
+  { immediate: true },
+)
+
 onMounted(async () => {
   // 1. Wait for all concepts to load, so we can find the corresponding object by slug.
   await fetchAllConcepts()
@@ -119,15 +136,10 @@ onMounted(async () => {
   const conceptSlug = route.query.concept
   if (conceptSlug) {
     const matchedConcept = allConcepts.value.find((c) => c.slug === conceptSlug)
-    if (matchedConcept) {
+    if (matchedConcept && !selectedConcepts.value.some((c) => c.id === matchedConcept.id)) {
       selectedConcepts.value.push(matchedConcept)
-      // The watcher will detect the change in selectedConcepts and automatically trigger fetchWorks(), so we can return here.
-      return
     }
   }
-
-  // 3. If there's no parameter or the concept is not found, fetch all works normally.
-  fetchWorks()
 })
 
 // Concept Computed Properties
@@ -229,6 +241,26 @@ const clearAllFilters = () => {
   yearMax.value = ''
   tempSelectedConcepts.value = []
   modalSearchQuery.value = ''
+  if (route.query.publication || route.query.catalogue) {
+    const query = { ...route.query }
+    delete query.publication
+    delete query.publication_title
+    delete query.catalogue
+    router.replace({ query })
+  }
+}
+
+const clearPublication = () => {
+  const query = { ...route.query }
+  delete query.publication
+  delete query.publication_title
+  router.replace({ query })
+}
+
+const clearCatalogue = () => {
+  const query = { ...route.query }
+  delete query.catalogue
+  router.replace({ query })
 }
 
 const changePage = (dir: number) => {
@@ -571,11 +603,39 @@ const changePage = (dir: number) => {
               selectedMedia.length ||
               selectedLengths.length ||
               yearMin ||
-              yearMax
+              yearMax ||
+              selectedPublicationId ||
+              selectedCatalogueTitle
             "
             class="flex flex-wrap items-center gap-1.5"
           >
             <span class="text-main/40 mr-1 shrink-0 text-xs">作用中：</span>
+
+            <span
+              v-if="selectedPublicationId"
+              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+            >
+              出版物：{{ selectedPublicationTitle }}
+              <button
+                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
+                @click="clearPublication"
+              >
+                &times;
+              </button>
+            </span>
+
+            <span
+              v-if="selectedCatalogueTitle"
+              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+            >
+              精選：{{ selectedCatalogueTitle }}
+              <button
+                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
+                @click="clearCatalogue"
+              >
+                &times;
+              </button>
+            </span>
 
             <span
               v-for="m in selectedMedia"

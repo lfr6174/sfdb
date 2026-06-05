@@ -62,8 +62,9 @@ onMounted(async () => {
 
     <!-- Footer -->
     <footer class="border-main/10 mt-auto border-t py-8">
-      <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 sm:flex-row text-main/60 text-sm">
-
+      <div
+        class="text-main/60 mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm sm:flex-row"
+      >
         <!-- Left: Creative Commons Declaration -->
         <div>
           本站內容採用
@@ -71,7 +72,7 @@ onMounted(async () => {
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-Hant"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-primary hover:text-primary/80 underline decoration-primary/30 underline-offset-4 transition-colors font-medium"
+            class="text-primary hover:text-primary/80 decoration-primary/30 font-medium underline underline-offset-4 transition-colors"
           >
             CC BY-NC-SA 4.0 授權條款
           </a>
@@ -79,14 +80,19 @@ onMounted(async () => {
 
         <!-- Right: Page Links -->
         <div class="flex gap-6">
-          <router-link to="/pages/about" class="hover:text-main transition-colors">
+          <router-link
+            to="/pages/about"
+            class="hover:text-main transition-colors"
+          >
             關於我們
           </router-link>
-          <router-link to="/pages/privacy" class="hover:text-main transition-colors">
+          <router-link
+            to="/pages/privacy"
+            class="hover:text-main transition-colors"
+          >
             隱私政策
           </router-link>
         </div>
-
       </div>
     </footer>
   </div>

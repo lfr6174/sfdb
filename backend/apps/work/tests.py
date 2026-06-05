@@ -5,7 +5,19 @@ from django.urls import reverse
 
 from apps.agent.models import Agent
 from apps.concept.models import Concept
-from apps.work.models import MediaType, Role, Work, WorkAgent, WorkConcept, WorkLength
+from apps.work.models import (
+    Catalogue,
+    CatalogueType,
+    Manifestation,
+    MediaType,
+    Publication,
+    Role,
+    Work,
+    WorkAgent,
+    WorkCatalogue,
+    WorkConcept,
+    WorkLength,
+)
 from apps.work.services import get_byline, get_credits
 
 
@@ -55,6 +67,43 @@ def test_work_list_query_ceiling(api_client, django_assert_max_num_queries):
     Work.objects.bulk_create([Work(title=f"W{i}") for i in range(5)])
     with django_assert_max_num_queries(5):  # Protects prefetch chains: contributions__agent, roles, work_concepts
         api_client.get(reverse("work:work-list"))
+
+
+# Prevents: Filtering by publication or catalogue not matching exactly
+@pytest.mark.django_db
+def test_filter_works_by_publication_and_catalogue(api_client):
+    w1, w2 = Work.objects.create(title="W1"), Work.objects.create(title="W2")
+    pub = Publication.objects.create(title="Pub A")
+    cat = Catalogue.objects.create(title="Cat A", catalogue_type=CatalogueType.AWARD)
+
+    Manifestation.objects.create(work=w1, publication=pub)
+    WorkCatalogue.objects.create(work=w2, catalogue=cat)
+
+    # Test publication filter
+    pub_data = api_client.get(reverse("work:work-list"), {"publication": pub.id}).json()
+    assert pub_data["count"] == 1 and pub_data["results"][0]["title"] == "W1"
+
+    # Test catalogue filter
+    cat_data = api_client.get(reverse("work:work-list"), {"catalogue": cat.title}).json()
+    assert cat_data["count"] == 1 and cat_data["results"][0]["title"] == "W2"
+
+
+# Prevents: Multiple categories of the same work in a single catalogue
+# (or multiple catalogues with same title) causing duplicate works in API response
+@pytest.mark.django_db
+def test_filter_by_catalogue_duplicate_entries_returns_distinct(api_client):
+    w1 = Work.objects.create(title="Distinct Work")
+    cat = Catalogue.objects.create(title="Cat with Duplicates", catalogue_type=CatalogueType.AWARD)
+
+    # Same work appears twice in the same catalogue under different categories
+    WorkCatalogue.objects.create(work=w1, catalogue=cat, category="Category 1")
+    WorkCatalogue.objects.create(work=w1, catalogue=cat, category="Category 2")
+
+    # Since we filter by title now
+    data = api_client.get(reverse("work:work-list"), {"catalogue": cat.title}).json()
+    assert data["count"] == 1
+    assert len(data["results"]) == 1
+    assert data["results"][0]["title"] == "Distinct Work"
 
 
 # Prevents: Public write access and unintended auth requirements on GET

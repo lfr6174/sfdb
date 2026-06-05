@@ -13,6 +13,12 @@ class WorkFilter(django_filters.FilterSet):
 
     media_type = django_filters.CharFilter(method="filter_media_type")
     work_length = django_filters.CharFilter(method="filter_work_length")
+    publication = django_filters.NumberFilter(
+        field_name="manifestations__publication__id", lookup_expr="exact", distinct=True
+    )
+    catalogue = django_filters.CharFilter(
+        field_name="work_catalogues__catalogue__title", lookup_expr="exact", distinct=True
+    )
 
     class Meta:
         model = Work

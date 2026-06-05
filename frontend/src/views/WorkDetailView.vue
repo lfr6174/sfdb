@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useSpoiler } from '../composables/useSpoiler'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
@@ -12,15 +12,6 @@ const { data: work, isLoading } = useApiDetail((params) => fetchWorkDetail(param
 useDocumentTitle(() => work.value?.title)
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
-
-const visibleIsbns = ref<Set<number>>(new Set())
-const toggleIsbn = (id: number) => {
-  if (visibleIsbns.value.has(id)) {
-    visibleIsbns.value.delete(id)
-  } else {
-    visibleIsbns.value.add(id)
-  }
-}
 
 // Map relational objects to simple concept objects for the tag list component
 const plainConcepts = computed(() => {
@@ -215,8 +206,6 @@ const sortedPublications = computed(() => {
                 v-for="pub in sortedPublications"
                 :key="pub.manifestation_id || pub.id"
                 class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
-                :class="{ 'cursor-pointer': pub.isbn }"
-                @click="pub.isbn && toggleIsbn(pub.manifestation_id || pub.id)"
               >
                 <!-- Left: year + media badge -->
                 <div class="flex w-11 shrink-0 flex-col items-start gap-1.5 pt-0.5">
@@ -231,7 +220,15 @@ const sortedPublications = computed(() => {
                 </div>
 
                 <div class="min-w-0 flex-1">
-                  <span class="text-main mb-0.5 block text-base font-medium">{{ pub.title }}</span>
+                  <router-link
+                    :to="{
+                      path: '/works',
+                      query: { publication: pub.id, publication_title: pub.title },
+                    }"
+                    class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
+                  >
+                    {{ pub.title }}
+                  </router-link>
 
                   <div
                     v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
@@ -274,9 +271,8 @@ const sortedPublications = computed(() => {
                   </div>
 
                   <div
-                    v-if="visibleIsbns.has(pub.manifestation_id || pub.id) && pub.isbn"
+                    v-if="pub.isbn"
                     class="text-main/40 selection:bg-primary/20 mt-2 font-mono text-xs"
-                    @click.stop
                   >
                     ISBN {{ pub.isbn }}
                   </div>
@@ -308,9 +304,12 @@ const sortedPublications = computed(() => {
                 </div>
 
                 <div class="min-w-0 flex-1">
-                  <span class="text-main mb-0.5 block text-base font-medium">
+                  <router-link
+                    :to="{ path: '/works', query: { catalogue: entry.catalogue.title } }"
+                    class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
+                  >
                     {{ entry.catalogue.title }}
-                  </span>
+                  </router-link>
 
                   <div
                     v-if="entry.category || entry.status_display || entry.note"
