@@ -6,7 +6,7 @@ from apps.concept.models import Concept
 from apps.work.models import Work
 
 
-def get_random_concept_with_works(max_works: int = 4, min_works_required: int = 4):
+def get_random_concept_with_works(max_works: int = 6, min_works_required: int = 4):
     """Get a random concept with prefetched associated works."""
     ids = list(
         Concept.objects.annotate(num_works=Count("works"))

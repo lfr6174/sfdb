@@ -10,7 +10,6 @@ import type { Work, Concept, Post } from '../types'
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
-import HoverListItem from '../components/HoverListItem.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 useDocumentTitle(null)
@@ -20,7 +19,7 @@ const isLoading = ref(true)
 
 const stats = ref({ works: 0, concepts: 0 })
 const currentConcept = ref<Concept | Record<string, any>>({})
-const recentConcepts = ref<Record<string, { name: string; slug: string }[]>>({})
+const recentConcepts = ref<Concept[]>([])
 const announcements = ref<Post[]>([])
 
 const refreshRandomConcept = async () => {
@@ -40,41 +39,24 @@ const refreshRandomConcept = async () => {
 
 onMounted(async () => {
   try {
-    // Send four independent RESTful requests in parallel using Promise.allSettled
     const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.allSettled([
-      fetchWorksApi({ limit: 1 }), // 優化：只為獲取總數，避免回傳整頁笨重資料
-      fetchConceptsApi({ ordering: '-updated_at' }), // Fetch genuinely "recently added" concepts by sorting
+      fetchWorksApi({ limit: 1 }),
+      fetchConceptsApi({ ordering: '-updated_at' }),
       fetchPostsApi(),
-      fetchRandomConceptApi(), // Fetch a random concept on initial load
+      fetchRandomConceptApi(),
     ])
 
-    // 1. Statistics
     if (worksRes.status === 'fulfilled') {
       stats.value.works = worksRes.value.data.count || 0
     }
     if (conceptsRes.status === 'fulfilled') {
       stats.value.concepts = conceptsRes.value.data.count || 0
-
-      // 2. Concept processing
       const allConcepts = conceptsRes.value.data.results || []
-
-      // Group recent concepts by category
-      const recent: Record<string, { name: string; slug: string }[]> = {}
-      allConcepts.forEach((c: Concept) => {
-        const catName = c.category || '未分類' // If DRF returns category_display, consider using c.category_display instead
-        if (!recent[catName]) recent[catName] = []
-        if (recent[catName].length < 5) recent[catName].push({ name: c.name, slug: c.slug })
-      })
-      recentConcepts.value = recent
+      recentConcepts.value = allConcepts.slice(0, 8)
     }
-
-    // 3. Announcement processing
     if (postsRes.status === 'fulfilled') {
-      const fetchedPosts = postsRes.value.data.results || []
-      announcements.value = fetchedPosts.slice(0, 5)
+      announcements.value = (postsRes.value.data.results || []).slice(0, 5)
     }
-
-    // 4. Set initial random concept
     if (
       randomRes.status === 'fulfilled' &&
       randomRes.value.status === 200 &&
@@ -92,7 +74,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl space-y-0 pb-20">
+  <div class="mx-auto max-w-4xl pb-20">
     <!-- Hero -->
     <section class="pt-6 pb-14 md:pt-10">
       <h1 class="text-main mb-2 text-2xl font-normal">能依概念檢索的科幻書目資料庫</h1>
@@ -115,11 +97,11 @@ onMounted(async () => {
       </div>
     </section>
 
-    <!-- Two Column Layout -->
-    <div class="grid grid-cols-1 gap-10 pb-16 lg:grid-cols-2 lg:gap-14">
-      <!-- Left Column: Random Concept Works -->
+    <!-- Two Column Layout: 60/40 -->
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr] lg:gap-14">
+      <!-- ══ Left Column: Random Concept Works ══ -->
       <section class="flex flex-col">
-        <SectionTitle class="mb-5">
+        <SectionTitle class="mb-4">
           與
           <router-link
             :to="`/concepts/${currentConcept.slug}`"
@@ -154,118 +136,166 @@ onMounted(async () => {
 
         <div
           v-if="isLoading"
-          class="text-main/50 py-3 text-center text-base"
+          class="text-main/50 py-3 text-sm"
         >
           正在讀取作品...
         </div>
+
         <div
           v-else-if="works.length > 0"
           class="flex flex-col"
         >
-          <!-- Works List -->
-          <HoverListItem
+          <router-link
             v-for="work in works"
             :key="work.id"
             :to="`/works/${work.id}`"
-            class="flex flex-col gap-1 no-underline"
+            class="group border-main/10 relative z-0 flex items-baseline gap-4 border-b py-3 no-underline transition-colors last:border-0"
           >
-            <div class="flex w-full items-start justify-between gap-4">
+            <!-- Hover Background Overlay -->
+            <div
+              class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
+            />
+
+            <!-- Accent line -->
+            <div
+              class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
+            />
+
+            <!-- Year -->
+            <span class="text-main/50 w-10 shrink-0 text-sm">
+              {{ work.year || '-' }}
+            </span>
+
+            <!-- Title -->
+            <div class="flex min-w-0 flex-1 items-baseline">
               <span
-                class="text-main group-hover:text-primary mb-1 block text-base font-medium transition-colors"
+                class="text-main group-hover:text-primary text-base font-medium transition-colors"
               >
                 {{ work.title }}
               </span>
             </div>
-            <div class="text-main/50 text-sm">
-              <template v-if="work.byline && work.byline.length">
-                <template
-                  v-for="(agent, idx) in work.byline"
-                  :key="idx"
-                >
-                  <span>{{ agent.text }}</span>
-                  <span v-if="idx < work.byline.length - 1">、</span>
+
+            <!-- Author + Meta -->
+            <div class="shrink-0 text-right">
+              <span class="text-main/50 text-sm">
+                <template v-if="work.byline && work.byline.length">
+                  <template
+                    v-for="(agent, idx) in work.byline"
+                    :key="idx"
+                  >
+                    <span>{{ agent.text }}</span>
+                    <span v-if="idx < work.byline.length - 1">、</span>
+                  </template>
                 </template>
-              </template>
-              <span v-else>佚名</span>
-              <span class="text-main/20 mx-1.5">·</span>
-              <span>{{ work.year || '未知年份' }}</span>
-              <template
+                <span v-else>佚名</span>
+              </span>
+              <span
                 v-if="[work.work_length_display, work.media_type_display].filter(Boolean).length"
+                class="text-main/30 ml-2 text-sm"
               >
-                <span class="text-main/20 mx-1.5">·</span>
-                <span>
-                  {{ [work.work_length_display, work.media_type_display].filter(Boolean).join('') }}
-                </span>
-              </template>
+                {{ [work.work_length_display, work.media_type_display].filter(Boolean).join('') }}
+              </span>
             </div>
-          </HoverListItem>
+          </router-link>
         </div>
 
         <div
           v-else
-          class="text-main/50 py-3 text-center text-base"
+          class="text-main/40 py-3 text-sm"
         >
           目前該概念下暫無作品。
         </div>
       </section>
 
-      <!-- Right Column: Recent Concepts -->
-      <section class="border-main/10 flex flex-col lg:border-l lg:pl-10">
-        <SectionTitle class="mb-5">近期新增概念</SectionTitle>
+      <!-- ══ Right Column ══ -->
+      <aside class="lg:border-main/10 flex flex-col gap-10 lg:border-l lg:pl-10">
+        <!-- 最新資訊 -->
+        <section>
+          <SectionTitle class="mb-4">
+            最新資訊
+            <template #action>
+              <router-link
+                to="/posts"
+                class="text-main/40 hover:text-primary text-sm no-underline transition-colors"
+              >
+                查看全部
+              </router-link>
+            </template>
+          </SectionTitle>
 
-        <div class="space-y-7">
+          <!-- Empty state -->
           <div
-            v-for="(tags, category) in recentConcepts"
-            :key="category"
+            v-if="announcements.length === 0"
+            class="flex flex-col items-center gap-2 py-6 text-center"
           >
-            <h3 class="text-main/40 mb-3 text-sm font-medium tracking-widest uppercase">
-              {{ category }}
-            </h3>
-            <div class="flex flex-wrap gap-1.5">
-              <ConceptTag
-                v-for="tag in tags"
-                :key="tag.slug"
-                :concept="tag"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- Footer Section: Announcements -->
-    <section class="">
-      <SectionTitle class="mb-5">
-        最新資訊
-        <template #action>
-          <router-link
-            to="/posts"
-            class="text-main/40 hover:text-primary text-sm no-underline transition-colors"
-          >
-            查看全部
-          </router-link>
-        </template>
-      </SectionTitle>
-      <ul class="flex flex-col">
-        <li
-          v-for="ann in announcements"
-          :key="ann.id"
-        >
-          <HoverListItem
-            :to="`/posts/${ann.id}`"
-            class="flex cursor-pointer flex-col gap-2 no-underline sm:flex-row sm:items-baseline sm:gap-6"
-          >
-            <span class="text-main/50 shrink-0 text-sm sm:w-28">
-              {{ formatDate(ann.created_at) }}
-            </span>
-            <span
-              class="text-main group-hover:text-primary text-base leading-relaxed font-medium transition-colors"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.2"
+              stroke="currentColor"
+              class="text-main/20 h-8 w-8"
             >
-              {{ ann.title }}
-            </span>
-          </HoverListItem>
-        </li>
-      </ul>
-    </section>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.97m1.965-2.277L21 21m-4.225-4.225a23.81 23.81 0 0 0 .498-2.242M3 3l4.241 4.241m0 0A23.94 23.94 0 0 1 12 6c2.57 0 5.026.4 7.334 1.15m-7.078 7.078L3 3"
+              />
+            </svg>
+            <span class="text-main/30 text-sm">目前尚無最新公告</span>
+          </div>
+
+          <!-- Announcements list -->
+          <ul
+            v-else
+            class="flex flex-col"
+          >
+            <li
+              v-for="ann in announcements"
+              :key="ann.id"
+            >
+              <router-link
+                :to="`/posts/${ann.id}`"
+                class="group border-main/10 relative z-0 flex flex-col gap-0.5 border-b py-3 no-underline last:border-0"
+              >
+                <div
+                  class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
+                />
+                <div
+                  class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
+                />
+                <span class="text-main/40 text-xs">{{ formatDate(ann.created_at) }}</span>
+                <span
+                  class="text-main group-hover:text-primary text-sm leading-snug font-medium transition-colors"
+                >
+                  {{ ann.title }}
+                </span>
+              </router-link>
+            </li>
+          </ul>
+        </section>
+
+        <!-- 近期新增概念 -->
+        <section>
+          <SectionTitle class="mb-4">近期新增概念</SectionTitle>
+          <div
+            v-if="recentConcepts.length > 0"
+            class="flex flex-wrap gap-1.5"
+          >
+            <ConceptTag
+              v-for="concept in recentConcepts"
+              :key="concept.slug"
+              :concept="concept"
+            />
+          </div>
+          <p
+            v-else
+            class="text-main/30 text-sm"
+          >
+            尚無概念資料。
+          </p>
+        </section>
+      </aside>
+    </div>
   </div>
 </template>
