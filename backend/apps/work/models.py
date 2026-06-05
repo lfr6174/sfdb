@@ -22,6 +22,7 @@ class Language(models.TextChoices):
 
 class MediaType(models.TextChoices):
     NOVEL = "novel", "小說"
+    POEM = "poem", "詩"
     COMIC = "comic", "漫畫"
 
 
