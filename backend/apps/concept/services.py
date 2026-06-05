@@ -1,14 +1,21 @@
 import random
 
-from django.db.models import Prefetch
+from django.db.models import Count, Prefetch
 
 from apps.concept.models import Concept
 from apps.work.models import Work
 
 
-def get_random_concept_with_works(max_works: int = 4):
+def get_random_concept_with_works(max_works: int = 4, min_works_required: int = 4):
     """Get a random concept with prefetched associated works."""
-    ids = list(Concept.objects.filter(works__isnull=False).distinct().values_list("id", flat=True))
+    ids = list(
+        Concept.objects.annotate(num_works=Count("works"))
+        .filter(num_works__gte=min_works_required)
+        .values_list("id", flat=True)
+    )
+
+    if not ids:
+        ids = list(Concept.objects.filter(works__isnull=False).distinct().values_list("id", flat=True))
 
     if not ids:
         return None
