@@ -20,7 +20,7 @@ class ConceptListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Concept
-        fields = ["id", "name", "slug", "category", "works_count", "updated_at"]
+        fields = ["id", "name", "slug", "category", "works_count", "updated_at", "is_featured", "featured_order"]
 
 
 class ConceptDetailSerializer(serializers.ModelSerializer):

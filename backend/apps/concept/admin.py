@@ -15,8 +15,9 @@ class ConceptLinkInline(TabularInline):
 
 @admin.register(Concept)
 class ConceptAdmin(ModelAdmin):
-    list_display = ("name", "category", "created_at", "updated_at")
-    list_filter = (("category", ChoicesDropdownFilter),)
+    list_display = ("name", "category", "is_featured", "featured_order", "created_at", "updated_at")
+    list_editable = ("category", "is_featured", "featured_order")
+    list_filter = (("category", ChoicesDropdownFilter), "is_featured")
     search_fields = ("name", "slug")
     autocomplete_fields = ("related_concepts",)
     inlines = [ConceptLinkInline]

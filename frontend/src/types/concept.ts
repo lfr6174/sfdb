@@ -22,6 +22,8 @@ export interface Concept {
   category: 'novum' | 'narrative' | 'theme'
 
   // Optional/Detail fields
+  is_featured?: boolean
+  featured_order?: number
   description?: string
   works_count?: number
   related_concepts?: Concept[]

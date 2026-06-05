@@ -14,10 +14,14 @@ class Concept(TimeStampedModel):
     slug = models.SlugField(
         max_length=150,
         unique=True,
-        help_text="若有重複則為其添加分類前綴，例如 novum-cyberpunk。",
         verbose_name="URL 識別符",
+        help_text="若有重複則為其添加分類前綴，例如 novum-cyberpunk。",
     )
-    category = models.CharField(max_length=20, choices=ConceptCategory.choices, verbose_name="分類")
+    category = models.CharField(
+        max_length=20, choices=ConceptCategory.choices, default=ConceptCategory.THEME, verbose_name="分類"
+    )
+    is_featured = models.BooleanField(default=False, verbose_name="精選標籤", help_text="是否顯示作品檢索頁側欄。")
+    featured_order = models.PositiveIntegerField(default=0, verbose_name="側欄排序")
 
     description = models.TextField(
         blank=True,

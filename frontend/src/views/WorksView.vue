@@ -150,26 +150,12 @@ const mappedConcepts = computed(() => {
   }))
 })
 
-// Top 5 unselected concepts per category for the left panel
+// Featured concepts for the left panel
 const leftPanelConcepts = computed(() => {
   const selectedIds = new Set(selectedConcepts.value.map((c) => c.id))
-  const grouped: Record<string, any[]> = {
-    '新異 Novum': [],
-    '敘事 Narrative': [],
-    '主題 Theme': [],
-  }
-
-  mappedConcepts.value.forEach((c) => {
-    if (!selectedIds.has(c.id) && grouped[c.mappedCategory]) {
-      grouped[c.mappedCategory].push(c)
-    }
-  })
-
-  for (const cat in grouped) {
-    grouped[cat].sort((a, b) => (b.works_count || 0) - (a.works_count || 0))
-    grouped[cat] = grouped[cat].slice(0, 5)
-  }
-  return grouped
+  return mappedConcepts.value
+    .filter((c) => c.is_featured && !selectedIds.has(c.id))
+    .sort((a, b) => (a.featured_order || 0) - (b.featured_order || 0))
 })
 
 // Modal concepts grouped and filtered by modal search
@@ -274,7 +260,7 @@ const changePage = (dir: number) => {
   <div class="mx-auto flex max-w-4xl flex-col items-start gap-0 pb-20 lg:flex-row lg:gap-12">
     <!-- ══ Left Sidebar ══ -->
     <aside
-      class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:sticky lg:top-24 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
+      class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
     >
       <!-- Search (Desktop) -->
       <div class="mb-7 hidden lg:block">
@@ -347,7 +333,7 @@ const changePage = (dir: number) => {
           v-if="selectedConcepts.length > 0"
           class="mb-4"
         >
-          <div class="flex flex-col gap-1.5">
+          <div class="flex flex-col gap-2">
             <label
               v-for="concept in selectedConcepts"
               :key="concept.id"
@@ -365,34 +351,24 @@ const changePage = (dir: number) => {
           <div class="border-main/10 mt-3 mb-3 border-t"></div>
         </div>
 
-        <!-- Top concept categories -->
+        <!-- Featured concepts -->
         <div class="space-y-4">
-          <div
-            v-for="(concepts, cat) in leftPanelConcepts"
-            :key="cat"
-          >
-            <div v-if="concepts.length > 0">
-              <div class="text-main/30 mb-2 text-sm font-medium tracking-widest uppercase">
-                {{ cat.split(' ')[0] }}
-              </div>
-              <div class="flex flex-col gap-1.5">
-                <label
-                  v-for="concept in concepts"
-                  :key="concept.id"
-                  class="group flex cursor-pointer items-center gap-2"
-                >
-                  <input
-                    type="checkbox"
-                    :checked="false"
-                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-                    @change="toggleConcept(concept)"
-                  />
-                  <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
-                    {{ concept.name }}
-                  </span>
-                </label>
-              </div>
-            </div>
+          <div class="flex flex-col gap-2">
+            <label
+              v-for="concept in leftPanelConcepts"
+              :key="concept.id"
+              class="group flex cursor-pointer items-center gap-2"
+            >
+              <input
+                type="checkbox"
+                :checked="false"
+                class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
+                @change="toggleConcept(concept)"
+              />
+              <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
+                {{ concept.name }}
+              </span>
+            </label>
           </div>
         </div>
 
