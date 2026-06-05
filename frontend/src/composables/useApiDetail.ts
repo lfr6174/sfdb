@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 export function useApiDetail<T>(
@@ -38,6 +38,15 @@ export function useApiDetail<T>(
   }
 
   onMounted(fetch)
+
+  watch(
+    () => route.path,
+    (newPath, oldPath) => {
+      if (newPath !== oldPath) {
+        fetch()
+      }
+    },
+  )
 
   return { data, isLoading, hasError, refetch: fetch }
 }
