@@ -565,8 +565,11 @@ class Catalogue(TimeStampedModel):
         verbose_name = "精選"
         verbose_name_plural = "精選"
         ordering = ["title"]
+        unique_together = [("title", "year")]
 
     def __str__(self):
+        if self.year:
+            return f"{self.title} ({self.year})"
         return self.title
 
 
