@@ -160,8 +160,16 @@ STATIC_URL = "static/"
 
 # API Spectacular settings
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Taiwan SF Concept Database API",
-    "DESCRIPTION": "API documentation for the Taiwan SF Concept Database",
+    "TITLE": "Taiwan sf Concept Database API",
+    "DESCRIPTION": "API documentation for the Taiwan sf Concept Database",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+}
+
+
+# django-unfold configuration
+
+UNFOLD = {
+    "SITE_HEADER": "TSFDB管理",
+    "SITE_TITLE": "TSFDB管理",
 }

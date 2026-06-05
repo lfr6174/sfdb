@@ -3,6 +3,10 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+admin.site.site_header = "TSFDB管理"
+admin.site.site_title = "TSFDB管理"
+admin.site.index_title = "資料"
+
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     # OpenAPI Schema and API documentation
