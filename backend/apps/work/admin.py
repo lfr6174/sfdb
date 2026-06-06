@@ -224,7 +224,7 @@ class OutgoingRelationInline(TabularInline):
     fk_name = "subject_work"
     verbose_name = "關聯設定"
     verbose_name_plural = "設定關聯對象 (設定本作衍生/接續自哪部作品)"
-    extra = 1
+    extra = 0
     autocomplete_fields = ("object_work",)
     classes = ["collapse"]
 
