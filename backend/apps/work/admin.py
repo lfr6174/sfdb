@@ -1,4 +1,8 @@
+import datetime
+
+from django import forms
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.contrib.filters.admin import ChoicesDropdownFilter, RangeNumericFilter, RelatedDropdownFilter
 
@@ -16,6 +20,175 @@ from .models import (
     WorkCatalogue,
     WorkConcept,
 )
+
+# ============================================================================
+# PARTIAL DATE WIDGET / FIELD / FORMS
+# ============================================================================
+
+_CY = datetime.date.today().year
+_YEAR_CHOICES = [("", "---")] + [(y, y) for y in range(_CY + 1, 1899, -1)]
+_MONTH_CHOICES = [("", "---")] + [(m, f"{m:02d}") for m in range(1, 13)]
+_DAY_CHOICES = [("", "---")] + [(d, f"{d:02d}") for d in range(1, 32)]
+
+
+class PartialDateWidget(forms.MultiWidget):
+    def __init__(self, attrs=None):
+        super().__init__(
+            widgets=[
+                forms.Select(choices=_YEAR_CHOICES, attrs={"style": "width:auto"}),
+                forms.Select(choices=_MONTH_CHOICES, attrs={"style": "width:auto"}),
+                forms.Select(choices=_DAY_CHOICES, attrs={"style": "width:auto"}),
+            ],
+            attrs=attrs,
+        )
+
+    def render(self, name, value, attrs=None, renderer=None):
+        if not isinstance(value, list):
+            value = self.decompress(value)
+
+        final_attrs = self.build_attrs(attrs or {})
+        base_id = final_attrs.get("id", "")
+        labels = ["年", "月", "日"]
+        parts = []
+
+        for i, (widget, label) in enumerate(zip(self.widgets, labels, strict=True)):
+            sub_attrs = {**final_attrs, "id": f"{base_id}_{i}" if base_id else ""}
+            rendered = widget.render(
+                f"{name}_{i}",
+                value[i] if i < len(value) else "",
+                sub_attrs,
+                renderer=renderer,
+            )
+            parts.append(f"{rendered} <span style='margin:0 8px 0 2px'>{label}</span>")
+
+        return mark_safe("".join(parts))
+
+    def decompress(self, value):
+        if not value:
+            return ["", "", ""]
+        date, precision = value
+        return [
+            date.year,
+            date.month if precision in ("month", "day") else "",
+            date.day if precision == "day" else "",
+        ]
+
+
+class PartialDateField(forms.MultiValueField):
+    """Combines three dropdown values into a (date, precision) tuple."""
+
+    widget = PartialDateWidget
+
+    def __init__(self, *args, **kwargs):
+        fields = (
+            forms.ChoiceField(choices=_YEAR_CHOICES, required=False),
+            forms.ChoiceField(choices=_MONTH_CHOICES, required=False),
+            forms.ChoiceField(choices=_DAY_CHOICES, required=False),
+        )
+        super().__init__(*args, fields=fields, require_all_fields=False, **kwargs)
+
+    def compress(self, data_list):
+        y, m, d = [v or None for v in (data_list or ["", "", ""])]
+        if not y:
+            return None
+        if d and not m:
+            raise forms.ValidationError("填寫日時，月份不能空白。")
+        try:
+            date = datetime.date(int(y), int(m) if m else 1, int(d) if d else 1)
+        except ValueError as e:
+            raise forms.ValidationError(f"日期無效：{e}") from e
+        precision = "day" if d else "month" if m else "year"
+        return (date, precision)
+
+
+def _format_partial_date(date_val, precision):
+    """Format a partial date for display in list_display."""
+    if not date_val:
+        return "-"
+    if precision == "day":
+        return date_val.strftime("%Y-%m-%d")
+    if precision == "month":
+        return date_val.strftime("%Y-%m")
+    return str(date_val.year)
+
+
+class WorkForm(forms.ModelForm):
+    ori_date_partial = PartialDateField(label="首度發表日期", required=False)
+
+    class Meta:
+        model = Work
+        fields = (
+            "title",
+            "genre",
+            "work_length",
+            "provenance",
+            "language",
+            "ori_date_partial",
+            "description",
+            "cycle",
+            "cycle_order",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk and self.instance.ori_date:
+            self.initial["ori_date_partial"] = (
+                self.instance.ori_date,
+                self.instance.ori_date_precision,
+            )
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        result = self.cleaned_data.get("ori_date_partial")
+        if result:
+            obj.ori_date, obj.ori_date_precision = result
+        else:
+            obj.ori_date = obj.ori_date_precision = None
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
+
+
+class PublicationForm(forms.ModelForm):
+    pub_date_partial = PartialDateField(label="出版日期", required=False)
+
+    class Meta:
+        model = Publication
+        fields = (
+            "title",
+            "subtitle",
+            "publisher",
+            "series",
+            "series_order",
+            "language",
+            "source",
+            "media",
+            "pub_date_partial",
+            "isbn",
+            "note",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk and self.instance.pub_date:
+            self.initial["pub_date_partial"] = (
+                self.instance.pub_date,
+                self.instance.pub_date_precision,
+            )
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        result = self.cleaned_data.get("pub_date_partial")
+        if result:
+            obj.pub_date, obj.pub_date_precision = result
+        else:
+            obj.pub_date = obj.pub_date_precision = None
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
+
 
 # ============================================================================
 # INLINES
@@ -130,6 +303,7 @@ class SeriesAdmin(ModelAdmin):
 
 @admin.register(Work)
 class WorkAdmin(ModelAdmin):
+    form = WorkForm
     list_display = (
         "title",
         "get_contributions_display",
@@ -137,7 +311,7 @@ class WorkAdmin(ModelAdmin):
         "work_length",
         "provenance",
         "language",
-        "year",
+        "get_date_display",
         "cycle",
     )
     list_filter = (
@@ -165,9 +339,16 @@ class WorkAdmin(ModelAdmin):
 
     get_contributions_display.short_description = "作品創作者"
 
+    def get_date_display(self, obj):
+        return _format_partial_date(obj.ori_date, obj.ori_date_precision)
+
+    get_date_display.short_description = "發表日期"
+    get_date_display.admin_order_field = "ori_date"
+
 
 @admin.register(Publication)
 class PublicationAdmin(ModelAdmin):
+    form = PublicationForm
     list_display = (
         "title",
         "subtitle",
@@ -179,7 +360,7 @@ class PublicationAdmin(ModelAdmin):
         "series_order",
         "publisher",
         "language",
-        "year",
+        "get_date_display",
         "isbn",
     )
     list_filter = (
@@ -231,6 +412,12 @@ class PublicationAdmin(ModelAdmin):
         return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in valid_agents])
 
     get_contributions_display.short_description = "出版品參與者"
+
+    def get_date_display(self, obj):
+        return _format_partial_date(obj.pub_date, obj.pub_date_precision)
+
+    get_date_display.short_description = "出版日期"
+    get_date_display.admin_order_field = "pub_date"
 
 
 @admin.register(Manifestation)

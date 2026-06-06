@@ -36,6 +36,12 @@ class WorkProvenance(models.TextChoices):
     LICENSED = "licensed", "代理"
 
 
+class DatePrecision(models.TextChoices):
+    YEAR = "year", "年"
+    MONTH = "month", "月"
+    DAY = "day", "日"
+
+
 # --- Models ---
 
 
@@ -108,7 +114,19 @@ class Work(TimeStampedModel):
         blank=True,
         validators=[validate_not_future_year],
         verbose_name="首度發表年份",
-        help_text="作品最早公開發表的年份，例如連載開始年或單行本初版年。不確定可留空。",
+        help_text="由系統自動同步，請勿手動編輯。",
+    )
+    ori_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="首度發表日期",
+        help_text="作品最早公開發表的日期。只知道年份也可以填寫，會自動計算精確度。不確定可留空。",
+    )
+    ori_date_precision = models.CharField(
+        max_length=10,
+        choices=DatePrecision.choices,
+        default=DatePrecision.YEAR,
+        verbose_name="日期精確度",
     )
     description = models.TextField(
         blank=True, verbose_name="作品簡介", help_text="簡要介紹作品，例如 logline 或 synopsis。可留空"
@@ -160,6 +178,11 @@ class Work(TimeStampedModel):
         super().clean()
         if self.cycle_order is not None and self.cycle_id is None:
             raise ValidationError({"cycle_order": "請先填寫所屬系列，再登記其順序。"})
+
+    def save(self, *args, **kwargs):
+        # Transition: keep legacy 'year' in sync with ori_date
+        self.year = self.ori_date.year if self.ori_date else None
+        super().save(*args, **kwargs)
 
 
 class Role(models.Model):
@@ -438,7 +461,19 @@ class Publication(TimeStampedModel):
         blank=True,
         validators=[validate_not_future_year],
         verbose_name="發行年份",
-        help_text="此出版品正式發行的年份。不確定可留空。",
+        help_text="由系統自動同步，請勿手動編輯。",
+    )
+    pub_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="出版日期",
+        help_text="此出版品正式發行的日期。只知道年份也可以填寫，會自動計算精確度。可留空",
+    )
+    pub_date_precision = models.CharField(
+        max_length=10,
+        choices=DatePrecision.choices,
+        default=DatePrecision.YEAR,
+        verbose_name="日期精確度",
     )
     isbn = models.CharField(
         max_length=50,
@@ -490,6 +525,8 @@ class Publication(TimeStampedModel):
             raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
 
     def save(self, *args, **kwargs):
+        # Transition: keep legacy 'year' in sync with pub_date
+        self.year = self.pub_date.year if self.pub_date else None
         if self.source == PublicationSource.WEBSITE:
             self.media = PublicationMediaType.DIGITAL
         if self.isbn:
