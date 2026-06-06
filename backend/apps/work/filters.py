@@ -7,8 +7,8 @@ from .models import Work
 class WorkFilter(django_filters.FilterSet):
     """Advanced Faceted Search Filter for Work. Supports exact matches and year ranges."""
 
-    year_min = django_filters.NumberFilter(field_name="year", lookup_expr="gte")
-    year_max = django_filters.NumberFilter(field_name="year", lookup_expr="lte")
+    year_min = django_filters.NumberFilter(field_name="ori_date__year", lookup_expr="gte")
+    year_max = django_filters.NumberFilter(field_name="ori_date__year", lookup_expr="lte")
     concepts_in = django_filters.CharFilter(method="filter_concepts_include")
 
     genre = django_filters.CharFilter(method="filter_genre")

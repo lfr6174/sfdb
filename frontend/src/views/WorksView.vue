@@ -452,7 +452,7 @@ const changePage = (dir: number) => {
 
           <div>
             <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
-              發表年份區間
+              發表日期區間
             </label>
             <div class="flex items-center gap-2">
               <input
@@ -690,8 +690,8 @@ const changePage = (dir: number) => {
                 v-model="ordering"
                 select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
                 :options="[
-                  { value: '-year', label: '年份（新到舊）' },
-                  { value: 'year', label: '年份（舊到新）' },
+                  { value: '-ori_date', label: '日期（新到舊）' },
+                  { value: 'ori_date', label: '日期（舊到新）' },
                   { value: 'title', label: '標題' },
                   { value: '-updated_at', label: '最近更新' },
                 ]"

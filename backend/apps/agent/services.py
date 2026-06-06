@@ -34,14 +34,14 @@ def get_agent_works(agent):
             ),
         )
         .distinct()
-        .order_by("-year")
+        .order_by("-ori_date")
     )
 
     return [
         {
             "id": w.id,
             "title": w.title,
-            "year": w.year,
+            "year": w.ori_date.year if w.ori_date else None,
             "genre": w.get_genre_display(),
             "work_length": w.get_work_length_display(),
             "roles": sorted({c.role.noun for c in w.agent_contributions}),
@@ -74,14 +74,14 @@ def get_agent_publications(agent):
             )
         )
         .distinct()
-        .order_by("-year")
+        .order_by("-pub_date")
     )
 
     return [
         {
             "id": p.id,
             "title": p.title,
-            "year": p.year,
+            "year": p.pub_date.year if p.pub_date else None,
             "source": p.get_source_display(),
             "media": p.composite_media_display,
             "publisher": p.publisher.name if p.publisher else "",

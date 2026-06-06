@@ -52,7 +52,7 @@ class ConceptDetailSerializer(serializers.ModelSerializer):
                 "id": wc.id,
                 "work": wc.work_id,
                 "work_title": wc.work.title,
-                "year": wc.work.year,
+                "year": wc.work.ori_date.year if wc.work.ori_date else None,
                 "description": wc.description,
             }
             for wc in getattr(obj, "prefetched_work_concepts", [])

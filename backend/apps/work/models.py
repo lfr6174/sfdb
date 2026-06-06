@@ -109,13 +109,7 @@ class Work(TimeStampedModel):
         verbose_name="原始語言",
         help_text="作品最初發表時使用的語言。若作者採雙語發表，則各語系獨立登載。",
     )
-    year = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_not_future_year],
-        verbose_name="首度發表年份",
-        help_text="由系統自動同步，請勿手動編輯。",
-    )
+    # Removed legacy `year` field
     ori_date = models.DateField(
         null=True,
         blank=True,
@@ -166,23 +160,18 @@ class Work(TimeStampedModel):
     )
 
     class Meta:
-        ordering = ["-year", "title"]
+        ordering = ["-ori_date", "title"]
         verbose_name = "作品"
         verbose_name_plural = "作品"
 
     def __str__(self):
-        year_str = f" ({self.year})" if self.year else ""
+        year_str = f" ({self.ori_date.year})" if self.ori_date else ""
         return f"{self.title}{year_str}"
 
     def clean(self):
         super().clean()
         if self.cycle_order is not None and self.cycle_id is None:
             raise ValidationError({"cycle_order": "請先填寫所屬系列，再登記其順序。"})
-
-    def save(self, *args, **kwargs):
-        # Transition: keep legacy 'year' in sync with ori_date
-        self.year = self.ori_date.year if self.ori_date else None
-        super().save(*args, **kwargs)
 
 
 class Role(models.Model):
@@ -456,13 +445,7 @@ class Publication(TimeStampedModel):
         default=PublicationMediaType.PRINT,
         verbose_name="出版媒介",
     )
-    year = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_not_future_year],
-        verbose_name="發行年份",
-        help_text="由系統自動同步，請勿手動編輯。",
-    )
+    # Removed legacy `year` field
     pub_date = models.DateField(
         null=True,
         blank=True,
@@ -495,12 +478,13 @@ class Publication(TimeStampedModel):
     )
 
     class Meta:
-        ordering = ["year", "title"]
+        ordering = ["pub_date", "title"]
         verbose_name = "出版品"
         verbose_name_plural = "出版品"
 
     def __str__(self):
-        return f"{self.title} ({self.year})"
+        year_str = f" ({self.pub_date.year})" if self.pub_date else ""
+        return f"{self.title}{year_str}"
 
     @property
     def composite_media_display(self):
@@ -525,8 +509,6 @@ class Publication(TimeStampedModel):
             raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
 
     def save(self, *args, **kwargs):
-        # Transition: keep legacy 'year' in sync with pub_date
-        self.year = self.pub_date.year if self.pub_date else None
         if self.source == PublicationSource.WEBSITE:
             self.media = PublicationMediaType.DIGITAL
         if self.isbn:

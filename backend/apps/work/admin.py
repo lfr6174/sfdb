@@ -4,7 +4,12 @@ from django import forms
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from unfold.admin import ModelAdmin, TabularInline
-from unfold.contrib.filters.admin import ChoicesDropdownFilter, RangeNumericFilter, RelatedDropdownFilter
+from unfold.contrib.filters.admin import (
+    ChoicesDropdownFilter,
+    RangeDateFilter,
+    RangeNumericFilter,
+    RelatedDropdownFilter,
+)
 
 from .models import (
     Catalogue,
@@ -320,7 +325,7 @@ class WorkAdmin(ModelAdmin):
         ("work_length", ChoicesDropdownFilter),
         ("provenance", ChoicesDropdownFilter),
         ("language", ChoicesDropdownFilter),
-        ("year", RangeNumericFilter),
+        ("ori_date", RangeDateFilter),
     )
     search_fields = ("title", "description", "contributions__agent__name", "contributions__agent__aliases__name")
     autocomplete_fields = ("cycle",)
@@ -367,7 +372,7 @@ class PublicationAdmin(ModelAdmin):
         ("language", ChoicesDropdownFilter),
         ("source", ChoicesDropdownFilter),
         ("media", ChoicesDropdownFilter),
-        ("year", RangeNumericFilter),
+        ("pub_date", RangeDateFilter),
         ("publisher", RelatedDropdownFilter),
         ("series", RelatedDropdownFilter),
     )

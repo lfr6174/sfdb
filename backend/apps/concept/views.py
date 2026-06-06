@@ -31,7 +31,7 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
                 "related_concepts",
                 Prefetch(
                     "work_concepts",
-                    queryset=WorkConcept.objects.select_related("work").order_by("-work__year"),
+                    queryset=WorkConcept.objects.select_related("work").order_by("-work__ori_date"),
                     to_attr="prefetched_work_concepts",
                 ),
             )
@@ -56,7 +56,7 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
             {
                 "id": w.id,
                 "title": w.title,
-                "year": w.year,
+                "year": w.ori_date.year if w.ori_date else None,
                 "genre_display": w.get_genre_display(),
                 "work_length_display": w.get_work_length_display(),
                 "byline": get_byline(w.contributions.all()),
