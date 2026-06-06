@@ -61,13 +61,13 @@ const sortedPublications = computed(() => {
           <section>
             <!-- Media type pill (gray filled badge, not a tag) -->
             <div
-              v-if="work.work_length_display || work.media_type_display"
+              v-if="work.work_length_display || work.genre_display"
               class="mb-4"
             >
               <span
                 class="text-main/50 bg-main/5 inline-block px-2 py-1 font-mono text-xs tracking-wider uppercase"
               >
-                {{ work.work_length_display || '' }}{{ work.media_type_display || '' }}
+                {{ work.work_length_display || '' }}{{ work.genre_display || '' }}
               </span>
             </div>
 
@@ -208,7 +208,7 @@ const sortedPublications = computed(() => {
                 class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
               >
                 <!-- Left: year + media badge -->
-                <div class="flex w-11 shrink-0 flex-col items-start gap-1.5 pt-0.5">
+                <div class="flex w-12 shrink-0 flex-col items-start gap-1.5 pt-0.5">
                   <span class="text-main/50 text-xs">{{ pub.year || '-' }}</span>
                   <!-- Gray filled badge — visually distinct from concept tags -->
                   <span
@@ -291,7 +291,7 @@ const sortedPublications = computed(() => {
                 :key="entry.id"
                 class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
               >
-                <div class="flex w-11 shrink-0 flex-col items-start gap-1.5 pt-0.5">
+                <div class="flex w-12 shrink-0 flex-col items-start gap-1.5 pt-0.5">
                   <span class="text-main/50 text-xs">
                     {{ entry.catalogue.year || '-' }}
                   </span>

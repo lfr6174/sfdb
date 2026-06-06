@@ -11,7 +11,7 @@ class WorkFilter(django_filters.FilterSet):
     year_max = django_filters.NumberFilter(field_name="year", lookup_expr="lte")
     concepts_in = django_filters.CharFilter(method="filter_concepts_include")
 
-    media_type = django_filters.CharFilter(method="filter_media_type")
+    genre = django_filters.CharFilter(method="filter_genre")
     work_length = django_filters.CharFilter(method="filter_work_length")
     publication = django_filters.NumberFilter(
         field_name="manifestations__publication__id", lookup_expr="exact", distinct=True
@@ -41,11 +41,11 @@ class WorkFilter(django_filters.FilterSet):
             .filter(matching_concepts=len(concept_ids))
         )
 
-    def filter_media_type(self, queryset, _name, value):
+    def filter_genre(self, queryset, _name, value):
         if not value:
             return queryset
         types = [v.strip() for v in value.split(",") if v.strip()]
-        return queryset.filter(media_type__in=types)
+        return queryset.filter(genre__in=types)
 
     def filter_work_length(self, queryset, _name, value):
         if not value:

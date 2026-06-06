@@ -141,7 +141,7 @@ const personAwards = computed(() => {
                 </div>
                 <div>
                   <span class="text-main/50 pr-3 text-sm">
-                    {{ [work.work_length, work.media_type].filter(Boolean).join('') }}
+                    {{ [work.work_length, work.genre].filter(Boolean).join('') }}
                   </span>
                   <span class="text-primary shrink-0 text-right text-sm font-medium">
                     {{ work.roles.join('、') }}

@@ -133,7 +133,7 @@ class WorkAdmin(ModelAdmin):
     list_display = (
         "title",
         "get_contributions_display",
-        "media_type",
+        "genre",
         "work_length",
         "provenance",
         "language",
@@ -142,7 +142,7 @@ class WorkAdmin(ModelAdmin):
     )
     list_filter = (
         ("description", admin.EmptyFieldListFilter),
-        ("media_type", ChoicesDropdownFilter),
+        ("genre", ChoicesDropdownFilter),
         ("work_length", ChoicesDropdownFilter),
         ("provenance", ChoicesDropdownFilter),
         ("language", ChoicesDropdownFilter),
@@ -172,6 +172,7 @@ class PublicationAdmin(ModelAdmin):
         "title",
         "subtitle",
         "get_contributions_display",
+        "source",
         "media",
         "get_works_display",
         "series",
@@ -183,6 +184,7 @@ class PublicationAdmin(ModelAdmin):
     )
     list_filter = (
         ("language", ChoicesDropdownFilter),
+        ("source", ChoicesDropdownFilter),
         ("media", ChoicesDropdownFilter),
         ("year", RangeNumericFilter),
         ("publisher", RelatedDropdownFilter),

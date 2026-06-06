@@ -15,8 +15,9 @@ import { useDocumentTitle } from '../composables/useDocumentTitle'
 useDocumentTitle('作品列表')
 
 // Filter Constants
-const MEDIA_OPTIONS = [
+const GENRE_OPTIONS = [
   { value: 'novel', label: '小說' },
+  { value: 'poem', label: '詩' },
   { value: 'comic', label: '漫畫' },
 ]
 const LENGTH_OPTIONS = [
@@ -33,7 +34,7 @@ const PAGE_SIZE = 20 // FIX: needed to compute totalPages
 
 // State
 const searchQuery = ref('')
-const selectedMedia = ref<string[]>([])
+const selectedGenres = ref<string[]>([])
 const selectedLengths = ref<string[]>([])
 const selectedConcepts = ref<Concept[]>([])
 const yearMin = ref<number | ''>('')
@@ -81,7 +82,7 @@ const fetchWorks = async () => {
       ordering: ordering.value,
     }
     if (searchQuery.value) params.search = searchQuery.value
-    if (selectedMedia.value.length) params.media_type = selectedMedia.value.join(',')
+    if (selectedGenres.value.length) params.genre = selectedGenres.value.join(',')
     if (selectedLengths.value.length) params.work_length = selectedLengths.value.join(',')
     if (selectedConcepts.value.length)
       params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
@@ -110,7 +111,7 @@ const triggerFetch = useDebounceFn(() => {
 
 // Watch all filter states and trigger fetch
 watch(
-  [searchQuery, selectedMedia, selectedLengths, selectedConcepts, yearMin, yearMax, ordering],
+  [searchQuery, selectedGenres, selectedLengths, selectedConcepts, yearMin, yearMax, ordering],
   () => {
     triggerFetch()
   },
@@ -220,7 +221,7 @@ const clearYearFilter = () => {
 
 const clearAllFilters = () => {
   searchQuery.value = ''
-  selectedMedia.value = []
+  selectedGenres.value = []
   selectedLengths.value = []
   selectedConcepts.value = []
   yearMin.value = ''
@@ -280,17 +281,17 @@ const changePage = (dir: number) => {
         </div>
       </div>
 
-      <!-- Media Type -->
+      <!-- Genre Type -->
       <div class="mb-6">
-        <SectionTitle class="mb-3">作品媒體</SectionTitle>
+        <SectionTitle class="mb-3">作品體裁</SectionTitle>
         <div class="flex flex-col gap-2">
           <label
-            v-for="opt in MEDIA_OPTIONS"
+            v-for="opt in GENRE_OPTIONS"
             :key="opt.value"
             class="group flex cursor-pointer items-center gap-2"
           >
             <input
-              v-model="selectedMedia"
+              v-model="selectedGenres"
               type="checkbox"
               :value="opt.value"
               class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
@@ -475,16 +476,16 @@ const changePage = (dir: number) => {
               <label
                 class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
               >
-                媒體類型
+                作品體裁
               </label>
               <div class="flex flex-wrap gap-x-5 gap-y-2">
                 <label
-                  v-for="opt in MEDIA_OPTIONS"
+                  v-for="opt in GENRE_OPTIONS"
                   :key="opt.value"
                   class="group flex cursor-pointer items-center gap-2"
                 >
                   <input
-                    v-model="selectedMedia"
+                    v-model="selectedGenres"
                     type="checkbox"
                     :value="opt.value"
                     class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
@@ -576,7 +577,7 @@ const changePage = (dir: number) => {
           <div
             v-if="
               selectedConcepts.length ||
-              selectedMedia.length ||
+              selectedGenres.length ||
               selectedLengths.length ||
               yearMin ||
               yearMax ||
@@ -614,14 +615,14 @@ const changePage = (dir: number) => {
             </span>
 
             <span
-              v-for="m in selectedMedia"
+              v-for="m in selectedGenres"
               :key="m"
               class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
             >
-              {{ MEDIA_OPTIONS.find((o) => o.value === m)?.label }}
+              {{ GENRE_OPTIONS.find((o) => o.value === m)?.label }}
               <button
                 class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="selectedMedia = selectedMedia.filter((v) => v !== m)"
+                @click="selectedGenres = selectedGenres.filter((v) => v !== m)"
               >
                 &times;
               </button>
@@ -757,13 +758,11 @@ const changePage = (dir: number) => {
                 <span class="text-main/20">·</span>
                 <span>{{ work.year || '未知' }}</span>
                 <template
-                  v-if="[work.work_length_display, work.media_type_display].filter(Boolean).length"
+                  v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
                 >
                   <span class="text-main/20">·</span>
                   <span>
-                    {{
-                      [work.work_length_display, work.media_type_display].filter(Boolean).join('')
-                    }}
+                    {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
                   </span>
                 </template>
               </div>

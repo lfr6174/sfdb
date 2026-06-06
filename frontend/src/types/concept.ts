@@ -37,7 +37,7 @@ export interface Concept {
     id: number
     title: string
     year: number | null
-    media_type_display: string
+    genre_display: string
     work_length_display: string
     byline: BylineEntry[]
   }[]

@@ -20,7 +20,7 @@ class Language(models.TextChoices):
     OTHER = "other", "其他"
 
 
-class MediaType(models.TextChoices):
+class WorkGenre(models.TextChoices):
     NOVEL = "novel", "小說"
     POEM = "poem", "詩"
     COMIC = "comic", "漫畫"
@@ -83,9 +83,7 @@ class Work(TimeStampedModel):
         verbose_name="標題",
         help_text="作品最廣為人知的原文標題，例如 'Starship Troopers' 或「酔歩する男」。",
     )
-    media_type = models.CharField(
-        max_length=20, choices=MediaType.choices, verbose_name="體裁", help_text="作品的主要形式"
-    )
+    genre = models.CharField(max_length=20, choices=WorkGenre.choices, verbose_name="體裁", help_text="作品的主要形式")
     work_length = models.CharField(
         max_length=20,
         choices=WorkLength.choices,
@@ -348,12 +346,18 @@ class ManifestationAgent(models.Model):
 # --- Enums ---
 
 
-class PublicationMedia(models.TextChoices):
+class PublicationSource(models.TextChoices):
     BOOK = "book", "書籍"
     MAGAZINE = "magazine", "雜誌"
     NEWSPAPER = "newspaper", "報紙"
     WEBSITE = "website", "網站"
     OTHER = "other", "其它"
+
+
+class PublicationMediaType(models.TextChoices):
+    PRINT = "print", "紙本"
+    DIGITAL = "digital", "電子"
+    AUDIO = "audio", "有聲"
 
 
 # --- Models ---
@@ -422,7 +426,13 @@ class Publication(TimeStampedModel):
         verbose_name="出版語言",
         help_text="此出版品使用的語言，通常是讀者實際閱讀的語言。",
     )
-    media = models.CharField(max_length=20, choices=PublicationMedia.choices, verbose_name="出版形式")
+    source = models.CharField(max_length=20, choices=PublicationSource.choices, verbose_name="出版形式")
+    media = models.CharField(
+        max_length=20,
+        choices=PublicationMediaType.choices,
+        default=PublicationMediaType.PRINT,
+        verbose_name="出版媒介",
+    )
     year = models.PositiveSmallIntegerField(
         null=True,
         blank=True,
@@ -457,12 +467,31 @@ class Publication(TimeStampedModel):
     def __str__(self):
         return f"{self.title} ({self.year})"
 
+    @property
+    def composite_media_display(self):
+        mapping = {
+            ("book", "print"): "紙本書",
+            ("book", "digital"): "電子書",
+            ("book", "audio"): "有聲書",
+            ("magazine", "print"): "雜誌",
+            ("magazine", "digital"): "電子雜誌",
+            ("newspaper", "print"): "報紙",
+            ("newspaper", "digital"): "電子報",
+            ("website", "digital"): "網站",
+            ("website", None): "網站",
+        }
+        return mapping.get((self.source, self.media), self.get_source_display())
+
     def clean(self):
         super().clean()
+        if self.source == PublicationSource.WEBSITE and self.media != PublicationMediaType.DIGITAL:
+            raise ValidationError({"media": "網站的出版媒介只能設定為「電子」。"})
         if self.series_order is not None and self.series_id is None:
             raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
 
     def save(self, *args, **kwargs):
+        if self.source == PublicationSource.WEBSITE:
+            self.media = PublicationMediaType.DIGITAL
         if self.isbn:
             self.isbn = self.isbn.replace("-", "").replace(" ", "").upper()
         super().save(*args, **kwargs)

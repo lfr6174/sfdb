@@ -43,6 +43,7 @@ export interface WorkAgent {
 export interface Publication {
   id: number
   title: string
+  source_display: string
   media_display: string
   language_display: string
   year: number | null
@@ -68,14 +69,14 @@ export interface Work {
   title: string
   year: number | null
   byline: BylineEntry[]
-  media_type_display: string
+  genre_display: string
   work_length_display: string
   work_concepts: WorkConcept[]
 
   // Detail fields (optional for list views)
   language?: string
   language_display?: string
-  media_type?: string
+  genre?: string
   work_length?: string
   description?: string
   cycle?: Cycle | null

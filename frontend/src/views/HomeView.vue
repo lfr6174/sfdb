@@ -190,10 +190,10 @@ onMounted(async () => {
                 <span v-else>佚名</span>
               </span>
               <span
-                v-if="[work.work_length_display, work.media_type_display].filter(Boolean).length"
+                v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
                 class="text-main/30 ml-2 text-sm"
               >
-                {{ [work.work_length_display, work.media_type_display].filter(Boolean).join('') }}
+                {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
               </span>
             </div>
           </router-link>

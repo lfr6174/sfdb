@@ -9,13 +9,13 @@ from apps.work.models import (
     Catalogue,
     CatalogueType,
     Manifestation,
-    MediaType,
     Publication,
     Role,
     Work,
     WorkAgent,
     WorkCatalogue,
     WorkConcept,
+    WorkGenre,
     WorkLength,
 )
 from apps.work.services import get_byline, get_credits
@@ -39,12 +39,12 @@ def test_get_credits_grouping():
 # Prevents: API response shape drift breaking the Vue frontend WorksView contract
 @pytest.mark.django_db
 def test_work_list_api_contract(api_client):
-    w = Work.objects.create(title="W", media_type=MediaType.NOVEL, work_length=WorkLength.SHORT)
+    w = Work.objects.create(title="W", genre=WorkGenre.NOVEL, work_length=WorkLength.SHORT)
     a = Agent.objects.create(name="A", agent_type="person")
     WorkAgent.objects.create(work=w, agent=a, role=Role.objects.create(code="r", noun="n", verb="v"))
 
     data = api_client.get(reverse("work:work-list")).json()["results"][0]
-    expected = {"id", "title", "year", "byline", "media_type_display", "work_length_display", "work_concepts"}
+    expected = {"id", "title", "year", "byline", "genre_display", "work_length_display", "work_concepts"}
     assert set(data.keys()) == expected and data["byline"][0]["text"] == "A"
 
 

@@ -57,7 +57,7 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
                 "id": w.id,
                 "title": w.title,
                 "year": w.year,
-                "media_type_display": w.get_media_type_display(),
+                "genre_display": w.get_genre_display(),
                 "work_length_display": w.get_work_length_display(),
                 "byline": get_byline(w.contributions.all()),
             }

@@ -13,7 +13,7 @@ export interface ParticipatedWork {
   id: number
   title: string
   year: number | null
-  media_type: string
+  genre: string
   work_length: string
   roles: string[]
   concepts: { name: string; slug: string }[]
@@ -30,6 +30,7 @@ export interface ParticipatedPublication {
   id: number
   title: string
   year: number | null
+  source: string
   media: string
   publisher: string
   isbn: string

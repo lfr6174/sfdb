@@ -83,7 +83,8 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
 
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     publisher = AgentMinimalSerializer(read_only=True)
-    media_display = serializers.CharField(source="get_media_display", read_only=True)
+    source_display = serializers.CharField(source="get_source_display", read_only=True)
+    media_display = serializers.CharField(source="composite_media_display", read_only=True)
     contributions = PublicationAgentSerializer(many=True, read_only=True)
 
     class Meta:
@@ -91,6 +92,7 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+            "source_display",
             "media_display",
             "language_display",
             "year",
@@ -131,7 +133,7 @@ class WorkCatalogueSerializer(serializers.ModelSerializer):
 
 class WorkListSerializer(serializers.ModelSerializer):
     byline = serializers.SerializerMethodField()
-    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
+    genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
     work_concepts = WorkConceptListSerializer(many=True, read_only=True)
 
@@ -142,7 +144,7 @@ class WorkListSerializer(serializers.ModelSerializer):
             "title",
             "year",
             "byline",
-            "media_type_display",
+            "genre_display",
             "work_length_display",
             "work_concepts",
         ]
@@ -152,7 +154,7 @@ class WorkListSerializer(serializers.ModelSerializer):
 
 
 class WorkDetailSerializer(serializers.ModelSerializer):
-    media_type_display = serializers.CharField(source="get_media_type_display", read_only=True)
+    genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
 
@@ -171,8 +173,8 @@ class WorkDetailSerializer(serializers.ModelSerializer):
             "title",
             "language",
             "language_display",
-            "media_type",
-            "media_type_display",
+            "genre",
+            "genre_display",
             "work_length",
             "work_length_display",
             "year",
