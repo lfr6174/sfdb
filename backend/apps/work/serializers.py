@@ -12,6 +12,7 @@ from .models import (
     WorkAgent,
     WorkCatalogue,
     WorkConcept,
+    WorkRelation,
 )
 from .services import get_byline, get_credits
 
@@ -161,6 +162,44 @@ class WorkListSerializer(serializers.ModelSerializer):
         return obj.ori_date.year if obj.ori_date else None
 
 
+RELATION_LABELS = {
+    "based_on": {"as_subject": "原作", "as_object": "衍生"},
+    "continues": {"as_subject": "前作", "as_object": "續作"},
+    "homage": {"as_subject": "原典", "as_object": "致敬"},
+    "related": {"as_subject": "相關", "as_object": "相關"},
+}
+
+
+class WorkRelationSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    direction = serializers.SerializerMethodField()
+    other_work = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkRelation
+        fields = ["id", "label", "direction", "other_work"]
+
+    def get_label(self, obj):
+        current_id = self.context.get("current_work_id")
+        direction = "as_subject" if obj.subject_work_id == current_id else "as_object"
+        return RELATION_LABELS.get(obj.kind, {}).get(direction, obj.get_kind_display())
+
+    def get_direction(self, obj):
+        current_id = self.context.get("current_work_id")
+        if obj.kind == "related":
+            return "none"
+        return "out" if obj.subject_work_id == current_id else "in"
+
+    def get_other_work(self, obj):
+        current_id = self.context.get("current_work_id")
+        work = obj.object_work if obj.subject_work_id == current_id else obj.subject_work
+        return {
+            "id": work.id,
+            "title": work.title,
+            "year": work.ori_date.year if work.ori_date else None,
+        }
+
+
 class WorkDetailSerializer(serializers.ModelSerializer):
     genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     language_display = serializers.CharField(source="get_language_display", read_only=True)
@@ -177,6 +216,7 @@ class WorkDetailSerializer(serializers.ModelSerializer):
     work_catalogues = WorkCatalogueSerializer(many=True, read_only=True)
     byline = serializers.SerializerMethodField()
     credit = serializers.SerializerMethodField()
+    relations = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
@@ -197,10 +237,17 @@ class WorkDetailSerializer(serializers.ModelSerializer):
             "work_concepts",
             "publications",
             "work_catalogues",
+            "relations",
             "byline",
             "credit",
             "updated_at",
         ]
+
+    def get_relations(self, obj):
+        rels = list(getattr(obj, "prefetched_rels_as_subject", [])) + list(
+            getattr(obj, "prefetched_rels_as_object", [])
+        )
+        return WorkRelationSerializer(rels, many=True, context={"current_work_id": obj.id}).data
 
     def get_byline(self, obj):
         return get_byline(obj.contributions.all())

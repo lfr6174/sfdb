@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
 from .filters import WorkFilter
-from .models import Manifestation, Work
+from .models import Manifestation, Work, WorkRelation
 from .serializers import (
     WorkDetailSerializer,
     WorkListSerializer,
@@ -32,6 +32,16 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
             "contributions__agent",
             "contributions__role",
             "work_concepts__concept",
+            Prefetch(
+                "rels_as_subject",
+                queryset=WorkRelation.objects.select_related("object_work"),
+                to_attr="prefetched_rels_as_subject",
+            ),
+            Prefetch(
+                "rels_as_object",
+                queryset=WorkRelation.objects.select_related("subject_work"),
+                to_attr="prefetched_rels_as_object",
+            ),
             Prefetch(
                 "manifestations",
                 queryset=Manifestation.objects.select_related("publication__publisher").prefetch_related(

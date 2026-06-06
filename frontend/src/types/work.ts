@@ -58,10 +58,22 @@ export interface Publication {
     role_display: string
     order: number
   }[]
+  manifestations?: { id: number; name: string }[]
   manifestation_id?: number
   manifestation_name?: string
   manifestation_display_name?: string
   credit?: CreditGroup[]
+}
+
+export interface WorkRelation {
+  id: number
+  label: string
+  direction: 'out' | 'in' | 'none'
+  other_work: {
+    id: number
+    title: string
+    year: number | null
+  }
 }
 
 export interface Work {
@@ -84,6 +96,7 @@ export interface Work {
   contributions?: WorkAgent[]
   publications?: Publication[]
   work_catalogues?: WorkCatalogue[]
+  relations?: WorkRelation[]
   credit?: CreditGroup[]
   updated_at?: string
 }

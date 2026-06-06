@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useSpoiler } from '../composables/useSpoiler'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
+import HoverListItem from '../components/HoverListItem.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { fetchWorkDetail } from '../api/works'
@@ -34,6 +35,14 @@ const sortedCatalogues = computed(() => {
 const sortedPublications = computed(() => {
   if (!work.value?.publications) return []
   return [...work.value.publications].sort((a, b) => (b.year || 0) - (a.year || 0))
+})
+
+const isExpandedPublications = ref(false)
+
+const visiblePublications = computed(() => {
+  const sorted = sortedPublications.value
+  if (isExpandedPublications.value) return sorted
+  return sorted.slice(0, 5)
 })
 </script>
 
@@ -203,7 +212,7 @@ const sortedPublications = computed(() => {
 
             <div class="flex flex-col">
               <div
-                v-for="pub in sortedPublications"
+                v-for="pub in visiblePublications"
                 :key="pub.manifestation_id || pub.id"
                 class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
               >
@@ -278,6 +287,23 @@ const sortedPublications = computed(() => {
                   </div>
                 </div>
               </div>
+
+              <!-- Expand row -->
+              <button
+                v-if="sortedPublications.length > 5"
+                class="text-main/50 hover:text-primary group mt-2 flex w-full cursor-pointer items-center justify-between py-2 text-sm transition-colors"
+                @click="isExpandedPublications = !isExpandedPublications"
+              >
+                <span>
+                  {{ isExpandedPublications ? '收起' : `＋ ${sortedPublications.length - 5} 筆` }}
+                </span>
+                <span
+                  class="transition-transform duration-200"
+                  :class="{ 'rotate-180': isExpandedPublications }"
+                >
+                  ⌄
+                </span>
+              </button>
             </div>
           </section>
 
@@ -346,6 +372,35 @@ const sortedPublications = computed(() => {
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
+          <!-- Relations -->
+          <section
+            v-if="work.relations && work.relations.length > 0"
+            class="mb-10"
+          >
+            <SectionTitle class="mb-4">關聯作品</SectionTitle>
+
+            <div class="flex flex-col">
+              <HoverListItem
+                v-for="rel in work.relations"
+                :key="rel.id"
+                :to="`/works/${rel.other_work.id}`"
+                class="!py-2"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="flex w-14 shrink-0 flex-col items-start">
+                    <span class="text-main/50 text-xs">{{ rel.label }}</span>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <span
+                      class="text-main group-hover:text-primary text-base font-medium transition-colors"
+                    >
+                      {{ rel.other_work.title }}
+                    </span>
+                  </div>
+                </div>
+              </HoverListItem>
             </div>
           </section>
         </aside>
