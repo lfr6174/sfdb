@@ -24,6 +24,7 @@ from .models import (
     WorkAgent,
     WorkCatalogue,
     WorkConcept,
+    WorkRelation,
 )
 
 # ============================================================================
@@ -218,6 +219,30 @@ class WorkConceptInline(TabularInline):
     hide_ordering_field = True
 
 
+class OutgoingRelationInline(TabularInline):
+    model = WorkRelation
+    fk_name = "subject_work"
+    verbose_name = "關聯設定"
+    verbose_name_plural = "設定關聯對象 (設定本作衍生/接續自哪部作品)"
+    extra = 1
+    autocomplete_fields = ("object_work",)
+    classes = ["collapse"]
+
+
+class IncomingRelationInline(TabularInline):
+    model = WorkRelation
+    fk_name = "object_work"
+    verbose_name = "衍生紀錄"
+    verbose_name_plural = "相關衍生紀錄 (本作有哪些續集或衍生作)"
+    extra = 0
+    can_delete = False
+    readonly_fields = ("subject_work", "kind", "note")
+    classes = ["collapse"]
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 class PublicationAgentInline(TabularInline):
     model = PublicationAgent
     extra = 0
@@ -329,7 +354,14 @@ class WorkAdmin(ModelAdmin):
     )
     search_fields = ("title", "description", "contributions__agent__name", "contributions__agent__aliases__name")
     autocomplete_fields = ("cycle",)
-    inlines = [WorkAgentInline, WorkConceptInline, ManifestationInlineForWork, WorkCatalogueInlineForWork]
+    inlines = [
+        WorkAgentInline,
+        WorkConceptInline,
+        OutgoingRelationInline,
+        IncomingRelationInline,
+        ManifestationInlineForWork,
+        WorkCatalogueInlineForWork,
+    ]
     readonly_fields = ("created_at", "updated_at")
 
     def get_queryset(self, request):

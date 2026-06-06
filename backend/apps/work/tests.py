@@ -10,6 +10,7 @@ from apps.work.models import (
     CatalogueType,
     Manifestation,
     Publication,
+    RelationKind,
     Role,
     Work,
     WorkAgent,
@@ -17,6 +18,7 @@ from apps.work.models import (
     WorkConcept,
     WorkGenre,
     WorkLength,
+    WorkRelation,
 )
 from apps.work.services import get_byline, get_credits
 
@@ -111,3 +113,18 @@ def test_filter_by_catalogue_duplicate_entries_returns_distinct(api_client):
 @pytest.mark.parametrize("method, expected", [("get", 200), ("post", 403), ("put", 403), ("delete", 403)])
 def test_work_api_unauth_surface(api_client, method, expected):
     assert getattr(api_client, method)(reverse("work:work-list")).status_code == expected
+
+
+# Prevents: Unnormalized undirected relations bypassing the database unique constraint
+@pytest.mark.django_db
+def test_work_relation_undirected_normalization():
+    """Ensures undirected RELATED relations always save with subject_id < object_id to prevent mirroring duplicates."""
+    w1 = Work.objects.create(title="W1")
+    w2 = Work.objects.create(title="W2")
+
+    smaller, larger = (w1, w2) if w1.id < w2.id else (w2, w1)
+
+    rel1 = WorkRelation.objects.create(subject_work=larger, object_work=smaller, kind=RelationKind.RELATED)
+
+    assert rel1.subject_work_id == smaller.id
+    assert rel1.object_work_id == larger.id

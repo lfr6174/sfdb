@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import F, Q
 from django.utils import timezone
 
 from apps.core.models import TimeStampedModel
@@ -40,6 +41,15 @@ class DatePrecision(models.TextChoices):
     YEAR = "year", "年"
     MONTH = "month", "月"
     DAY = "day", "日"
+
+
+class RelationKind(models.TextChoices):
+    # Directed
+    BASED_ON = "based_on", "衍生 (主=衍生作, 受=原作)"
+    CONTINUES = "continues", "接續 (主=續作, 受=前作)"
+    HOMAGE = "homage", "致敬 (主=致敬作, 受=原作)"
+    # Undirected
+    RELATED = "related", "關聯 (無向，任填)"
 
 
 # --- Models ---
@@ -172,6 +182,63 @@ class Work(TimeStampedModel):
         super().clean()
         if self.cycle_order is not None and self.cycle_id is None:
             raise ValidationError({"cycle_order": "請先填寫所屬系列，再登記其順序。"})
+
+
+class WorkRelation(models.Model):
+    """
+    Represents a relationship between works.
+    - Directed: Have a distinct subject -> object direction.
+    - Undirected: Normalized on `save()` (`subject_work_id < object_work_id`) to prevent mirror duplicates.
+    """
+
+    subject_work = models.ForeignKey(
+        "Work",
+        on_delete=models.CASCADE,
+        related_name="rels_as_subject",
+        verbose_name="主詞作品",
+        help_text="發起關聯的作品。通常為續作或衍生作，例如同人誌。",
+    )
+    object_work = models.ForeignKey(
+        "Work",
+        on_delete=models.CASCADE,
+        related_name="rels_as_object",
+        verbose_name="受詞作品",
+        help_text="被關聯的作品。通常為前作或原作，例如《科學怪人》之於〈潘渡娜〉。",
+    )
+    kind = models.CharField(
+        max_length=20,
+        choices=RelationKind.choices,
+        verbose_name="關係",
+        help_text="定義這兩個作品間的關係。若為無向關係（如「關聯」），存檔時系統會自動標準化，無需在意主受詞順序。",
+    )
+    note = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="備註",
+        help_text="（選填）補充說明這段關係的細節，例如「致敬某某元素」、「參考某年某人訪談」等。",
+    )
+
+    class Meta:
+        verbose_name = "作品關聯"
+        verbose_name_plural = "作品關聯"
+        constraints = [
+            models.UniqueConstraint(fields=["subject_work", "object_work", "kind"], name="unique_work_relation"),
+            models.CheckConstraint(
+                condition=~Q(subject_work=F("object_work")), name="no_self_reference_work_relation"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.subject_work} -> {self.object_work}"
+
+    def save(self, *args, **kwargs):
+        # If undirected relation, enforce subject_id < object_id to prevent mirror duplicates
+        if self.kind == RelationKind.RELATED:
+            s_id = self.subject_work_id or 0
+            o_id = self.object_work_id or 0
+            if s_id > o_id:
+                self.subject_work_id, self.object_work_id = o_id, s_id
+        super().save(*args, **kwargs)
 
 
 class Role(models.Model):
