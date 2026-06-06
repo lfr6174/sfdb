@@ -7,7 +7,11 @@ import api from './api/axios'
 const showBanner = ref(false)
 const globalAnnouncement = ref('')
 
+// Global settings
+const siteSettings = ref<Record<string, string>>({})
+
 onMounted(async () => {
+  // Fetch banner
   try {
     const response = await api.get('/posts/active-pinned/')
     if (response.status === 200 && response.data) {
@@ -16,6 +20,19 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Failed to fetch active pinned post:', error)
+  }
+
+  try {
+    const response = await api.get('/settings/')
+    if (response.status === 200 && response.data?.results) {
+      const settingsMap: Record<string, string> = {}
+      response.data.results.forEach((s: { key: string; value: string }) => {
+        settingsMap[s.key] = s.value
+      })
+      siteSettings.value = settingsMap
+    }
+  } catch (error) {
+    console.error('Failed to fetch site settings:', error)
   }
 })
 </script>
@@ -80,6 +97,24 @@ onMounted(async () => {
 
         <!-- Right: Page Links -->
         <div class="flex gap-6">
+          <a
+            v-if="siteSettings['submit_data_url']"
+            :href="siteSettings['submit_data_url']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-main transition-colors"
+          >
+            貢獻資料
+          </a>
+          <a
+            v-if="siteSettings['feedback_url']"
+            :href="siteSettings['feedback_url']"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-main transition-colors"
+          >
+            問題回報
+          </a>
           <router-link
             to="/pages/about"
             class="hover:text-main transition-colors"
