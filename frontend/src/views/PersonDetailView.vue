@@ -7,6 +7,7 @@ import HoverListItem from '../components/HoverListItem.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { fetchPersonDetail } from '../api/persons'
 import { useApiDetail } from '../composables/useApiDetail'
+import { getYearRange } from '../utils/formatters'
 
 const { data: person, isLoading } = useApiDetail((params) => fetchPersonDetail(params.id as string))
 useDocumentTitle(() => person.value?.name)
@@ -16,14 +17,9 @@ const totalWorksCount = computed(() => {
 })
 
 const activeYears = computed(() => {
-  if (!person.value?.participated_works || person.value.participated_works.length === 0) return '—'
-  const years = person.value.participated_works
-    .map((w: any) => parseInt(w.year))
-    .filter((y: number) => !isNaN(y))
-  if (years.length === 0) return '—'
-  const min = Math.min(...years)
-  const max = Math.max(...years)
-  return min === max ? `${min}` : `${min} — ${max}`
+  const range = getYearRange(person.value?.participated_works || [])
+  if (range.min === null) return '—'
+  return range.min === range.max ? `${range.min}` : `${range.min} — ${range.max}`
 })
 
 const personAwards = computed(() => {

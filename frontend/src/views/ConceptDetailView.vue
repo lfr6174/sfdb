@@ -8,6 +8,7 @@ import SectionTitle from '../components/SectionTitle.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { fetchConceptDetail } from '../api/concepts'
 import { useApiDetail } from '../composables/useApiDetail'
+import { getYearRange } from '../utils/formatters'
 
 const route = useRoute()
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
@@ -32,23 +33,7 @@ const validWorkConcepts = computed(() => {
   )
 })
 
-const earliestYear = computed(() => {
-  if (!concept.value?.work_concepts || concept.value.work_concepts.length === 0) return '—'
-  const years = concept.value.work_concepts
-    .map((w: any) => parseInt(w.year))
-    .filter((y: number) => !isNaN(y))
-  if (years.length === 0) return '—'
-  return Math.min(...years)
-})
-
-const latestYear = computed(() => {
-  if (!concept.value?.work_concepts || concept.value.work_concepts.length === 0) return '—'
-  const years = concept.value.work_concepts
-    .map((w: any) => parseInt(w.year))
-    .filter((y: number) => !isNaN(y))
-  if (years.length === 0) return '—'
-  return Math.max(...years)
-})
+const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []))
 
 // Refetch data to handle same-route navigation
 watch(
@@ -196,9 +181,9 @@ watch(
           <div>
             <SectionTitle class="mb-2">出現年份</SectionTitle>
             <div class="flex items-baseline gap-2">
-              <span class="text-main text-base">{{ earliestYear }}</span>
+              <span class="text-main text-base">{{ yearRange.min ?? '—' }}</span>
               <span class="text-main/30 text-xs">—</span>
-              <span class="text-main text-base">{{ latestYear }}</span>
+              <span class="text-main text-base">{{ yearRange.max ?? '—' }}</span>
             </div>
           </div>
 
