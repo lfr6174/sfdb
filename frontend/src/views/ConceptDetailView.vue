@@ -14,15 +14,16 @@ const route = useRoute()
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
 const isExamplesExpanded = ref(false)
 
-const {
-  data: concept,
-  isLoading,
-  refetch,
-} = useApiDetail((params) => fetchConceptDetail(params.slug as string), {
-  onRefetch: () => {
-    isExamplesExpanded.value = false
+const { data: concept, isLoading } = useApiDetail(
+  (params) => fetchConceptDetail(params.slug as string),
+  {
+    onRefetch: () => {
+      isExamplesExpanded.value = false
+      clearRevealedSpoilers()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
   },
-})
+)
 
 useDocumentTitle(() => concept.value?.name)
 
@@ -34,18 +35,6 @@ const validWorkConcepts = computed(() => {
 })
 
 const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []))
-
-// Refetch data to handle same-route navigation
-watch(
-  () => route.params.slug,
-  (newSlug, oldSlug) => {
-    if (newSlug && newSlug !== oldSlug) {
-      clearRevealedSpoilers()
-      refetch()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  },
-)
 </script>
 
 <template>
