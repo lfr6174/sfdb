@@ -11,6 +11,7 @@ import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import FilterChip from '../components/FilterChip.vue'
 import ConceptPickerModal from '../components/ConceptPickerModal.vue'
+import CheckboxGroup from '../components/CheckboxGroup.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER, DEFAULT_PAGE_SIZE } from '../utils/constants'
@@ -240,45 +241,13 @@ const changePage = (dir: number) => {
       <!-- Genre Type -->
       <div class="mb-6">
         <SectionTitle class="mb-3">作品體裁</SectionTitle>
-        <div class="flex flex-col gap-2">
-          <label
-            v-for="opt in GENRE_OPTIONS"
-            :key="opt.value"
-            class="group flex cursor-pointer items-center gap-2"
-          >
-            <input
-              v-model="selectedGenres"
-              type="checkbox"
-              :value="opt.value"
-              class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-            />
-            <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
-              {{ opt.label }}
-            </span>
-          </label>
-        </div>
+        <CheckboxGroup v-model="selectedGenres" :options="GENRE_OPTIONS" />
       </div>
 
       <!-- Work Length -->
       <div class="mb-6">
         <SectionTitle class="mb-3">作品篇幅</SectionTitle>
-        <div class="flex flex-col gap-2">
-          <label
-            v-for="opt in LENGTH_OPTIONS"
-            :key="opt.value"
-            class="group flex cursor-pointer items-center gap-2"
-          >
-            <input
-              v-model="selectedLengths"
-              type="checkbox"
-              :value="opt.value"
-              class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-            />
-            <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
-              {{ opt.label }}
-            </span>
-          </label>
-        </div>
+        <CheckboxGroup v-model="selectedLengths" :options="LENGTH_OPTIONS" />
       </div>
 
       <!-- Concept Tags -->
@@ -434,23 +403,7 @@ const changePage = (dir: number) => {
               >
                 作品體裁
               </label>
-              <div class="flex flex-wrap gap-x-5 gap-y-2">
-                <label
-                  v-for="opt in GENRE_OPTIONS"
-                  :key="opt.value"
-                  class="group flex cursor-pointer items-center gap-2"
-                >
-                  <input
-                    v-model="selectedGenres"
-                    type="checkbox"
-                    :value="opt.value"
-                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-                  />
-                  <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
-                    {{ opt.label }}
-                  </span>
-                </label>
-              </div>
+              <CheckboxGroup v-model="selectedGenres" :options="GENRE_OPTIONS" layout-class="flex flex-wrap gap-x-5 gap-y-2" />
             </div>
             <div>
               <label
@@ -458,23 +411,7 @@ const changePage = (dir: number) => {
               >
                 作品篇幅
               </label>
-              <div class="flex flex-wrap gap-x-5 gap-y-2">
-                <label
-                  v-for="opt in LENGTH_OPTIONS"
-                  :key="opt.value"
-                  class="group flex cursor-pointer items-center gap-2"
-                >
-                  <input
-                    v-model="selectedLengths"
-                    type="checkbox"
-                    :value="opt.value"
-                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-                  />
-                  <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
-                    {{ opt.label }}
-                  </span>
-                </label>
-              </div>
+              <CheckboxGroup v-model="selectedLengths" :options="LENGTH_OPTIONS" layout-class="flex flex-wrap gap-x-5 gap-y-2" />
             </div>
           </div>
 
