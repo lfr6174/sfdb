@@ -73,7 +73,7 @@ const fetchAllConcepts = async () => {
 const fetchWorks = async () => {
   isLoading.value = true
   try {
-    const params: Record<string, any> = {
+    const params: Record<string, string | number | boolean> = {
       page: currentPage.value,
       ordering: ordering.value,
     }
@@ -156,7 +156,7 @@ const leftPanelConcepts = computed(() => {
 })
 
 // Methods
-const toggleConcept = (concept: any) => {
+const toggleConcept = (concept: Concept) => {
   const index = selectedConcepts.value.findIndex((c) => c.id === concept.id)
   if (index === -1) {
     selectedConcepts.value.push(concept)
@@ -227,7 +227,7 @@ const changePage = (dir: number) => {
           <BaseSearchInput
             v-model="searchQuery"
             placeholder="搜尋標題、作者…"
-            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pl-6 pr-8 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
           />
           <div class="mt-2 flex justify-start">
             <button
@@ -274,6 +274,7 @@ const changePage = (dir: number) => {
               >
                 <input
                   type="checkbox"
+                  name="selected-concept"
                   :checked="true"
                   class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                   @change="toggleConcept(concept)"
@@ -294,6 +295,7 @@ const changePage = (dir: number) => {
               >
                 <input
                   type="checkbox"
+                  name="featured-concept"
                   :checked="false"
                   class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                   @change="toggleConcept(concept)"
@@ -322,7 +324,7 @@ const changePage = (dir: number) => {
             <BaseSearchInput
               v-model="searchQuery"
               placeholder="搜尋標題、作者…"
-              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pl-6 pr-8 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
             />
           </div>
           <button
@@ -378,8 +380,9 @@ const changePage = (dir: number) => {
               <input
                 v-model="searchQuery"
                 type="text"
+                name="search"
                 placeholder="標題、作者、筆名等"
-                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2"
               />
             </div>
 
@@ -391,15 +394,17 @@ const changePage = (dir: number) => {
                 <input
                   v-model="yearMin"
                   type="number"
+                  name="year-min"
                   placeholder="YYYY"
-                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2"
                 />
                 <span class="text-main/40 shrink-0 text-xs">至</span>
                 <input
                   v-model="yearMax"
                   type="number"
+                  name="year-max"
                   placeholder="YYYY"
-                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2"
                 />
               </div>
             </div>
@@ -455,6 +460,7 @@ const changePage = (dir: number) => {
                   {{ concept.name }}
                   <button
                     class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
+                    :aria-label="`移除 ${concept.name}`"
                     @click.stop="toggleConcept(concept)"
                   >
                     &times;
@@ -575,8 +581,19 @@ const changePage = (dir: number) => {
             v-else-if="works.length === 0"
             class="flex flex-col items-center gap-2 py-16 text-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" class="text-main/15 h-10 w-10">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.2"
+              stroke="currentColor"
+              class="text-main/15 h-10 w-10"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"
+              />
             </svg>
             <span class="text-main/35 text-sm">找不到符合條件的作品。</span>
           </div>

@@ -64,7 +64,7 @@ const groupedConcepts = computed(() => {
   })
 
   // Skip empty groups
-  return Object.fromEntries(Object.entries(groups).filter(([_, concepts]) => concepts.length > 0))
+  return Object.fromEntries(Object.entries(groups).filter(([, concepts]) => concepts.length > 0))
 })
 </script>
 <template>
@@ -75,7 +75,7 @@ const groupedConcepts = computed(() => {
         <BaseSearchInput
           v-model="searchQuery"
           placeholder="搜尋概念名稱…"
-          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent py-1.5 pl-6 pr-8 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-1.5 pr-8 pl-6 text-sm transition-colors outline-none focus-visible:outline-2"
         />
       </div>
       <div class="relative w-28 shrink-0">

@@ -19,12 +19,12 @@ const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
 
 // Map relational objects to simple concept objects for the tag list component
 const plainConcepts = computed(() => {
-  return work.value?.work_concepts?.map((wc: any) => wc.concept) || []
+  return work.value?.work_concepts?.map((wc) => wc.concept) || []
 })
 
 const conceptDescriptions = computed(() => {
   if (!work.value?.work_concepts) return []
-  return work.value.work_concepts.filter((wc: any) => !!wc.description)
+  return work.value.work_concepts.filter((wc) => !!wc.description)
 })
 
 const sortedCatalogues = computed(() => {

@@ -52,7 +52,7 @@ const modalGroupedConcepts = computed(() => {
   const query = modalSearchQuery.value.toLowerCase()
   const filtered = mappedConcepts.value.filter((c) => c.name.toLowerCase().includes(query))
 
-  const grouped: Record<string, any[]> = {}
+  const grouped: Record<string, (Concept & { mappedCategory: string })[]> = {}
   CONCEPT_CATEGORY_ORDER.forEach((cat) => (grouped[cat] = []))
 
   filtered.forEach((c) => {
@@ -62,7 +62,7 @@ const modalGroupedConcepts = computed(() => {
   })
 
   for (const cat in grouped) {
-    grouped[cat].sort((a, b: any) => a.name.localeCompare(b.name))
+    grouped[cat].sort((a, b) => a.name.localeCompare(b.name))
   }
   return grouped
 })
@@ -89,7 +89,7 @@ const apply = () => {
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+    class="focus-visible:outline-primary/50 fixed inset-0 z-50 flex items-center justify-center p-4 outline-none focus-visible:outline-2 sm:p-6"
     tabindex="0"
     @keydown.esc="$emit('close')"
   >
@@ -116,7 +116,7 @@ const apply = () => {
           ref="searchInputRef"
           v-model="modalSearchQuery"
           placeholder="搜尋標籤…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pl-6 pr-8 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
           @escape="$emit('close')"
         />
 
@@ -164,6 +164,7 @@ const apply = () => {
                 >
                   <input
                     type="checkbox"
+                    name="concept"
                     :checked="tempSelectedConcepts.some((c) => c.id === concept.id)"
                     class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                     @change="toggleTempConcept(concept)"

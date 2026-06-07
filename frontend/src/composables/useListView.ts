@@ -10,8 +10,13 @@ export interface PaginatedResponse<T> {
 }
 
 export function useListView<T>(
-  fetchFn: (params: Record<string, any>) => Promise<{ data: PaginatedResponse<T> }>,
-  options?: { defaultOrdering?: string; extraParams?: () => Record<string, any> },
+  fetchFn: (
+    params: Record<string, string | number | boolean>,
+  ) => Promise<{ data: PaginatedResponse<T> }>,
+  options?: {
+    defaultOrdering?: string
+    extraParams?: () => Record<string, string | number | boolean>
+  },
 ) {
   const items = ref<T[]>([]) as import('vue').Ref<T[]>
   const isLoading = ref(false)
@@ -26,7 +31,7 @@ export function useListView<T>(
   const fetch = async () => {
     isLoading.value = true
     try {
-      const params: Record<string, any> = {
+      const params: Record<string, string | number | boolean> = {
         page: currentPage.value,
         ordering: ordering.value,
         ...(options?.extraParams?.() || {}),

@@ -160,6 +160,7 @@ onMounted(async () => {
     <!-- Scroll-to-top Button -->
     <button
       v-show="showScrollTop"
+      aria-label="回到頂部"
       class="bg-main/10 text-main/50 hover:bg-primary hover:text-bg fixed right-8 bottom-8 z-40 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all duration-200"
       @click="scrollToTop"
     >

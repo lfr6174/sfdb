@@ -27,11 +27,11 @@ const activeYears = computed(() => {
 
 const personAwards = computed(() => {
   if (!person.value?.participated_works) return []
-  const awardsMap = new Map<number, any>()
+  const awardsMap = new Map<string, { id: string; title: string; count: number }>()
 
-  person.value.participated_works.forEach((w: any) => {
+  person.value.participated_works.forEach((w) => {
     if (w.awards && w.awards.length > 0) {
-      w.awards.forEach((award: any) => {
+      w.awards.forEach((award) => {
         if (!awardsMap.has(award.title)) {
           awardsMap.set(award.title, {
             id: award.title,
@@ -39,7 +39,7 @@ const personAwards = computed(() => {
             count: 0,
           })
         }
-        awardsMap.get(award.title).count += 1
+        awardsMap.get(award.title)!.count += 1
       })
     }
   })
@@ -143,8 +143,19 @@ const personAwards = computed(() => {
               v-else
               class="flex flex-col items-center gap-2 py-10 text-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" class="text-main/15 h-10 w-10">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.2"
+                stroke="currentColor"
+                class="text-main/15 h-10 w-10"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"
+                />
               </svg>
               <span class="text-main/35 text-sm">尚無關聯的歷年作品。</span>
             </div>

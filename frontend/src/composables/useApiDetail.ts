@@ -1,5 +1,6 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { AxiosError } from 'axios'
 
 export function useApiDetail<T>(
   fetchFn: (params: Record<string, string | string[]>) => Promise<{ data: T }>,
@@ -22,9 +23,9 @@ export function useApiDetail<T>(
       }
       const response = await fetchFn(route.params)
       data.value = response.data
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch details:', error)
-      if (error.response?.status === 404) {
+      if (error instanceof AxiosError && error.response?.status === 404) {
         router.replace({
           name: 'not-found',
           params: { pathMatch: route.path.substring(1).split('/') },

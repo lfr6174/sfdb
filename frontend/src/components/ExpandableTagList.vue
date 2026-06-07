@@ -4,7 +4,7 @@ import ConceptTag from './ConceptTag.vue'
 
 const props = withDefaults(
   defineProps<{
-    concepts: any[]
+    concepts: { name: string; slug: string; works_count?: number }[]
     limit?: number
   }>(),
   {

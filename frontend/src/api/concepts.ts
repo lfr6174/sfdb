@@ -1,7 +1,7 @@
 import api from './axios'
 import type { PaginatedResponse, Concept } from '../types'
 
-export function fetchConcepts(params?: Record<string, any>) {
+export function fetchConcepts(params?: Record<string, string | number | boolean>) {
   return api.get<PaginatedResponse<Concept>>('/concepts/', { params })
 }
 

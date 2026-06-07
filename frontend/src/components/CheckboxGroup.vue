@@ -22,6 +22,7 @@ defineEmits<{ 'update:modelValue': [val: string[]] }>()
     >
       <input
         type="checkbox"
+        :name="opt.value"
         :value="opt.value"
         :checked="modelValue.includes(opt.value)"
         class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"

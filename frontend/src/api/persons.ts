@@ -1,7 +1,7 @@
 import api from './axios'
 import type { PaginatedResponse, Person } from '../types'
 
-export function fetchPersons(params?: Record<string, any>) {
+export function fetchPersons(params?: Record<string, string | number | boolean>) {
   return api.get<PaginatedResponse<Person>>('/persons/', { params })
 }
 

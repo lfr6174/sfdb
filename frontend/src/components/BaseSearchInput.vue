@@ -49,6 +49,7 @@ export default {
       ref="inputRef"
       v-model="model"
       type="text"
+      name="search"
       v-bind="$attrs"
       @keydown.esc.stop="handleEscape"
     />
