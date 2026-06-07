@@ -392,7 +392,6 @@ class PublicationAdmin(ModelAdmin):
         "get_contributions_display",
         "source",
         "media",
-        "get_works_display",
         "series",
         "series_order",
         "publisher",
@@ -423,18 +422,7 @@ class PublicationAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related("publisher", "series").prefetch_related(
-            "contributions__agent", "contributions__role", "works"
-        )
-
-    def get_works_display(self, obj):
-        works = obj.works.all()[:3]
-        display = "、".join([w.title for w in works])
-        if obj.works.count() > 3:
-            display += "..."
-        return display or "-"
-
-    get_works_display.short_description = "收錄紀錄"
+        return qs.select_related("publisher", "series").prefetch_related("contributions__agent", "contributions__role")
 
     def get_contributions_display(self, obj):
         contributions = obj.contributions.all()
