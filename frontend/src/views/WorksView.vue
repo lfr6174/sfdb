@@ -10,6 +10,7 @@ import SortSelect from '../components/SortSelect.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import FilterChip from '../components/FilterChip.vue'
+import ConceptPickerModal from '../components/ConceptPickerModal.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER, DEFAULT_PAGE_SIZE } from '../utils/constants'
@@ -48,8 +49,6 @@ const hasPrev = ref(false)
 
 const allConcepts = ref<Concept[]>([])
 const isModalOpen = ref(false)
-const tempSelectedConcepts = ref<Concept[]>([])
-const modalSearchQuery = ref('')
 
 const isAdvancedMode = ref(false)
 
@@ -154,26 +153,6 @@ const leftPanelConcepts = computed(() => {
     .sort((a, b) => (a.featured_order || 0) - (b.featured_order || 0))
 })
 
-// Modal concepts grouped and filtered by modal search
-const modalGroupedConcepts = computed(() => {
-  const query = modalSearchQuery.value.toLowerCase()
-  const filtered = mappedConcepts.value.filter((c) => c.name.toLowerCase().includes(query))
-
-  const grouped: Record<string, any[]> = {}
-  CONCEPT_CATEGORY_ORDER.forEach((cat) => (grouped[cat] = []))
-
-  filtered.forEach((c) => {
-    if (grouped[c.mappedCategory]) {
-      grouped[c.mappedCategory].push(c)
-    }
-  })
-
-  for (const cat in grouped) {
-    grouped[cat].sort((a, b) => a.name.localeCompare(b.name))
-  }
-  return grouped
-})
-
 // Methods
 const toggleConcept = (concept: any) => {
   const index = selectedConcepts.value.findIndex((c) => c.id === concept.id)
@@ -185,27 +164,11 @@ const toggleConcept = (concept: any) => {
 }
 
 const openModal = () => {
-  tempSelectedConcepts.value = [...selectedConcepts.value]
-  modalSearchQuery.value = ''
   isModalOpen.value = true
 }
 
 // FIX: was calling undefined closeModal — now correctly closes the modal
 const closeModal = () => {
-  isModalOpen.value = false
-}
-
-const toggleTempConcept = (concept: any) => {
-  const index = tempSelectedConcepts.value.findIndex((c) => c.id === concept.id)
-  if (index === -1) {
-    tempSelectedConcepts.value.push(concept)
-  } else {
-    tempSelectedConcepts.value.splice(index, 1)
-  }
-}
-
-const applyModalConcepts = () => {
-  selectedConcepts.value = [...tempSelectedConcepts.value]
   isModalOpen.value = false
 }
 
@@ -221,8 +184,6 @@ const clearAllFilters = () => {
   selectedConcepts.value = []
   yearMin.value = ''
   yearMax.value = ''
-  tempSelectedConcepts.value = []
-  modalSearchQuery.value = ''
   if (route.query.publication || route.query.catalogue) {
     const query = { ...route.query }
     delete query.publication
@@ -743,108 +704,10 @@ const changePage = (dir: number) => {
   </div>
 
   <!-- ══ Concept Modal ══ -->
-  <div
-    v-if="isModalOpen"
-    class="bg-main/40 fixed inset-0 z-50 flex items-center justify-center p-4"
-    @click.self="closeModal"
-  >
-    <div
-      class="bg-bg border-main/10 flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden border"
-    >
-      <!-- Modal Header -->
-      <div class="border-main/10 shrink-0 border-b px-6 pt-6 pb-5">
-        <div class="mb-5 flex items-center justify-between">
-          <h2 class="text-main text-xl font-normal">選取概念標籤</h2>
-          <button
-            class="text-main/40 border-main/10 hover:text-primary hover:border-primary/30 border px-3 py-1 text-sm transition-colors"
-            @click="closeModal"
-          >
-            取消
-          </button>
-        </div>
-
-        <input
-          v-model="modalSearchQuery"
-          type="text"
-          placeholder="搜尋標籤…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-        />
-
-        <!-- Selected in modal -->
-        <div class="mt-4 flex min-h-[28px] flex-wrap items-center gap-1.5">
-          <span class="text-main/40 mr-1 shrink-0 text-sm font-medium tracking-widest uppercase">
-            已選取
-          </span>
-          <span
-            v-if="tempSelectedConcepts.length === 0"
-            class="text-main/30 text-xs"
-          >
-            —
-          </span>
-          <span
-            v-for="concept in tempSelectedConcepts"
-            :key="concept.id"
-            class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-          >
-            {{ concept.name }}
-            <button
-              class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-              @click="toggleTempConcept(concept)"
-            >
-              &times;
-            </button>
-          </span>
-        </div>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="flex-1 overflow-y-auto px-6 py-5">
-        <div class="space-y-8">
-          <div
-            v-for="cat in CONCEPT_CATEGORY_ORDER"
-            :key="cat"
-          >
-            <template v-if="modalGroupedConcepts[cat]?.length > 0">
-              <SectionTitle class="mb-4">{{ cat }}</SectionTitle>
-              <div class="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2 md:grid-cols-3">
-                <label
-                  v-for="concept in modalGroupedConcepts[cat]"
-                  :key="concept.id"
-                  class="group hover:bg-primary/5 flex cursor-pointer items-center gap-2 px-2 py-1.5 transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    :checked="tempSelectedConcepts.some((c) => c.id === concept.id)"
-                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-                    @change="toggleTempConcept(concept)"
-                  />
-                  <span
-                    class="text-main/60 group-hover:text-primary truncate text-sm transition-colors"
-                  >
-                    {{ concept.name }}
-                  </span>
-                </label>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="border-main/10 flex shrink-0 justify-end gap-3 border-t px-6 py-4">
-        <button
-          class="text-main/50 hover:text-primary px-3 py-1.5 text-xs transition-colors"
-          @click="clearAllFilters"
-        >
-          清除條件
-        </button>
-        <button
-          class="text-bg bg-primary px-4 py-1.5 text-xs font-medium transition-opacity hover:opacity-85"
-          @click="applyModalConcepts"
-        >
-          套用篩選
-        </button>
-      </div>
-    </div>
-  </div>
+  <ConceptPickerModal
+    v-model="selectedConcepts"
+    :all-concepts="allConcepts"
+    :open="isModalOpen"
+    @close="closeModal"
+  />
 </template>
