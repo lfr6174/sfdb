@@ -162,7 +162,12 @@ const personAwards = computed(() => {
                 </span>
 
                 <div class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <span class="text-main text-base font-medium">{{ pub.title }}</span>
+                  <router-link
+                    :to="{ path: '/works', query: { publication: pub.id, publication_title: pub.title } }"
+                    class="text-main hover:text-primary text-base font-medium no-underline transition-colors"
+                  >
+                    {{ pub.title }}
+                  </router-link>
                 </div>
                 <div>
                   <span
