@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Concept } from '../types'
@@ -8,7 +8,7 @@ import ConceptTag from '../components/ConceptTag.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
 
-useDocumentTitle('概念探索')
+useDocumentMeta('概念探索', '')
 
 const allConcepts = ref<Concept[]>([])
 const isLoading = ref(true)

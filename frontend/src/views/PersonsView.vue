@@ -4,11 +4,11 @@ import type { Person } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { useListView } from '../composables/useListView'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 
-useDocumentTitle('人物列表')
+useDocumentMeta('人物列表', '')
 
 const {
   items: persons,

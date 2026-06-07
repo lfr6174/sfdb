@@ -11,9 +11,9 @@ import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import HoverListItem from '../components/HoverListItem.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 
-useDocumentTitle(null)
+useDocumentMeta(null, '')
 
 const works = ref<Work[]>([])
 const isLoading = ref(true)

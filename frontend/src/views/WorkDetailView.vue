@@ -5,12 +5,15 @@ import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchWorkDetail } from '../api/works'
 import { useApiDetail } from '../composables/useApiDetail'
 
 const { data: work, isLoading } = useApiDetail((params) => fetchWorkDetail(params.id as string))
-useDocumentTitle(() => work.value?.title)
+useDocumentMeta(
+  () => work.value?.title,
+  () => work.value?.description?.slice(0, 160),
+)
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
 

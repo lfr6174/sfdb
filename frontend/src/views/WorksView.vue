@@ -14,10 +14,10 @@ import ConceptPickerModal from '../components/ConceptPickerModal.vue'
 import CheckboxGroup from '../components/CheckboxGroup.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useDebounceFn } from '../composables/useDebounce'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { CONCEPT_CATEGORY_MAP, DEFAULT_PAGE_SIZE } from '../utils/constants'
 
-useDocumentTitle('作品列表')
+useDocumentMeta('作品列表', '')
 
 // Filter Constants
 const GENRE_OPTIONS = [

@@ -4,13 +4,16 @@ import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import HoverListItem from '../components/HoverListItem.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchPersonDetail } from '../api/persons'
 import { useApiDetail } from '../composables/useApiDetail'
 import { getYearRange } from '../utils/formatters'
 
 const { data: person, isLoading } = useApiDetail((params) => fetchPersonDetail(params.id as string))
-useDocumentTitle(() => person.value?.name)
+useDocumentMeta(
+  () => person.value?.name,
+  () => person.value?.brief_intro?.slice(0, 160),
+)
 
 const totalWorksCount = computed(() => {
   return person.value?.participated_works?.length || 0

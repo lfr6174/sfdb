@@ -5,11 +5,11 @@ import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { formatDate } from '../utils/formatters'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useListView } from '../composables/useListView'
 
-useDocumentTitle('最新資訊')
+useDocumentMeta('最新資訊', '')
 
 const {
   items: posts,

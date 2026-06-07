@@ -4,7 +4,7 @@ import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchConceptDetail } from '../api/concepts'
 import { useApiDetail } from '../composables/useApiDetail'
 import { getYearRange } from '../utils/formatters'
@@ -23,7 +23,10 @@ const { data: concept, isLoading } = useApiDetail(
   },
 )
 
-useDocumentTitle(() => concept.value?.name)
+useDocumentMeta(
+  () => concept.value?.name,
+  () => concept.value?.description?.slice(0, 160),
+)
 
 const validWorkConcepts = computed(() => {
   if (!concept.value?.work_concepts) return []

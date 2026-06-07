@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchPageDetail } from '../api/pages'
 import { useApiDetail } from '../composables/useApiDetail'
 
@@ -10,7 +10,10 @@ const {
   isLoading,
   hasError,
 } = useApiDetail((params) => fetchPageDetail(params.slug as string))
-useDocumentTitle(() => pageData.value?.title)
+useDocumentMeta(
+  () => pageData.value?.title,
+  () => pageData.value?.content?.slice(0, 160),
+)
 </script>
 
 <template>

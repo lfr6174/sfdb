@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 
-useDocumentTitle('404 找不到頁面')
+useDocumentMeta('404 找不到頁面', '')
 </script>
 
 <template>

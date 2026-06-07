@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
-import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchPostDetail } from '../api/posts'
 import { useApiDetail } from '../composables/useApiDetail'
 
 const { data: post, isLoading } = useApiDetail((params) => fetchPostDetail(params.id as string))
-useDocumentTitle(() => post.value?.title)
+useDocumentMeta(
+  () => post.value?.title,
+  () => post.value?.content?.slice(0, 160),
+)
 </script>
 
 <template>
