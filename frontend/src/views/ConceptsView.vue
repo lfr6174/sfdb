@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Concept } from '../types'
 import ConceptTag from '../components/ConceptTag.vue'
@@ -70,30 +71,11 @@ const groupedConcepts = computed(() => {
   <div class="mx-auto max-w-4xl">
     <!-- ── Controls ── -->
     <div class="flex flex-col justify-between gap-4 pt-6 md:flex-row md:items-center md:pt-10">
-      <div class="relative w-full md:w-56">
-        <svg
-          class="text-main/30 pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle
-            cx="11"
-            cy="11"
-            r="8"
-          />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
-        <input
+      <div class="w-full md:w-56">
+        <BaseSearchInput
           v-model="searchQuery"
-          type="text"
           placeholder="搜尋概念名稱…"
-          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent py-1.5 pr-0 pl-6 text-sm transition-colors outline-none"
+          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent py-1.5 pr-8 pl-6 text-sm transition-colors outline-none"
         />
       </div>
       <div class="relative w-28 shrink-0">

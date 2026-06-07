@@ -163,8 +163,18 @@ onMounted(async () => {
       class="bg-main/10 text-main/50 hover:bg-primary hover:text-bg fixed right-8 bottom-8 z-40 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all duration-200"
       @click="scrollToTop"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m18 15-6-6-6 6"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m18 15-6-6-6 6" />
       </svg>
     </button>
   </div>

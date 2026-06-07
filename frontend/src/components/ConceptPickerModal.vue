@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import SectionTitle from './SectionTitle.vue'
+import BaseSearchInput from './BaseSearchInput.vue'
 import { CONCEPT_CATEGORY_ORDER, CONCEPT_CATEGORY_MAP } from '../utils/constants'
 import type { Concept } from '../types'
 
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 
 const tempSelectedConcepts = ref<Concept[]>([])
 const modalSearchQuery = ref('')
+const searchInputRef = ref<InstanceType<typeof BaseSearchInput> | null>(null)
 
 // Sync modal state when it opens
 watch(
@@ -25,6 +27,9 @@ watch(
     if (isOpen) {
       tempSelectedConcepts.value = [...props.modelValue]
       modalSearchQuery.value = ''
+      nextTick(() => {
+        searchInputRef.value?.focus()
+      })
     }
   },
 )
@@ -77,7 +82,9 @@ const apply = () => {
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 outline-none sm:p-6"
+    tabindex="0"
+    @keydown.esc="$emit('close')"
   >
     <div
       class="bg-main/20 absolute inset-0 backdrop-blur-sm"
@@ -98,32 +105,13 @@ const apply = () => {
           </button>
         </div>
 
-        <div class="relative">
-          <svg
-            class="text-main/30 pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle
-              cx="11"
-              cy="11"
-              r="8"
-            />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            v-model="modalSearchQuery"
-            type="text"
-            placeholder="搜尋標籤…"
-            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-0 pl-6 text-base transition-colors outline-none"
-          />
-        </div>
+        <BaseSearchInput
+          ref="searchInputRef"
+          v-model="modalSearchQuery"
+          placeholder="搜尋標籤…"
+          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none"
+          @escape="$emit('close')"
+        />
 
         <!-- Selected in modal -->
         <div class="mt-4 flex min-h-[28px] flex-wrap items-center gap-1.5">

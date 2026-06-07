@@ -31,7 +31,9 @@ watch(
             to="/concepts"
             :class="[
               'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
-              route.path.startsWith('/concepts') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+              route.path.startsWith('/concepts')
+                ? 'border-primary text-primary'
+                : 'text-main/60 border-transparent',
             ]"
           >
             概念
@@ -40,7 +42,9 @@ watch(
             to="/works"
             :class="[
               'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
-              route.path.startsWith('/works') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+              route.path.startsWith('/works')
+                ? 'border-primary text-primary'
+                : 'text-main/60 border-transparent',
             ]"
           >
             作品
@@ -49,7 +53,9 @@ watch(
             to="/persons"
             :class="[
               'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
-              route.path.startsWith('/persons') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+              route.path.startsWith('/persons')
+                ? 'border-primary text-primary'
+                : 'text-main/60 border-transparent',
             ]"
           >
             人物
@@ -58,7 +64,9 @@ watch(
             to="/pages/about"
             :class="[
               'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
-              route.path.startsWith('/pages/about') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+              route.path.startsWith('/pages/about')
+                ? 'border-primary text-primary'
+                : 'text-main/60 border-transparent',
             ]"
           >
             關於
@@ -143,7 +151,7 @@ watch(
           to="/concepts"
           :class="[
             'hover:text-primary text-lg font-medium transition-colors',
-            route.path.startsWith('/concepts') ? 'text-primary' : 'text-main/70'
+            route.path.startsWith('/concepts') ? 'text-primary' : 'text-main/70',
           ]"
         >
           概念
@@ -152,7 +160,7 @@ watch(
           to="/works"
           :class="[
             'hover:text-primary text-lg font-medium transition-colors',
-            route.path.startsWith('/works') ? 'text-primary' : 'text-main/70'
+            route.path.startsWith('/works') ? 'text-primary' : 'text-main/70',
           ]"
         >
           作品
@@ -161,7 +169,7 @@ watch(
           to="/persons"
           :class="[
             'hover:text-primary text-lg font-medium transition-colors',
-            route.path.startsWith('/persons') ? 'text-primary' : 'text-main/70'
+            route.path.startsWith('/persons') ? 'text-primary' : 'text-main/70',
           ]"
         >
           人物
@@ -170,7 +178,7 @@ watch(
           to="/pages/about"
           :class="[
             'hover:text-primary text-lg font-medium transition-colors',
-            route.path.startsWith('/pages/about') ? 'text-primary' : 'text-main/70'
+            route.path.startsWith('/pages/about') ? 'text-primary' : 'text-main/70',
           ]"
         >
           關於
