@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import SectionTitle from './SectionTitle.vue'
 import BaseSearchInput from './BaseSearchInput.vue'
 import { CONCEPT_CATEGORY_ORDER, CONCEPT_CATEGORY_MAP } from '../utils/constants'
@@ -27,12 +27,19 @@ watch(
     if (isOpen) {
       tempSelectedConcepts.value = [...props.modelValue]
       modalSearchQuery.value = ''
+      document.body.style.overflow = 'hidden' // Lock background scroll
       nextTick(() => {
         searchInputRef.value?.focus()
       })
+    } else {
+      document.body.style.overflow = '' // Restore background scroll
     }
   },
 )
+
+onUnmounted(() => {
+  document.body.style.overflow = '' // Safety cleanup
+})
 
 const mappedConcepts = computed(() => {
   return props.allConcepts.map((c) => ({
