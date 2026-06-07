@@ -10,6 +10,7 @@ import type { Work, Concept, Post } from '../types'
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
+import HoverListItem from '../components/HoverListItem.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 
 useDocumentTitle(null)
@@ -145,22 +146,12 @@ onMounted(async () => {
           v-else-if="works.length > 0"
           class="flex flex-col"
         >
-          <router-link
+          <HoverListItem
             v-for="work in works"
             :key="work.id"
             :to="`/works/${work.id}`"
-            class="group border-main/10 relative z-0 flex items-baseline gap-4 border-b py-3 no-underline transition-colors last:border-0"
+            class="flex items-baseline gap-4 py-3 no-underline"
           >
-            <!-- Hover Background Overlay -->
-            <div
-              class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-            />
-
-            <!-- Accent line -->
-            <div
-              class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-            />
-
             <!-- Year -->
             <span class="text-main/50 w-10 shrink-0 text-sm">
               {{ work.year || '-' }}
@@ -196,7 +187,7 @@ onMounted(async () => {
                 {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
               </span>
             </div>
-          </router-link>
+          </HoverListItem>
         </div>
 
         <div
@@ -254,23 +245,17 @@ onMounted(async () => {
               v-for="ann in announcements"
               :key="ann.id"
             >
-              <router-link
+              <HoverListItem
                 :to="`/posts/${ann.id}`"
-                class="group border-main/10 relative z-0 flex flex-col gap-0.5 border-b py-3 no-underline last:border-0"
+                class="flex flex-col gap-0.5 py-3 no-underline"
               >
-                <div
-                  class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-                />
-                <div
-                  class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-                />
                 <span class="text-main/40 text-xs">{{ formatDate(ann.created_at) }}</span>
                 <span
                   class="text-main group-hover:text-primary text-sm leading-snug font-medium transition-colors"
                 >
                   {{ ann.title }}
                 </span>
-              </router-link>
+              </HoverListItem>
             </li>
           </ul>
         </section>

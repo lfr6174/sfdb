@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
+import HoverListItem from '../components/HoverListItem.vue'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { fetchPersonDetail } from '../api/persons'
 import { useApiDetail } from '../composables/useApiDetail'
@@ -112,22 +113,12 @@ const personAwards = computed(() => {
               v-if="person.participated_works && person.participated_works.length > 0"
               class="flex flex-col"
             >
-              <router-link
+              <HoverListItem
                 v-for="work in person.participated_works"
                 :key="work.id"
                 :to="`/works/${work.id}`"
-                class="group border-main/10 relative z-0 flex items-baseline gap-4 border-b py-3 no-underline transition-colors last:border-0"
+                class="flex items-baseline gap-4 py-3 no-underline"
               >
-                <!-- Hover Background Overlay -->
-                <div
-                  class="pointer-events-none absolute -inset-x-3 inset-y-0 -z-10 rounded-sm bg-transparent transition-colors group-hover:bg-white/5"
-                ></div>
-
-                <!-- Accent line -->
-                <div
-                  class="group-hover:bg-primary pointer-events-none absolute top-0 bottom-0 -left-3 w-0.5 bg-transparent transition-colors"
-                ></div>
-
                 <span class="text-main/50 w-10 shrink-0 text-sm">
                   {{ work.year || '-' }}
                 </span>
@@ -147,7 +138,7 @@ const personAwards = computed(() => {
                     {{ work.roles.join('、') }}
                   </span>
                 </div>
-              </router-link>
+              </HoverListItem>
             </div>
             <div
               v-else

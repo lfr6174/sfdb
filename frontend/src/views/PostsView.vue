@@ -118,7 +118,7 @@ const changePage = (dir: number) => {
         v-for="post in posts"
         :key="post.id"
         :to="`/posts/${post.id}`"
-        class="flex flex-col gap-1 no-underline"
+        class="flex flex-col gap-1 py-4 no-underline"
       >
         <span class="text-main/40 text-xs">
           {{ formatDate(post.created_at) }}

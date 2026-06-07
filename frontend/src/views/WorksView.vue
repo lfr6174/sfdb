@@ -722,7 +722,7 @@ const changePage = (dir: number) => {
             v-for="work in works"
             :key="work.id"
             tag="div"
-            class="flex flex-col justify-between gap-3 md:flex-row md:items-start"
+            class="flex flex-col justify-between gap-3 py-4 md:flex-row md:items-start"
           >
             <!-- Left: title + meta -->
             <div class="min-w-0 flex-1">

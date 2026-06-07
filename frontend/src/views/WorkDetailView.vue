@@ -386,7 +386,7 @@ const visiblePublications = computed(() => {
                 v-for="rel in work.relations"
                 :key="rel.id"
                 :to="`/works/${rel.other_work.id}`"
-                class="!py-2"
+                class="block py-2"
               >
                 <div class="flex items-center gap-3">
                   <div class="flex w-14 shrink-0 flex-col items-start">

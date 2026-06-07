@@ -17,7 +17,7 @@ const resolvedTag = computed(() => {
   <component
     :is="resolvedTag"
     :to="to"
-    class="group border-main/10 relative z-0 block border-b py-4 transition-colors last:border-0"
+    class="group border-main/10 relative z-0 border-b transition-colors last:border-0"
   >
     <!-- Hover Background Overlay -->
     <div

@@ -114,7 +114,7 @@ onMounted(() => {
         v-for="person in persons"
         :key="person.id"
         :to="`/persons/${person.id}`"
-        class="cursor-pointer"
+        class="block cursor-pointer py-4"
       >
         <!-- Name row -->
         <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-3">
