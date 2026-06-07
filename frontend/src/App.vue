@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import Navbar from './components/Navbar.vue'
 import api from './api/axios'
 
@@ -10,7 +10,24 @@ const globalAnnouncement = ref('')
 // Global settings
 const siteSettings = ref<Record<string, string>>({})
 
+// Scroll-to-top logic
+const showScrollTop = ref(false)
+
+const handleScroll = () => {
+  showScrollTop.value = window.scrollY > 400
+}
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
 onMounted(async () => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+
   // Fetch banner
   try {
     const response = await api.get('/posts/active-pinned/')
@@ -139,5 +156,16 @@ onMounted(async () => {
         </div>
       </div>
     </footer>
+
+    <!-- Scroll-to-top Button -->
+    <button
+      v-show="showScrollTop"
+      class="bg-main/10 text-main/50 hover:bg-primary hover:text-bg fixed right-8 bottom-8 z-40 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all duration-200"
+      @click="scrollToTop"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 15-6-6-6 6"/>
+      </svg>
+    </button>
   </div>
 </template>
