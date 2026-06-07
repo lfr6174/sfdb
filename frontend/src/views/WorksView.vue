@@ -11,6 +11,7 @@ import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
 
 useDocumentTitle('作品列表')
 
@@ -24,12 +25,6 @@ const LENGTH_OPTIONS = [
   { value: 'long', label: '長篇' },
   { value: 'short', label: '中短篇' },
 ]
-const CATEGORIES = ['新異 Novum', '敘事 Narrative', '主題 Theme', '未分類']
-const CATEGORY_MAP: Record<string, string> = {
-  novum: '新異 Novum',
-  narrative: '敘事 Narrative',
-  theme: '主題 Theme',
-}
 const PAGE_SIZE = 20 // FIX: needed to compute totalPages
 
 // State
@@ -147,7 +142,7 @@ onMounted(async () => {
 const mappedConcepts = computed(() => {
   return allConcepts.value.map((c) => ({
     ...c,
-    mappedCategory: CATEGORY_MAP[c.category] || '未分類',
+    mappedCategory: CONCEPT_CATEGORY_MAP[c.category] || '未分類',
   }))
 })
 
@@ -165,7 +160,7 @@ const modalGroupedConcepts = computed(() => {
   const filtered = mappedConcepts.value.filter((c) => c.name.toLowerCase().includes(query))
 
   const grouped: Record<string, any[]> = {}
-  CATEGORIES.forEach((cat) => (grouped[cat] = []))
+  CONCEPT_CATEGORY_ORDER.forEach((cat) => (grouped[cat] = []))
 
   filtered.forEach((c) => {
     if (grouped[c.mappedCategory]) {
@@ -853,7 +848,7 @@ const changePage = (dir: number) => {
       <div class="flex-1 overflow-y-auto px-6 py-5">
         <div class="space-y-8">
           <div
-            v-for="cat in CATEGORIES"
+            v-for="cat in CONCEPT_CATEGORY_ORDER"
             :key="cat"
           >
             <template v-if="modalGroupedConcepts[cat]?.length > 0">

@@ -5,6 +5,7 @@ import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Concept } from '../types'
 import ConceptTag from '../components/ConceptTag.vue'
 import SortSelect from '../components/SortSelect.vue'
+import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
 
 useDocumentTitle('概念探索')
 
@@ -13,13 +14,6 @@ const isLoading = ref(true)
 
 const searchQuery = ref('')
 const sortBy = ref('alpha')
-
-// Map backend category names to bilingual display formats
-const categoryMap: Record<string, string> = {
-  novum: '新異 Novum',
-  narrative: '敘事 Narrative',
-  theme: '主題 Theme',
-}
 
 const fetchAllConcepts = async () => {
   isLoading.value = true
@@ -37,8 +31,6 @@ onMounted(() => {
   fetchAllConcepts()
 })
 
-const GROUP_ORDER = ['新異 Novum', '敘事 Narrative', '主題 Theme', '未分類']
-
 const groupedConcepts = computed(() => {
   let filtered = allConcepts.value
 
@@ -49,18 +41,18 @@ const groupedConcepts = computed(() => {
 
   // Inter-group sorting
   const groups: Record<string, Concept[]> = {}
-  GROUP_ORDER.forEach((cat) => {
+  CONCEPT_CATEGORY_ORDER.forEach((cat) => {
     groups[cat] = []
   })
 
   filtered.forEach((c) => {
     const rawCat = c.category || '未分類'
-    const cat = categoryMap[rawCat] || '未分類'
+    const cat = CONCEPT_CATEGORY_MAP[rawCat] || '未分類'
     groups[cat].push(c)
   })
 
   // Inner-group sorting
-  GROUP_ORDER.forEach((cat) => {
+  CONCEPT_CATEGORY_ORDER.forEach((cat) => {
     groups[cat].sort((a, b) => {
       if (sortBy.value === 'alpha') return a.name.localeCompare(b.name)
       if (sortBy.value === 'count') return (b.works_count || 0) - (a.works_count || 0)
