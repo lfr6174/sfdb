@@ -9,6 +9,7 @@ import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
+import FilterChip from '../components/FilterChip.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
 import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER, DEFAULT_PAGE_SIZE } from '../utils/constants'
@@ -582,86 +583,39 @@ const changePage = (dir: number) => {
           >
             <span class="text-main/40 mr-1 shrink-0 text-xs">作用中：</span>
 
-            <span
+            <FilterChip
               v-if="selectedPublicationId"
-              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-            >
-              出版物：{{ selectedPublicationTitle }}
-              <button
-                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="clearPublication"
-              >
-                &times;
-              </button>
-            </span>
-
-            <span
+              :label="`出版物：${selectedPublicationTitle}`"
+              @remove="clearPublication"
+            />
+            <FilterChip
               v-if="selectedCatalogueTitle"
-              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-            >
-              精選：{{ selectedCatalogueTitle }}
-              <button
-                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="clearCatalogue"
-              >
-                &times;
-              </button>
-            </span>
-
-            <span
+              :label="`精選：${selectedCatalogueTitle}`"
+              @remove="clearCatalogue"
+            />
+            <FilterChip
               v-for="m in selectedGenres"
               :key="m"
-              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-            >
-              {{ GENRE_OPTIONS.find((o) => o.value === m)?.label }}
-              <button
-                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="selectedGenres = selectedGenres.filter((v) => v !== m)"
-              >
-                &times;
-              </button>
-            </span>
-
-            <span
+              :label="GENRE_OPTIONS.find((o) => o.value === m)?.label || ''"
+              @remove="selectedGenres = selectedGenres.filter((v) => v !== m)"
+            />
+            <FilterChip
               v-for="l in selectedLengths"
               :key="l"
-              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-            >
-              {{ LENGTH_OPTIONS.find((o) => o.value === l)?.label }}
-              <button
-                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="selectedLengths = selectedLengths.filter((v) => v !== l)"
-              >
-                &times;
-              </button>
-            </span>
-
-            <span
+              :label="LENGTH_OPTIONS.find((o) => o.value === l)?.label || ''"
+              @remove="selectedLengths = selectedLengths.filter((v) => v !== l)"
+            />
+            <FilterChip
               v-for="c in selectedConcepts"
               :key="c.id"
-              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-            >
-              {{ c.name }}
-              <button
-                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="toggleConcept(c)"
-              >
-                &times;
-              </button>
-            </span>
-
-            <span
+              :label="c.name"
+              @remove="toggleConcept(c)"
+            />
+            <FilterChip
               v-if="yearMin || yearMax"
-              class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
-            >
-              {{ yearMin || '…' }}–{{ yearMax || '…' }}
-              <button
-                class="ml-0.5 text-sm leading-none transition-opacity hover:opacity-60"
-                @click="clearYearFilter"
-              >
-                &times;
-              </button>
-            </span>
+              :label="`${yearMin || '…'}–${yearMax || '…'}`"
+              @remove="clearYearFilter"
+            />
 
             <button
               class="text-main/40 hover:text-primary ml-auto text-xs transition-colors"
