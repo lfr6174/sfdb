@@ -86,7 +86,7 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
     publisher = AgentMinimalSerializer(read_only=True)
     source_display = serializers.CharField(source="get_source_display", read_only=True)
     media_display = serializers.CharField(source="composite_media_display", read_only=True)
-    year = serializers.SerializerMethodField()
+    year = serializers.IntegerField(read_only=True)
     contributions = PublicationAgentSerializer(many=True, read_only=True)
 
     class Meta:
@@ -103,9 +103,6 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
             "publisher",
             "contributions",
         ]
-
-    def get_year(self, obj):
-        return obj.pub_date.year if obj.pub_date else None
 
 
 # ============================================================================
@@ -140,7 +137,7 @@ class WorkListSerializer(serializers.ModelSerializer):
     byline = serializers.SerializerMethodField()
     genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
-    year = serializers.SerializerMethodField()
+    year = serializers.IntegerField(read_only=True)
     work_concepts = WorkConceptListSerializer(many=True, read_only=True)
 
     class Meta:
@@ -157,9 +154,6 @@ class WorkListSerializer(serializers.ModelSerializer):
 
     def get_byline(self, obj):
         return get_byline(obj.contributions.all())
-
-    def get_year(self, obj):
-        return obj.ori_date.year if obj.ori_date else None
 
 
 RELATION_LABELS = {
@@ -196,7 +190,7 @@ class WorkRelationSerializer(serializers.ModelSerializer):
         return {
             "id": work.id,
             "title": work.title,
-            "year": work.ori_date.year if work.ori_date else None,
+            "year": work.year,
         }
 
 
@@ -204,10 +198,7 @@ class WorkDetailSerializer(serializers.ModelSerializer):
     genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
-    year = serializers.SerializerMethodField()
-
-    def get_year(self, obj):
-        return obj.ori_date.year if obj.ori_date else None
+    year = serializers.IntegerField(read_only=True)
 
     cycle = CycleSerializer(read_only=True)
     contributions = WorkAgentSerializer(many=True, read_only=True)

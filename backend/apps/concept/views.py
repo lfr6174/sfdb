@@ -56,7 +56,7 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
             {
                 "id": w.id,
                 "title": w.title,
-                "year": w.ori_date.year if w.ori_date else None,
+                "year": w.year,
                 "genre_display": w.get_genre_display(),
                 "work_length_display": w.get_work_length_display(),
                 "byline": get_byline(w.contributions.all()),

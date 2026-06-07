@@ -41,7 +41,7 @@ def get_agent_works(agent):
         {
             "id": w.id,
             "title": w.title,
-            "year": w.ori_date.year if w.ori_date else None,
+            "year": w.year,
             "genre": w.get_genre_display(),
             "work_length": w.get_work_length_display(),
             "roles": sorted({c.role.noun for c in w.agent_contributions}),
@@ -81,7 +81,7 @@ def get_agent_publications(agent):
         {
             "id": p.id,
             "title": p.title,
-            "year": p.pub_date.year if p.pub_date else None,
+            "year": p.year,
             "source": p.get_source_display(),
             "media": p.composite_media_display,
             "publisher": p.publisher.name if p.publisher else "",

@@ -174,8 +174,12 @@ class Work(TimeStampedModel):
         verbose_name = "作品"
         verbose_name_plural = "作品"
 
+    @property
+    def year(self):
+        return self.ori_date.year if self.ori_date else None
+
     def __str__(self):
-        year_str = f" ({self.ori_date.year})" if self.ori_date else ""
+        year_str = f" ({self.year})" if self.year else ""
         return f"{self.title}{year_str}"
 
     def clean(self):
@@ -549,8 +553,12 @@ class Publication(TimeStampedModel):
         verbose_name = "出版品"
         verbose_name_plural = "出版品"
 
+    @property
+    def year(self):
+        return self.pub_date.year if self.pub_date else None
+
     def __str__(self):
-        year_str = f" ({self.pub_date.year})" if self.pub_date else ""
+        year_str = f" ({self.year})" if self.year else ""
         return f"{self.title}{year_str}"
 
     @property
