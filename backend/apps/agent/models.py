@@ -84,4 +84,4 @@ class AgentLink(models.Model):
         verbose_name_plural = "人物/組織連結"
 
     def __str__(self):
-        return f"{self.label}: {self.agent.name}"
+        return f"{self.agent.name} - {self.label}"

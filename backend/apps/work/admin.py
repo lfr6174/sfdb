@@ -125,11 +125,11 @@ class WorkForm(forms.ModelForm):
         model = Work
         fields = (
             "title",
+            "ori_date_partial",
             "genre",
             "work_length",
-            "provenance",
             "language",
-            "ori_date_partial",
+            "provenance",
             "description",
             "cycle",
             "cycle_order",
@@ -163,15 +163,15 @@ class PublicationForm(forms.ModelForm):
         model = Publication
         fields = (
             "title",
-            "subtitle",
             "publisher",
-            "series",
-            "series_order",
-            "language",
+            "pub_date_partial",
             "source",
             "media",
-            "pub_date_partial",
+            "language",
             "isbn",
+            "subtitle",
+            "series",
+            "series_order",
             "note",
         )
 
@@ -205,7 +205,6 @@ class WorkAgentInline(TabularInline):
     model = WorkAgent
     extra = 0
     autocomplete_fields = ("agent", "role")
-    classes = ["collapse"]
     ordering_field = "order"
     hide_ordering_field = True
 
@@ -278,7 +277,6 @@ class ManifestationInlineForPublication(TabularInline):
     fields = ("work", "name")
     autocomplete_fields = ("work",)
     show_change_link = True
-    classes = ["collapse"]
 
 
 class WorkCatalogueInlineForWork(TabularInline):
@@ -314,10 +312,6 @@ class CycleAdmin(ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
-    fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("title", "note")}),
-        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
-    )
 
 
 @admin.register(Series)
@@ -325,10 +319,6 @@ class SeriesAdmin(ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
-    fieldsets = (
-        ("基本資訊 (Basic Info)", {"fields": ("title", "note")}),
-        ("系統資訊 (System Info)", {"fields": ("created_at", "updated_at"), "classes": ("collapse",)}),
-    )
 
 
 @admin.register(Work)
@@ -388,16 +378,12 @@ class PublicationAdmin(ModelAdmin):
     form = PublicationForm
     list_display = (
         "title",
-        "subtitle",
-        "get_contributions_display",
+        "get_date_display",
+        "publisher",
         "source",
         "media",
-        "series",
-        "series_order",
-        "publisher",
-        "language",
-        "get_date_display",
         "isbn",
+        "series",
     )
     list_filter = (
         ("language", ChoicesDropdownFilter),
@@ -423,20 +409,6 @@ class PublicationAdmin(ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related("publisher", "series").prefetch_related("contributions__agent", "contributions__role")
-
-    def get_contributions_display(self, obj):
-        contributions = obj.contributions.all()
-        valid_agents = []
-        for c in contributions:
-            if c.role.code in ["author", "co_author", "story", "art"] and not c.display_name:
-                continue
-            valid_agents.append(c)
-
-        if not valid_agents:
-            return "-"
-        return "、".join([f"{c.display_name or c.agent.name} ({c.role.noun})" for c in valid_agents])
-
-    get_contributions_display.short_description = "出版品參與者"
 
     def get_date_display(self, obj):
         return _format_partial_date(obj.pub_date, obj.pub_date_precision)

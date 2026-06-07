@@ -321,7 +321,7 @@ class WorkAgent(models.Model):
         verbose_name_plural = "作品創作者"
 
     def __str__(self):
-        return f"{self.work.title} - {self.agent.name} ({self.role.noun})"
+        return f"{self.agent.name} ({self.role.noun})"
 
 
 class WorkConcept(models.Model):
@@ -349,7 +349,7 @@ class WorkConcept(models.Model):
         verbose_name_plural = "作品相關概念"
 
     def __str__(self):
-        return f"{self.work.title} ✕ {self.concept.name}"
+        return f"{self.concept.name}"
 
 
 class Manifestation(models.Model):
@@ -372,7 +372,7 @@ class Manifestation(models.Model):
         verbose_name_plural = "收錄紀錄"
 
     def __str__(self):
-        return f"{self.publication.title} - {self.work.title}"
+        return f"{self.work.title} ⊆ {self.publication.title}"
 
 
 class ManifestationAgent(models.Model):
@@ -416,9 +416,7 @@ class ManifestationAgent(models.Model):
 
     def __str__(self):
         name_to_display = self.display_name or self.agent.name
-        publication_title = self.manifestation.publication.title
-        work_title = self.manifestation.work.title
-        return f"[{publication_title}] 收錄之 <{work_title}> - {name_to_display} ({self.role.noun})"
+        return f"{name_to_display} ({self.role.noun})"
 
 
 # ============================================================================
@@ -631,7 +629,7 @@ class PublicationAgent(models.Model):
 
     def __str__(self):
         name_to_display = self.display_name or self.agent.name
-        return f"{self.publication.title} - {name_to_display} ({self.role.noun})"
+        return f"{name_to_display} ({self.role.noun})"
 
 
 # ============================================================================
@@ -728,7 +726,8 @@ class WorkCatalogue(TimeStampedModel):
         verbose_name_plural = "獎項與書單收錄紀錄"
 
     def __str__(self):
-        return f"[{self.get_status_display()}] {self.work.title} in {self.catalogue.title}"
+        cat = str(self.catalogue)
+        return f"{cat}：{self.work.title}（{self.get_status_display()}）"
 
     def clean(self):
         super().clean()

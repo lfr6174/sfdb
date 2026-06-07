@@ -42,7 +42,7 @@ class Concept(TimeStampedModel):
         ]
 
     def __str__(self):
-        return f"[{self.get_category_display()}] {self.name}"
+        return f"{self.name}"
 
 
 class ConceptLink(models.Model):
