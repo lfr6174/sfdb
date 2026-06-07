@@ -8,10 +8,10 @@ import SortSelect from '../components/SortSelect.vue'
 import { formatDate } from '../utils/formatters'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { DEFAULT_PAGE_SIZE } from '../utils/constants'
 
 useDocumentTitle('最新資訊')
 
-const PAGE_SIZE = 20
 const posts = ref<Post[]>([])
 const totalPosts = ref(0)
 const isLoading = ref(false)
@@ -22,7 +22,7 @@ const hasPrev = ref(false)
 const searchQuery = ref('')
 const ordering = ref('-created_at')
 
-const totalPages = computed(() => Math.max(1, Math.ceil(totalPosts.value / PAGE_SIZE)))
+const totalPages = computed(() => Math.max(1, Math.ceil(totalPosts.value / DEFAULT_PAGE_SIZE)))
 
 const fetchPosts = async () => {
   isLoading.value = true

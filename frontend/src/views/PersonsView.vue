@@ -7,6 +7,7 @@ import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
+import { DEFAULT_PAGE_SIZE } from '../utils/constants'
 
 useDocumentTitle('人物列表')
 
@@ -32,9 +33,8 @@ const fetchPersons = async () => {
     persons.value = response.data.results || []
     totalCount.value = response.data.count || 0
 
-    // Calculate total pages based on backend's default page size (e.g., 20)
-    const pageSize = 20 // Adjust if your DRF default page_size is different
-    totalPages.value = Math.ceil(totalCount.value / pageSize) || 1
+    // Calculate total pages based on backend's default page size
+    totalPages.value = Math.ceil(totalCount.value / DEFAULT_PAGE_SIZE) || 1
   } catch (error) {
     console.error('Failed to fetch persons:', error)
   } finally {

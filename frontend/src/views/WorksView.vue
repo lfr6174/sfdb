@@ -11,7 +11,7 @@ import ConceptTag from '../components/ConceptTag.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
-import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
+import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER, DEFAULT_PAGE_SIZE } from '../utils/constants'
 
 useDocumentTitle('作品列表')
 
@@ -25,7 +25,6 @@ const LENGTH_OPTIONS = [
   { value: 'long', label: '長篇' },
   { value: 'short', label: '中短篇' },
 ]
-const PAGE_SIZE = 20 // FIX: needed to compute totalPages
 
 // State
 const searchQuery = ref('')
@@ -57,7 +56,7 @@ const route = useRoute()
 const router = useRouter()
 
 // FIX: Compute total pages for pagination display
-const totalPages = computed(() => Math.max(1, Math.ceil(totalWorks.value / PAGE_SIZE)))
+const totalPages = computed(() => Math.max(1, Math.ceil(totalWorks.value / DEFAULT_PAGE_SIZE)))
 
 // Data Fetching
 const fetchAllConcepts = async () => {
