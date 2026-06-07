@@ -27,12 +27,32 @@ const {
   <div class="mx-auto max-w-4xl">
     <!-- ── Controls ── -->
     <div class="flex flex-col justify-between gap-4 pt-6 pb-8 md:flex-row md:items-center md:pt-10">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="搜尋姓名、別名或簡介…"
-        class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
-      />
+      <div class="relative w-full md:w-56">
+        <svg
+          class="text-main/30 pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="搜尋姓名、別名或簡介…"
+          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent py-1.5 pr-0 pl-6 text-sm transition-colors outline-none"
+        />
+      </div>
       <div class="relative w-28 shrink-0">
         <SortSelect
           v-model="sortBy"

@@ -223,12 +223,32 @@ const changePage = (dir: number) => {
       >
         <!-- Search (Desktop) -->
         <div class="mb-7 hidden lg:block">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜尋標題、作者…"
-            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-          />
+          <div class="relative">
+            <svg
+              class="text-main/30 pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="搜尋標題、作者…"
+              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-0 pl-6 text-base transition-colors outline-none"
+            />
+          </div>
           <div class="mt-2 flex justify-start">
             <button
               class="text-main/50 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-sm font-medium tracking-wide underline underline-offset-4 transition-colors"
@@ -318,12 +338,32 @@ const changePage = (dir: number) => {
       <main class="min-w-0 flex-1 pt-6 md:pt-10">
         <!-- Search and Filter (Mobile) -->
         <div class="mb-6 flex items-center gap-3 lg:hidden">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜尋標題、作者…"
-            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 min-w-0 flex-1 border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-          />
+          <div class="relative min-w-0 flex-1">
+            <svg
+              class="text-main/30 pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="搜尋標題、作者…"
+              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-0 pl-6 text-base transition-colors outline-none"
+            />
+          </div>
           <button
             :class="
               isAdvancedMode
