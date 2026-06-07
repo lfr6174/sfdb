@@ -29,29 +29,37 @@ watch(
         <nav class="hidden h-full gap-6 md:flex">
           <router-link
             to="/concepts"
-            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
-            active-class="!border-primary !text-primary"
+            :class="[
+              'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
+              route.path.startsWith('/concepts') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+            ]"
           >
             概念
           </router-link>
           <router-link
             to="/works"
-            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
-            active-class="!border-primary !text-primary"
+            :class="[
+              'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
+              route.path.startsWith('/works') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+            ]"
           >
             作品
           </router-link>
           <router-link
             to="/persons"
-            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
-            active-class="!border-primary !text-primary"
+            :class="[
+              'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
+              route.path.startsWith('/persons') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+            ]"
           >
             人物
           </router-link>
           <router-link
             to="/pages/about"
-            class="text-main/60 hover:text-primary inline-flex items-center border-b-2 border-transparent px-1 text-base font-medium transition-colors"
-            active-class="!border-primary !text-primary"
+            :class="[
+              'hover:text-primary inline-flex items-center border-b-2 px-1 text-base font-medium transition-colors',
+              route.path.startsWith('/pages/about') ? 'border-primary text-primary' : 'border-transparent text-main/60'
+            ]"
           >
             關於
           </router-link>
@@ -133,29 +141,37 @@ watch(
       <nav class="flex flex-col gap-6">
         <router-link
           to="/concepts"
-          class="text-main/70 hover:text-primary text-lg font-medium transition-colors"
-          active-class="!text-primary"
+          :class="[
+            'hover:text-primary text-lg font-medium transition-colors',
+            route.path.startsWith('/concepts') ? 'text-primary' : 'text-main/70'
+          ]"
         >
           概念
         </router-link>
         <router-link
           to="/works"
-          class="text-main/70 hover:text-primary text-lg font-medium transition-colors"
-          active-class="!text-primary"
+          :class="[
+            'hover:text-primary text-lg font-medium transition-colors',
+            route.path.startsWith('/works') ? 'text-primary' : 'text-main/70'
+          ]"
         >
           作品
         </router-link>
         <router-link
           to="/persons"
-          class="text-main/70 hover:text-primary text-lg font-medium transition-colors"
-          active-class="!text-primary"
+          :class="[
+            'hover:text-primary text-lg font-medium transition-colors',
+            route.path.startsWith('/persons') ? 'text-primary' : 'text-main/70'
+          ]"
         >
           人物
         </router-link>
         <router-link
           to="/pages/about"
-          class="text-main/70 hover:text-primary text-lg font-medium transition-colors"
-          active-class="!text-primary"
+          :class="[
+            'hover:text-primary text-lg font-medium transition-colors',
+            route.path.startsWith('/pages/about') ? 'text-primary' : 'text-main/70'
+          ]"
         >
           關於
         </router-link>
