@@ -227,7 +227,7 @@ const changePage = (dir: number) => {
           <BaseSearchInput
             v-model="searchQuery"
             placeholder="搜尋標題、作者…"
-            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none"
+            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pl-6 pr-8 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
           />
           <div class="mt-2 flex justify-start">
             <button
@@ -322,7 +322,7 @@ const changePage = (dir: number) => {
             <BaseSearchInput
               v-model="searchQuery"
               placeholder="搜尋標題、作者…"
-              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none"
+              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pl-6 pr-8 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
             />
           </div>
           <button
@@ -379,7 +379,7 @@ const changePage = (dir: number) => {
                 v-model="searchQuery"
                 type="text"
                 placeholder="標題、作者、筆名等"
-                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
               />
             </div>
 
@@ -392,14 +392,14 @@ const changePage = (dir: number) => {
                   v-model="yearMin"
                   type="number"
                   placeholder="YYYY"
-                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
                 />
                 <span class="text-main/40 shrink-0 text-xs">至</span>
                 <input
                   v-model="yearMax"
                   type="number"
                   placeholder="YYYY"
-                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
                 />
               </div>
             </div>
@@ -552,7 +552,7 @@ const changePage = (dir: number) => {
               <div class="flex items-center gap-2">
                 <SortSelect
                   v-model="ordering"
-                  select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
+                  select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
                   :options="[
                     { value: '-ori_date', label: '日期（新到舊）' },
                     { value: 'ori_date', label: '日期（舊到新）' },

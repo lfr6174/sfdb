@@ -32,13 +32,13 @@ const {
         <BaseSearchInput
           v-model="searchQuery"
           placeholder="搜尋姓名、別名或簡介…"
-          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent py-1.5 pr-8 pl-6 text-sm transition-colors outline-none"
+          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent py-1.5 pl-6 pr-8 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
         />
       </div>
       <div class="relative w-28 shrink-0">
         <SortSelect
           v-model="sortBy"
-          select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none"
+          select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
           :options="[
             { value: 'name', label: '字母排序' },
             { value: '-updated_at', label: '最近更新' },

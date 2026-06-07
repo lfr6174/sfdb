@@ -16,7 +16,7 @@ defineEmits<{
       :value="modelValue"
       :class="
         selectClass ||
-        'text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none'
+        'text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50'
       "
       @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >

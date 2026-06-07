@@ -22,3 +22,13 @@
 .fade-enter-active { @apply transition-opacity duration-150 ease-out; }
 .fade-leave-active { @apply transition-opacity duration-100 ease-in; }
 .fade-enter-from, .fade-leave-to { @apply opacity-0; }
+
+/* Global Focus Ring (A11y) */
+:focus-visible {
+  outline: 2px solid rgba(194, 113, 78, 0.5); /* primary/50 */
+  outline-offset: 2px;
+}
+input:focus-visible, select:focus-visible, button:focus-visible {
+  outline: none;
+  border-color: rgba(194, 113, 78, 0.5);
+}

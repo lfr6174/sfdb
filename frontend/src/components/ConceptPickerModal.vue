@@ -82,7 +82,7 @@ const apply = () => {
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 outline-none sm:p-6"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
     tabindex="0"
     @keydown.esc="$emit('close')"
   >
@@ -109,7 +109,7 @@ const apply = () => {
           ref="searchInputRef"
           v-model="modalSearchQuery"
           placeholder="搜尋標籤…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none"
+          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent py-2 pl-6 pr-8 text-base transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
           @escape="$emit('close')"
         />
 
