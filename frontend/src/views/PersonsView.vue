@@ -1,68 +1,26 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
 import { fetchPersons as fetchPersonsApi } from '../api/persons'
 import type { Person } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
-import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
-import { DEFAULT_PAGE_SIZE } from '../utils/constants'
+import { useListView } from '../composables/useListView'
 
 useDocumentTitle('人物列表')
 
-const persons = ref<Person[]>([])
-const isLoading = ref(true)
-
-// Search, sort, and pagination states
-const searchQuery = ref('')
-const sortBy = ref('name') // Default: name
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalCount = ref(0)
-
-const fetchPersons = async () => {
-  isLoading.value = true
-  try {
-    const response = await fetchPersonsApi({
-      page: currentPage.value,
-      search: searchQuery.value,
-      ordering: sortBy.value,
-    })
-
-    persons.value = response.data.results || []
-    totalCount.value = response.data.count || 0
-
-    // Calculate total pages based on backend's default page size
-    totalPages.value = Math.ceil(totalCount.value / DEFAULT_PAGE_SIZE) || 1
-  } catch (error) {
-    console.error('Failed to fetch persons:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// Implement simple debounce for search input to prevent excessive API calls
-const onSearchInput = useDebounceFn(() => {
-  currentPage.value = 1
-  fetchPersons()
-}, 300)
-
-// When sort order changes, reset to first page and refetch
-watch(sortBy, () => {
-  currentPage.value = 1
-  fetchPersons()
-})
-
-const changePage = (dir: number) => {
-  currentPage.value += dir
-  fetchPersons()
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-onMounted(() => {
-  fetchPersons()
-})
+const {
+  items: persons,
+  isLoading,
+  searchQuery,
+  ordering: sortBy,
+  currentPage,
+  totalPages,
+  hasNext,
+  hasPrev,
+  changePage,
+  totalCount,
+} = useListView<Person>(fetchPersonsApi, { defaultOrdering: 'name' })
 </script>
 
 <template>
@@ -74,7 +32,6 @@ onMounted(() => {
         type="text"
         placeholder="搜尋姓名、別名或簡介…"
         class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 w-full border-b bg-transparent px-0 py-1.5 text-sm transition-colors outline-none md:w-56"
-        @input="onSearchInput"
       />
       <div class="relative w-28 shrink-0">
         <SortSelect
@@ -142,8 +99,8 @@ onMounted(() => {
         v-if="totalPages > 1"
         :current-page="currentPage"
         :total-pages="totalPages"
-        :has-prev="currentPage > 1"
-        :has-next="currentPage < totalPages"
+        :has-prev="hasPrev"
+        :has-next="hasNext"
         @change-page="changePage"
       />
     </div>

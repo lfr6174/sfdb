@@ -1,68 +1,27 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
 import { fetchPosts as fetchPostsApi } from '../api/posts'
 import type { Post } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { formatDate } from '../utils/formatters'
-import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentTitle } from '../composables/useDocumentTitle'
-import { DEFAULT_PAGE_SIZE } from '../utils/constants'
+import { useListView } from '../composables/useListView'
 
 useDocumentTitle('最新資訊')
 
-const posts = ref<Post[]>([])
-const totalPosts = ref(0)
-const isLoading = ref(false)
-const currentPage = ref(1)
-const hasNext = ref(false)
-const hasPrev = ref(false)
-
-const searchQuery = ref('')
-const ordering = ref('-created_at')
-
-const totalPages = computed(() => Math.max(1, Math.ceil(totalPosts.value / DEFAULT_PAGE_SIZE)))
-
-const fetchPosts = async () => {
-  isLoading.value = true
-  try {
-    const params: Record<string, any> = {
-      page: currentPage.value,
-      ordering: ordering.value,
-    }
-    if (searchQuery.value) params.search = searchQuery.value
-
-    const res = await fetchPostsApi(params)
-    posts.value = res.data.results || []
-    totalPosts.value = res.data.count || 0
-    hasNext.value = !!res.data.next
-    hasPrev.value = !!res.data.previous
-  } catch (err) {
-    console.error('Failed to fetch posts', err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const triggerFetch = useDebounceFn(() => {
-  currentPage.value = 1
-  fetchPosts()
-}, 300)
-
-watch([searchQuery, ordering], () => {
-  triggerFetch()
-})
-
-onMounted(() => {
-  fetchPosts()
-})
-
-const changePage = (dir: number) => {
-  currentPage.value += dir
-  fetchPosts()
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
+const {
+  items: posts,
+  isLoading,
+  searchQuery,
+  ordering,
+  currentPage,
+  totalPages,
+  hasNext,
+  hasPrev,
+  changePage,
+  totalCount: totalPosts,
+} = useListView<Post>(fetchPostsApi, { defaultOrdering: '-created_at' })
 </script>
 
 <template>
