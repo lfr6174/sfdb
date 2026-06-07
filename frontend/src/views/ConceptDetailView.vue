@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, computed } from 'vue'
 import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
@@ -10,7 +9,6 @@ import { fetchConceptDetail } from '../api/concepts'
 import { useApiDetail } from '../composables/useApiDetail'
 import { getYearRange } from '../utils/formatters'
 
-const route = useRoute()
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
 const isExamplesExpanded = ref(false)
 
