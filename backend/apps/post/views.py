@@ -22,7 +22,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["get"], url_path="active-pinned")
     def active_pinned(self, request):
-        post = Post.objects.select_related("author").filter(post_type=PostType.ANNOUNCEMENT, is_pinned=True).first()
+        post = self.get_queryset().filter(post_type=PostType.ANNOUNCEMENT, is_pinned=True).first()
 
         if not post:
             return Response(None, status=status.HTTP_204_NO_CONTENT)
