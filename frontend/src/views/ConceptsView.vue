@@ -92,7 +92,7 @@ const groupedConcepts = computed(() => {
     <!-- ── Loading ── -->
     <div
       v-if="isLoading"
-      class="text-main/50 py-16 text-center text-base font-medium"
+      class="text-main/50 animate-pulse py-16 text-center text-base font-medium"
     >
       正在讀取全站概念...
     </div>

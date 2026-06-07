@@ -215,436 +215,454 @@ const changePage = (dir: number) => {
 </script>
 
 <template>
-  <div class="mx-auto flex max-w-4xl flex-col items-start gap-0 pb-20 lg:flex-row lg:gap-12">
-    <!-- ══ Left Sidebar ══ -->
-    <aside
-      class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
-    >
-      <!-- Search (Desktop) -->
-      <div class="mb-7 hidden lg:block">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="搜尋標題、作者…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-        />
-        <div class="mt-2 flex justify-start">
-          <button
-            class="text-main/50 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-sm font-medium tracking-wide underline underline-offset-4 transition-colors"
-            @click="isAdvancedMode = !isAdvancedMode"
-          >
-            {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Genre Type -->
-      <div class="mb-6">
-        <SectionTitle class="mb-3">作品體裁</SectionTitle>
-        <CheckboxGroup v-model="selectedGenres" :options="GENRE_OPTIONS" />
-      </div>
-
-      <!-- Work Length -->
-      <div class="mb-6">
-        <SectionTitle class="mb-3">作品篇幅</SectionTitle>
-        <CheckboxGroup v-model="selectedLengths" :options="LENGTH_OPTIONS" />
-      </div>
-
-      <!-- Concept Tags -->
-      <div>
-        <SectionTitle class="mb-3">概念標籤</SectionTitle>
-
-        <!-- Selected tags -->
-        <div
-          v-if="selectedConcepts.length > 0"
-          class="mb-4"
-        >
-          <div class="flex flex-col gap-2">
-            <label
-              v-for="concept in selectedConcepts"
-              :key="concept.id"
-              class="group flex cursor-pointer items-center gap-2"
-            >
-              <input
-                type="checkbox"
-                :checked="true"
-                class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-                @change="toggleConcept(concept)"
-              />
-              <span class="text-primary text-sm font-medium">{{ concept.name }}</span>
-            </label>
-          </div>
-          <div class="border-main/10 mt-3 mb-3 border-t"></div>
-        </div>
-
-        <!-- Featured concepts -->
-        <div class="space-y-4">
-          <div class="flex flex-col gap-2">
-            <label
-              v-for="concept in leftPanelConcepts"
-              :key="concept.id"
-              class="group flex cursor-pointer items-center gap-2"
-            >
-              <input
-                type="checkbox"
-                :checked="false"
-                class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
-                @change="toggleConcept(concept)"
-              />
-              <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
-                {{ concept.name }}
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <button
-          class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 mt-5 w-full text-left text-sm underline underline-offset-4 transition-colors"
-          @click="openModal"
-        >
-          展開所有標籤
-        </button>
-      </div>
-    </aside>
-
-    <!-- ══ Main Panel ══ -->
-    <main class="min-w-0 flex-1 pt-6 md:pt-10">
-      <!-- Search and Filter (Mobile) -->
-      <div class="mb-6 flex items-center gap-3 lg:hidden">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="搜尋標題、作者…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 min-w-0 flex-1 border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-        />
-        <button
-          :class="
-            isAdvancedMode
-              ? 'border-primary/60 text-primary bg-primary/5'
-              : 'border-main/20 text-main'
-          "
-          class="hover:border-primary/50 flex h-10 w-10 shrink-0 items-center justify-center rounded border bg-transparent transition-colors"
-          title="進階搜尋"
-          aria-label="進階搜尋"
-          :aria-pressed="isAdvancedMode"
-          @click="isAdvancedMode = !isAdvancedMode"
-        >
-          <svg
-            aria-hidden="true"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-          </svg>
-        </button>
-      </div>
-
-      <!-- ── Advanced Search ── -->
-      <section
-        v-if="isAdvancedMode"
-        class="border-main/10 mb-8 border-b pb-10"
+  <div>
+    <div class="mx-auto flex max-w-4xl flex-col items-start gap-0 pb-20 lg:flex-row lg:gap-12">
+      <!-- ══ Left Sidebar ══ -->
+      <aside
+        class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
       >
-        <SectionTitle class="mb-6">
-          進階搜尋
-          <template #action>
+        <!-- Search (Desktop) -->
+        <div class="mb-7 hidden lg:block">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="搜尋標題、作者…"
+            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+          />
+          <div class="mt-2 flex justify-start">
             <button
-              class="text-main/50 border-main/10 hover:text-primary hover:border-primary/30 border px-3 py-1 text-xs transition-colors"
-              @click="isAdvancedMode = false"
+              class="text-main/50 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-sm font-medium tracking-wide underline underline-offset-4 transition-colors"
+              @click="isAdvancedMode = !isAdvancedMode"
             >
-              返回結果列表
+              {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
             </button>
-          </template>
-        </SectionTitle>
-
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
-              關鍵字
-            </label>
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="標題、作者、筆名等"
-              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-            />
           </div>
+        </div>
 
-          <div>
-            <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
-              發表日期區間
-            </label>
-            <div class="flex items-center gap-2">
-              <input
-                v-model="yearMin"
-                type="number"
-                placeholder="YYYY"
-                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-              />
-              <span class="text-main/40 shrink-0 text-xs">至</span>
-              <input
-                v-model="yearMax"
-                type="number"
-                placeholder="YYYY"
-                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
-              />
-            </div>
-          </div>
+        <!-- Genre Type -->
+        <div class="mb-6">
+          <SectionTitle class="mb-3">作品體裁</SectionTitle>
+          <CheckboxGroup
+            v-model="selectedGenres"
+            :options="GENRE_OPTIONS"
+          />
+        </div>
 
-          <div class="space-y-5">
-            <div>
+        <!-- Work Length -->
+        <div class="mb-6">
+          <SectionTitle class="mb-3">作品篇幅</SectionTitle>
+          <CheckboxGroup
+            v-model="selectedLengths"
+            :options="LENGTH_OPTIONS"
+          />
+        </div>
+
+        <!-- Concept Tags -->
+        <div>
+          <SectionTitle class="mb-3">概念標籤</SectionTitle>
+
+          <!-- Selected tags -->
+          <div
+            v-if="selectedConcepts.length > 0"
+            class="mb-4"
+          >
+            <div class="flex flex-col gap-2">
               <label
-                class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
-              >
-                作品體裁
-              </label>
-              <CheckboxGroup v-model="selectedGenres" :options="GENRE_OPTIONS" layout-class="flex flex-wrap gap-x-5 gap-y-2" />
-            </div>
-            <div>
-              <label
-                class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
-              >
-                作品篇幅
-              </label>
-              <CheckboxGroup v-model="selectedLengths" :options="LENGTH_OPTIONS" layout-class="flex flex-wrap gap-x-5 gap-y-2" />
-            </div>
-          </div>
-
-          <div>
-            <label class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase">
-              概念標籤
-            </label>
-            <button
-              class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 w-full text-left text-base underline underline-offset-4 transition-colors"
-              @click="openModal"
-            >
-              + 點擊選取概念標籤
-            </button>
-            <div
-              v-if="selectedConcepts.length > 0"
-              class="mt-3 flex flex-wrap gap-1.5"
-            >
-              <span
                 v-for="concept in selectedConcepts"
                 :key="concept.id"
-                class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+                class="group flex cursor-pointer items-center gap-2"
               >
-                {{ concept.name }}
-                <button
-                  class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
-                  @click.stop="toggleConcept(concept)"
-                >
-                  &times;
-                </button>
-              </span>
+                <input
+                  type="checkbox"
+                  :checked="true"
+                  class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
+                  @change="toggleConcept(concept)"
+                />
+                <span class="text-primary text-sm font-medium">{{ concept.name }}</span>
+              </label>
+            </div>
+            <div class="border-main/10 mt-3 mb-3 border-t"></div>
+          </div>
+
+          <!-- Featured concepts -->
+          <div class="space-y-4">
+            <div class="flex flex-col gap-2">
+              <label
+                v-for="concept in leftPanelConcepts"
+                :key="concept.id"
+                class="group flex cursor-pointer items-center gap-2"
+              >
+                <input
+                  type="checkbox"
+                  :checked="false"
+                  class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
+                  @change="toggleConcept(concept)"
+                />
+                <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
+                  {{ concept.name }}
+                </span>
+              </label>
             </div>
           </div>
-        </div>
 
-        <div class="border-main/10 mt-8 flex justify-end gap-3 border-t pt-5">
           <button
-            class="text-main/50 hover:text-primary px-3 py-1.5 text-sm transition-colors"
-            @click="clearAllFilters"
+            class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 mt-5 w-full text-left text-sm underline underline-offset-4 transition-colors"
+            @click="openModal"
           >
-            清除條件
-          </button>
-          <button
-            class="text-bg bg-primary px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-85"
-            @click="isAdvancedMode = false"
-          >
-            查看結果（{{ totalWorks }}）
+            展開所有標籤
           </button>
         </div>
-      </section>
+      </aside>
 
-      <!-- ── Results View ── -->
-      <template v-else>
-        <!-- Active Filters + Sort Bar -->
-        <div class="border-main/10 mb-1 flex flex-col gap-3 border-b pb-5">
-          <!-- Active filter chips -->
-          <div
-            v-if="
-              selectedConcepts.length ||
-              selectedGenres.length ||
-              selectedLengths.length ||
-              yearMin ||
-              yearMax ||
-              selectedPublicationId ||
-              selectedCatalogueTitle
+      <!-- ══ Main Panel ══ -->
+      <main class="min-w-0 flex-1 pt-6 md:pt-10">
+        <!-- Search and Filter (Mobile) -->
+        <div class="mb-6 flex items-center gap-3 lg:hidden">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="搜尋標題、作者…"
+            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 min-w-0 flex-1 border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+          />
+          <button
+            :class="
+              isAdvancedMode
+                ? 'border-primary/60 text-primary bg-primary/5'
+                : 'border-main/20 text-main'
             "
-            class="flex flex-wrap items-center gap-1.5"
+            class="hover:border-primary/50 flex h-10 w-10 shrink-0 items-center justify-center rounded border bg-transparent transition-colors"
+            title="進階搜尋"
+            aria-label="進階搜尋"
+            :aria-pressed="isAdvancedMode"
+            @click="isAdvancedMode = !isAdvancedMode"
           >
-            <span class="text-main/40 mr-1 shrink-0 text-xs">作用中：</span>
-
-            <FilterChip
-              v-if="selectedPublicationId"
-              :label="`出版物：${selectedPublicationTitle}`"
-              @remove="clearPublication"
-            />
-            <FilterChip
-              v-if="selectedCatalogueTitle"
-              :label="`精選：${selectedCatalogueTitle}`"
-              @remove="clearCatalogue"
-            />
-            <FilterChip
-              v-for="m in selectedGenres"
-              :key="m"
-              :label="GENRE_OPTIONS.find((o) => o.value === m)?.label || ''"
-              @remove="selectedGenres = selectedGenres.filter((v) => v !== m)"
-            />
-            <FilterChip
-              v-for="l in selectedLengths"
-              :key="l"
-              :label="LENGTH_OPTIONS.find((o) => o.value === l)?.label || ''"
-              @remove="selectedLengths = selectedLengths.filter((v) => v !== l)"
-            />
-            <FilterChip
-              v-for="c in selectedConcepts"
-              :key="c.id"
-              :label="c.name"
-              @remove="toggleConcept(c)"
-            />
-            <FilterChip
-              v-if="yearMin || yearMax"
-              :label="`${yearMin || '…'}–${yearMax || '…'}`"
-              @remove="clearYearFilter"
-            />
-
-            <button
-              class="text-main/40 hover:text-primary ml-auto text-xs transition-colors"
-              @click="clearAllFilters"
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              清除全部
-            </button>
-          </div>
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </button>
+        </div>
 
-          <!-- Count + Sort -->
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <span class="text-main/50 text-sm">
-              共
-              <span class="text-primary">{{ totalWorks }}</span>
-              部作品
-            </span>
+        <!-- ── Advanced Search ── -->
+        <section
+          v-if="isAdvancedMode"
+          class="border-main/10 mb-8 border-b pb-10"
+        >
+          <SectionTitle class="mb-6">
+            進階搜尋
+            <template #action>
+              <button
+                class="text-main/50 border-main/10 hover:text-primary hover:border-primary/30 border px-3 py-1 text-xs transition-colors"
+                @click="isAdvancedMode = false"
+              >
+                返回結果列表
+              </button>
+            </template>
+          </SectionTitle>
 
-            <div class="flex items-center gap-2">
-              <SortSelect
-                v-model="ordering"
-                select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
-                :options="[
-                  { value: '-ori_date', label: '日期（新到舊）' },
-                  { value: 'ori_date', label: '日期（舊到新）' },
-                  { value: 'title', label: '標題' },
-                  { value: '-updated_at', label: '最近更新' },
-                ]"
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
+                關鍵字
+              </label>
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="標題、作者、筆名等"
+                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
               />
             </div>
-          </div>
-        </div>
 
-        <!-- Works List -->
-        <div
-          v-if="isLoading"
-          class="text-main/40 py-16 text-center text-base"
-        >
-          搜尋中…
-        </div>
-        <div
-          v-else-if="works.length === 0"
-          class="text-main/40 py-16 text-center text-base"
-        >
-          找不到符合條件的作品。
-        </div>
-
-        <div
-          v-else
-          class="flex flex-col"
-        >
-          <HoverListItem
-            v-for="work in works"
-            :key="work.id"
-            tag="div"
-            class="flex flex-col justify-between gap-3 py-4 md:flex-row md:items-start"
-          >
-            <!-- Left: title + meta -->
-            <div class="min-w-0 flex-1">
-              <router-link
-                :to="`/works/${work.id}`"
-                class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
-              >
-                {{ work.title }}
-              </router-link>
-
-              <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
-                <span
-                  v-if="work.byline && work.byline.length"
-                  class="flex flex-wrap items-center gap-x-0.5"
-                >
-                  <template
-                    v-for="(agent, idx) in work.byline"
-                    :key="idx"
-                  >
-                    <router-link
-                      v-if="agent.id && agent.agent_type === 'person'"
-                      :to="`/persons/${agent.id}`"
-                      class="hover:text-primary no-underline transition-colors"
-                    >
-                      {{ agent.text }}
-                    </router-link>
-                    <span v-else>{{ agent.text }}</span>
-                    <span v-if="idx < work.byline.length - 1">、</span>
-                  </template>
-                </span>
-                <span v-else>佚名</span>
-
-                <span class="text-main/20">·</span>
-                <span>{{ work.year || '未知' }}</span>
-                <template
-                  v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
-                >
-                  <span class="text-main/20">·</span>
-                  <span>
-                    {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
-                  </span>
-                </template>
+            <div>
+              <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
+                發表日期區間
+              </label>
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="yearMin"
+                  type="number"
+                  placeholder="YYYY"
+                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+                />
+                <span class="text-main/40 shrink-0 text-xs">至</span>
+                <input
+                  v-model="yearMax"
+                  type="number"
+                  placeholder="YYYY"
+                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none"
+                />
               </div>
             </div>
 
-            <!-- Right: concept tags -->
-            <div
-              v-if="work.work_concepts && work.work_concepts.length"
-              class="flex flex-wrap gap-1.5 md:max-w-[45%] md:justify-end"
-            >
-              <ConceptTag
-                v-for="wc in work.work_concepts"
-                :key="wc.concept.slug"
-                :concept="wc.concept"
-              />
+            <div class="space-y-5">
+              <div>
+                <label
+                  class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
+                >
+                  作品體裁
+                </label>
+                <CheckboxGroup
+                  v-model="selectedGenres"
+                  :options="GENRE_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-5 gap-y-2"
+                />
+              </div>
+              <div>
+                <label
+                  class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
+                >
+                  作品篇幅
+                </label>
+                <CheckboxGroup
+                  v-model="selectedLengths"
+                  :options="LENGTH_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-5 gap-y-2"
+                />
+              </div>
             </div>
-          </HoverListItem>
-        </div>
 
-        <PaginationControls
-          v-if="works.length > 0 && (hasPrev || hasNext)"
-          :current-page="currentPage"
-          :total-pages="totalPages"
-          :has-prev="hasPrev"
-          :has-next="hasNext"
-          @change-page="changePage"
-        />
-      </template>
-    </main>
+            <div>
+              <label
+                class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
+              >
+                概念標籤
+              </label>
+              <button
+                class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 w-full text-left text-base underline underline-offset-4 transition-colors"
+                @click="openModal"
+              >
+                + 點擊選取概念標籤
+              </button>
+              <div
+                v-if="selectedConcepts.length > 0"
+                class="mt-3 flex flex-wrap gap-1.5"
+              >
+                <span
+                  v-for="concept in selectedConcepts"
+                  :key="concept.id"
+                  class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+                >
+                  {{ concept.name }}
+                  <button
+                    class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
+                    @click.stop="toggleConcept(concept)"
+                  >
+                    &times;
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-main/10 mt-8 flex justify-end gap-3 border-t pt-5">
+            <button
+              class="text-main/50 hover:text-primary px-3 py-1.5 text-sm transition-colors"
+              @click="clearAllFilters"
+            >
+              清除條件
+            </button>
+            <button
+              class="text-bg bg-primary px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-85"
+              @click="isAdvancedMode = false"
+            >
+              查看結果（{{ totalWorks }}）
+            </button>
+          </div>
+        </section>
+
+        <!-- ── Results View ── -->
+        <template v-else>
+          <!-- Active Filters + Sort Bar -->
+          <div class="border-main/10 mb-1 flex flex-col gap-3 border-b pb-5">
+            <!-- Active filter chips -->
+            <div
+              v-if="
+                selectedConcepts.length ||
+                selectedGenres.length ||
+                selectedLengths.length ||
+                yearMin ||
+                yearMax ||
+                selectedPublicationId ||
+                selectedCatalogueTitle
+              "
+              class="flex flex-wrap items-center gap-1.5"
+            >
+              <span class="text-main/40 mr-1 shrink-0 text-xs">作用中：</span>
+
+              <FilterChip
+                v-if="selectedPublicationId"
+                :label="`出版物：${selectedPublicationTitle}`"
+                @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedCatalogueTitle"
+                :label="`精選：${selectedCatalogueTitle}`"
+                @remove="clearCatalogue"
+              />
+              <FilterChip
+                v-for="m in selectedGenres"
+                :key="m"
+                :label="GENRE_OPTIONS.find((o) => o.value === m)?.label || ''"
+                @remove="selectedGenres = selectedGenres.filter((v) => v !== m)"
+              />
+              <FilterChip
+                v-for="l in selectedLengths"
+                :key="l"
+                :label="LENGTH_OPTIONS.find((o) => o.value === l)?.label || ''"
+                @remove="selectedLengths = selectedLengths.filter((v) => v !== l)"
+              />
+              <FilterChip
+                v-for="c in selectedConcepts"
+                :key="c.id"
+                :label="c.name"
+                @remove="toggleConcept(c)"
+              />
+              <FilterChip
+                v-if="yearMin || yearMax"
+                :label="`${yearMin || '…'}–${yearMax || '…'}`"
+                @remove="clearYearFilter"
+              />
+
+              <button
+                class="text-main/40 hover:text-primary ml-auto text-xs transition-colors"
+                @click="clearAllFilters"
+              >
+                清除全部
+              </button>
+            </div>
+
+            <!-- Count + Sort -->
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <span class="text-main/50 text-sm">
+                共
+                <span class="text-primary">{{ totalWorks }}</span>
+                部作品
+              </span>
+
+              <div class="flex items-center gap-2">
+                <SortSelect
+                  v-model="ordering"
+                  select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none"
+                  :options="[
+                    { value: '-ori_date', label: '日期（新到舊）' },
+                    { value: 'ori_date', label: '日期（舊到新）' },
+                    { value: 'title', label: '標題' },
+                    { value: '-updated_at', label: '最近更新' },
+                  ]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Works List -->
+          <div
+            v-if="isLoading"
+            class="text-main/40 animate-pulse py-16 text-center text-base"
+          >
+            搜尋中…
+          </div>
+          <div
+            v-else-if="works.length === 0"
+            class="text-main/40 py-16 text-center text-base"
+          >
+            找不到符合條件的作品。
+          </div>
+
+          <div
+            v-else
+            class="flex flex-col"
+          >
+            <HoverListItem
+              v-for="work in works"
+              :key="work.id"
+              tag="div"
+              class="flex flex-col justify-between gap-3 py-4 md:flex-row md:items-start"
+            >
+              <!-- Left: title + meta -->
+              <div class="min-w-0 flex-1">
+                <router-link
+                  :to="`/works/${work.id}`"
+                  class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
+                >
+                  {{ work.title }}
+                </router-link>
+
+                <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
+                  <span
+                    v-if="work.byline && work.byline.length"
+                    class="flex flex-wrap items-center gap-x-0.5"
+                  >
+                    <template
+                      v-for="(agent, idx) in work.byline"
+                      :key="idx"
+                    >
+                      <router-link
+                        v-if="agent.id && agent.agent_type === 'person'"
+                        :to="`/persons/${agent.id}`"
+                        class="hover:text-primary no-underline transition-colors"
+                      >
+                        {{ agent.text }}
+                      </router-link>
+                      <span v-else>{{ agent.text }}</span>
+                      <span v-if="idx < work.byline.length - 1">、</span>
+                    </template>
+                  </span>
+                  <span v-else>佚名</span>
+
+                  <span class="text-main/20">·</span>
+                  <span>{{ work.year || '未知' }}</span>
+                  <template
+                    v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
+                  >
+                    <span class="text-main/20">·</span>
+                    <span>
+                      {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
+                    </span>
+                  </template>
+                </div>
+              </div>
+
+              <!-- Right: concept tags -->
+              <div
+                v-if="work.work_concepts && work.work_concepts.length"
+                class="flex flex-wrap gap-1.5 md:max-w-[45%] md:justify-end"
+              >
+                <ConceptTag
+                  v-for="wc in work.work_concepts"
+                  :key="wc.concept.slug"
+                  :concept="wc.concept"
+                />
+              </div>
+            </HoverListItem>
+          </div>
+
+          <PaginationControls
+            v-if="works.length > 0 && (hasPrev || hasNext)"
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            :has-prev="hasPrev"
+            :has-next="hasNext"
+            @change-page="changePage"
+          />
+        </template>
+      </main>
+    </div>
+
+    <!-- ══ Concept Modal ══ -->
+    <ConceptPickerModal
+      v-model="selectedConcepts"
+      :all-concepts="allConcepts"
+      :open="isModalOpen"
+      @close="closeModal"
+    />
   </div>
-
-  <!-- ══ Concept Modal ══ -->
-  <ConceptPickerModal
-    v-model="selectedConcepts"
-    :all-concepts="allConcepts"
-    :open="isModalOpen"
-    @close="closeModal"
-  />
 </template>

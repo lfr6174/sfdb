@@ -137,7 +137,7 @@ onMounted(async () => {
 
         <div
           v-if="isLoading"
-          class="text-main/50 py-3 text-sm"
+          class="text-main/50 animate-pulse py-3 text-sm"
         >
           正在讀取作品...
         </div>

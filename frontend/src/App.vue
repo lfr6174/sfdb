@@ -72,9 +72,18 @@ onMounted(async () => {
     <!-- Injected Global Navbar Component -->
     <Navbar />
 
-    <!-- Main Content Area: dynamically rendered by Vue Router -->
     <main class="flex-grow px-5 py-4 md:px-8 md:py-8">
-      <router-view :key="$route.path"></router-view>
+      <router-view v-slot="{ Component }">
+        <transition
+          name="fade"
+          mode="out-in"
+        >
+          <component
+            :is="Component"
+            :key="$route.path"
+          />
+        </transition>
+      </router-view>
     </main>
 
     <!-- Footer -->

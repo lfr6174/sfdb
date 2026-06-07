@@ -41,7 +41,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
   <div class="mx-auto max-w-4xl">
     <div
       v-if="isLoading"
-      class="text-main/50 py-16 text-center text-sm font-medium"
+      class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
     >
       正在讀取概念資料...
     </div>

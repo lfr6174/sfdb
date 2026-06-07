@@ -17,7 +17,7 @@ useDocumentTitle(() => pageData.value?.title)
   <div class="mx-auto max-w-4xl space-y-4 pb-20">
     <div
       v-if="isLoading"
-      class="text-main/50 py-16 text-center text-sm font-medium"
+      class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
     >
       正在讀取頁面資料...
     </div>
