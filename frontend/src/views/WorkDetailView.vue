@@ -273,7 +273,6 @@ const visiblePublications = computed(() => {
 
                   <div
                     v-if="
-                      pub.manifestations?.length === 1 &&
                       pub.manifestation_display_name &&
                       pub.manifestation_display_name !== pub.title
                     "
