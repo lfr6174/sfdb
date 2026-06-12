@@ -174,13 +174,23 @@ class Work(TimeStampedModel):
         verbose_name = "作品"
         verbose_name_plural = "作品"
 
+    def __str__(self):
+        date_str = f" ({self.partial_date_str})" if self.partial_date_str else ""
+        return f"{self.title}{date_str}"
+
     @property
     def year(self):
         return self.ori_date.year if self.ori_date else None
 
-    def __str__(self):
-        year_str = f" ({self.year})" if self.year else ""
-        return f"{self.title}{year_str}"
+    @property
+    def partial_date_str(self):
+        if not self.ori_date:
+            return ""
+        if self.ori_date_precision == DatePrecision.DAY:
+            return self.ori_date.strftime("%Y-%m-%d")
+        if self.ori_date_precision == DatePrecision.MONTH:
+            return self.ori_date.strftime("%Y-%m")
+        return str(self.ori_date.year)
 
     def clean(self):
         super().clean()
@@ -551,13 +561,24 @@ class Publication(TimeStampedModel):
         verbose_name = "出版品"
         verbose_name_plural = "出版品"
 
+    def __str__(self):
+        media_str = f"[{self.composite_media_display}]"
+        date_str = f"({self.partial_date_str})" if self.partial_date_str else ""
+        return f"{self.title}{media_str}{date_str}"
+
     @property
     def year(self):
         return self.pub_date.year if self.pub_date else None
 
-    def __str__(self):
-        year_str = f" ({self.year})" if self.year else ""
-        return f"{self.title}{year_str}"
+    @property
+    def partial_date_str(self):
+        if not self.pub_date:
+            return ""
+        if self.pub_date_precision == DatePrecision.DAY:
+            return self.pub_date.strftime("%Y-%m-%d")
+        if self.pub_date_precision == DatePrecision.MONTH:
+            return self.pub_date.strftime("%Y-%m")
+        return str(self.pub_date.year)
 
     @property
     def composite_media_display(self):

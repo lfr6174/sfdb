@@ -180,11 +180,14 @@ AXES_COOLOFF_TIME = 1
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
 
-AXES_META_PRECEDENCE_ORDER = [
+# Prevent X-Forwarded-For IP spoofing when deployed behind Railway proxy.
+# We must use django-ipware (Axes v8+ delegates IP parsing to it).
+AXES_CLIENT_IP_CALLABLE = "axes.helpers.get_client_ip"
+
+# django-ipware configuration
+IPWARE_META_PRECEDENCE_ORDER = [
     "HTTP_X_FORWARDED_FOR",
     "REMOTE_ADDR",
 ]
-# Prevent X-Forwarded-For IP spoofing when deployed behind Railway proxy.
-# Railway acts as a single reverse proxy layer, appending the real client IP to the rightmost position.
-# Setting PROXY_COUNT = 1 ensures Axes strictly reads the rightmost IP, ignoring any spoofed IPs on the left.
-AXES_PROXY_COUNT = 1
+# Railway acts as a single reverse proxy layer.
+IPWARE_PROXY_COUNT = 1
