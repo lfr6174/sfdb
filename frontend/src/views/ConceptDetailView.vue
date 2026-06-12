@@ -12,15 +12,16 @@ import { getYearRange } from '../utils/formatters'
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler, clearRevealedSpoilers } = useSpoiler()
 const isExamplesExpanded = ref(false)
 
-const { data: concept, isLoading } = useApiDetail(
-  (params) => fetchConceptDetail(params.slug as string),
-  {
-    onRefetch: () => {
-      isExamplesExpanded.value = false
-      clearRevealedSpoilers()
-    },
+const {
+  data: concept,
+  isLoading,
+  hasError,
+} = useApiDetail((params) => fetchConceptDetail(params.slug as string), {
+  onRefetch: () => {
+    isExamplesExpanded.value = false
+    clearRevealedSpoilers()
   },
-)
+})
 
 useDocumentMeta(
   () => concept.value?.name,
@@ -44,6 +45,13 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
       class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
     >
       正在讀取概念資料...
+    </div>
+
+    <div
+      v-else-if="hasError"
+      class="text-main/50 py-16 text-center text-sm font-medium"
+    >
+      資料讀取發生問題，請稍後再試。
     </div>
 
     <template v-else-if="concept">

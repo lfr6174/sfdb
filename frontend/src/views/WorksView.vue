@@ -45,6 +45,7 @@ const selectedCatalogueTitle = ref('')
 const works = ref<Work[]>([])
 const totalWorks = ref(0)
 const isLoading = ref(false)
+const hasError = ref(false)
 const currentPage = ref(1)
 const hasNext = ref(false)
 const hasPrev = ref(false)
@@ -72,6 +73,7 @@ const fetchAllConcepts = async () => {
 
 const fetchWorks = async () => {
   isLoading.value = true
+  hasError.value = false
   try {
     const params: Record<string, string | number | boolean> = {
       page: currentPage.value,
@@ -94,6 +96,7 @@ const fetchWorks = async () => {
     hasPrev.value = !!res.data.previous
   } catch (err) {
     console.error('Failed to fetch works', err)
+    hasError.value = true
   } finally {
     isLoading.value = false
   }
@@ -575,6 +578,12 @@ const changePage = (dir: number) => {
             class="text-main/40 animate-pulse py-16 text-center text-base"
           >
             搜尋中…
+          </div>
+          <div
+            v-else-if="hasError"
+            class="text-main/50 py-16 text-center text-base font-medium"
+          >
+            資料讀取發生問題，請稍後再試。
           </div>
           <div
             v-else-if="works.length === 0"

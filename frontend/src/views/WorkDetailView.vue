@@ -9,7 +9,11 @@ import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchWorkDetail } from '../api/works'
 import { useApiDetail } from '../composables/useApiDetail'
 
-const { data: work, isLoading } = useApiDetail((params) => fetchWorkDetail(params.id as string))
+const {
+  data: work,
+  isLoading,
+  hasError,
+} = useApiDetail((params) => fetchWorkDetail(params.id as string))
 useDocumentMeta(
   () => work.value?.title,
   () => work.value?.description?.slice(0, 160),
@@ -56,6 +60,13 @@ const visiblePublications = computed(() => {
       class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
     >
       正在讀取作品資料...
+    </div>
+
+    <div
+      v-else-if="hasError"
+      class="text-main/50 py-16 text-center text-sm font-medium"
+    >
+      資料讀取發生問題，請稍後再試。
     </div>
 
     <template v-else-if="work">

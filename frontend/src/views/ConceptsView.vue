@@ -12,17 +12,20 @@ useDocumentMeta('概念探索', '')
 
 const allConcepts = ref<Concept[]>([])
 const isLoading = ref(true)
+const hasError = ref(false)
 
 const searchQuery = ref('')
 const sortBy = ref('alpha')
 
 const fetchAllConcepts = async () => {
   isLoading.value = true
+  hasError.value = false
   try {
     const response = await fetchAllConceptsApi()
     allConcepts.value = response.data || []
   } catch (error) {
     console.error('Failed to fetch concepts:', error)
+    hasError.value = true
   } finally {
     isLoading.value = false
   }
@@ -97,6 +100,14 @@ const groupedConcepts = computed(() => {
       class="text-main/50 animate-pulse py-16 text-center text-base font-medium"
     >
       正在讀取全站概念...
+    </div>
+
+    <!-- ── Error ── -->
+    <div
+      v-else-if="hasError"
+      class="text-main/50 py-16 text-center text-base font-medium"
+    >
+      資料讀取發生問題，請稍後再試。
     </div>
 
     <!-- ── Concept Groups ── -->

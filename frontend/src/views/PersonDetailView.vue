@@ -9,7 +9,11 @@ import { fetchPersonDetail } from '../api/persons'
 import { useApiDetail } from '../composables/useApiDetail'
 import { getYearRange } from '../utils/formatters'
 
-const { data: person, isLoading } = useApiDetail((params) => fetchPersonDetail(params.id as string))
+const {
+  data: person,
+  isLoading,
+  hasError,
+} = useApiDetail((params) => fetchPersonDetail(params.id as string))
 useDocumentMeta(
   () => person.value?.name,
   () => person.value?.about?.slice(0, 160),
@@ -55,6 +59,13 @@ const personAwards = computed(() => {
       class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
     >
       正在讀取人物資料...
+    </div>
+
+    <div
+      v-else-if="hasError"
+      class="text-main/50 py-16 text-center text-sm font-medium"
+    >
+      資料讀取發生問題，請稍後再試。
     </div>
 
     <template v-else-if="person">

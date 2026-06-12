@@ -13,6 +13,7 @@ useDocumentMeta('人物列表', '')
 const {
   items: persons,
   isLoading,
+  hasError,
   searchQuery,
   ordering: sortBy,
   currentPage,
@@ -49,12 +50,17 @@ const {
 
     <!-- ── Loading ── -->
     <div
-      v-if="isLoading && persons.length === 0"
+      v-if="isLoading"
+      class="text-main/50 animate-pulse py-16 text-center text-base font-medium"
+    >
+      正在讀取人物資料...
+    </div>
+    <div
+      v-else-if="hasError"
       class="text-main/50 py-16 text-center text-base font-medium"
     >
-      正在讀取人物列表...
+      資料讀取發生問題，請稍後再試。
     </div>
-
     <div
       v-else-if="persons.length === 0"
       class="flex flex-col items-center gap-2 py-16 text-center"

@@ -20,6 +20,7 @@ export function useListView<T>(
 ) {
   const items = ref<T[]>([]) as import('vue').Ref<T[]>
   const isLoading = ref(false)
+  const hasError = ref(false)
   const searchQuery = ref('')
   const ordering = ref(options?.defaultOrdering || '-created_at')
   const currentPage = ref(1)
@@ -30,6 +31,7 @@ export function useListView<T>(
 
   const fetch = async () => {
     isLoading.value = true
+    hasError.value = false
     try {
       const params: Record<string, string | number | boolean> = {
         page: currentPage.value,
@@ -44,6 +46,7 @@ export function useListView<T>(
       hasPrev.value = !!res.data.previous
     } catch (err) {
       console.error('Fetch failed:', err)
+      hasError.value = true
     } finally {
       isLoading.value = false
     }
@@ -65,6 +68,7 @@ export function useListView<T>(
   return {
     items,
     isLoading,
+    hasError,
     searchQuery,
     ordering,
     currentPage,

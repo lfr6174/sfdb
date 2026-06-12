@@ -14,6 +14,7 @@ useDocumentMeta('最新資訊', '')
 const {
   items: posts,
   isLoading,
+  hasError,
   searchQuery,
   ordering,
   currentPage,
@@ -56,6 +57,12 @@ const {
       class="text-main/50 animate-pulse py-16 text-center text-base font-medium"
     >
       正在讀取文章列表...
+    </div>
+    <div
+      v-else-if="hasError"
+      class="text-main/50 py-16 text-center text-base font-medium"
+    >
+      資料讀取發生問題，請稍後再試。
     </div>
     <div
       v-else-if="posts.length === 0"

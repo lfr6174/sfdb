@@ -17,6 +17,7 @@ useDocumentMeta(null, '')
 
 const works = ref<Work[]>([])
 const isLoading = ref(true)
+const hasError = ref(false)
 
 const stats = ref({ works: 0, concepts: 0 })
 const currentConcept = ref<Concept | null>(null)
@@ -39,6 +40,8 @@ const refreshRandomConcept = async () => {
 }
 
 onMounted(async () => {
+  isLoading.value = true
+  hasError.value = false
   try {
     const [worksRes, conceptsRes, postsRes, randomRes] = await Promise.allSettled([
       fetchWorksApi({ limit: 1 }),
@@ -66,8 +69,17 @@ onMounted(async () => {
       currentConcept.value = randomRes.value.data
       works.value = randomRes.value.data.random_works || []
     }
+
+    if (
+      worksRes.status === 'rejected' &&
+      conceptsRes.status === 'rejected' &&
+      postsRes.status === 'rejected'
+    ) {
+      hasError.value = true
+    }
   } catch (error) {
     console.error('RESTful API fetch failed:', error)
+    hasError.value = true
   } finally {
     isLoading.value = false
   }
@@ -98,8 +110,19 @@ onMounted(async () => {
       </div>
     </section>
 
+    <!-- Error State -->
+    <div
+      v-if="hasError"
+      class="text-main/50 py-16 text-center text-base font-medium"
+    >
+      資料讀取發生問題，請稍後再試。
+    </div>
+
     <!-- Two Column Layout: 60/40 -->
-    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr] lg:gap-14">
+    <div
+      v-else
+      class="grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr] lg:gap-14"
+    >
       <!-- ══ Left Column: Random Concept Works ══ -->
       <section class="flex flex-col">
         <SectionTitle
@@ -231,9 +254,17 @@ onMounted(async () => {
             </template>
           </SectionTitle>
 
+          <!-- Loading state -->
+          <div
+            v-if="isLoading"
+            class="text-main/50 animate-pulse py-3 text-sm"
+          >
+            正在讀取公告...
+          </div>
+
           <!-- Empty state -->
           <div
-            v-if="announcements.length === 0"
+            v-else-if="announcements.length === 0"
             class="flex flex-col items-center gap-2 py-6 text-center"
           >
             <svg
@@ -281,7 +312,13 @@ onMounted(async () => {
         <section>
           <SectionTitle class="mb-4">近期新增概念</SectionTitle>
           <div
-            v-if="recentConcepts.length > 0"
+            v-if="isLoading"
+            class="text-main/50 animate-pulse py-3 text-sm"
+          >
+            正在讀取概念...
+          </div>
+          <div
+            v-else-if="recentConcepts.length > 0"
             class="flex flex-wrap gap-1.5"
           >
             <ConceptTag
