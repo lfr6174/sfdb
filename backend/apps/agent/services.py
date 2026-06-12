@@ -66,6 +66,7 @@ def get_agent_publications(agent):
 
     publications = (
         Publication.objects.filter(agents=agent)
+        .select_related("publisher")
         .prefetch_related(
             Prefetch(
                 "contributions",
