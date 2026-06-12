@@ -165,15 +165,7 @@ const visiblePublications = computed(() => {
             v-if="conceptDescriptions.length > 0"
             class="mt-12"
           >
-            <!-- Section eyebrow: label inline with rule -->
-            <div class="mb-3 flex items-center gap-3">
-              <span
-                class="text-main/40 text-sm font-medium tracking-widest whitespace-nowrap uppercase"
-              >
-                概念應用詳述
-              </span>
-              <div class="border-main/10 flex-1 border-t"></div>
-            </div>
+            <SectionTitle class="mb-3">概念應用詳述</SectionTitle>
 
             <div class="flex flex-col">
               <div
