@@ -58,7 +58,7 @@ const groupedConcepts = computed(() => {
       if (sortBy.value === 'alpha') return a.name.localeCompare(b.name)
       if (sortBy.value === 'count') return (b.works_count || 0) - (a.works_count || 0)
       if (sortBy.value === 'recent')
-        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        return new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
       return 0
     })
   })
