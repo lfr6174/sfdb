@@ -8,7 +8,7 @@ import { useApiDetail } from '../composables/useApiDetail'
 const { data: post, isLoading } = useApiDetail((params) => fetchPostDetail(params.id as string))
 useDocumentMeta(
   () => post.value?.title,
-  () => post.value?.content?.slice(0, 160),
+  () => post.value?.body?.slice(0, 160),
 )
 </script>
 

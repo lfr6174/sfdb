@@ -12,7 +12,7 @@ const {
 } = useApiDetail((params) => fetchPageDetail(params.slug as string))
 useDocumentMeta(
   () => pageData.value?.title,
-  () => pageData.value?.content?.slice(0, 160),
+  () => pageData.value?.body?.slice(0, 160),
 )
 </script>
 

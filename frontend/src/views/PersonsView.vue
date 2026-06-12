@@ -113,7 +113,7 @@ const {
 
         <!-- Bio -->
         <p class="text-main/70 mb-3.5 line-clamp-2 text-base leading-relaxed">
-          {{ person.excerpt || person.about || '暫無簡歷提供。' }}
+          {{ person.about || '暫無簡歷提供。' }}
         </p>
       </HoverListItem>
 

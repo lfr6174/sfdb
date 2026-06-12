@@ -12,7 +12,7 @@ import { getYearRange } from '../utils/formatters'
 const { data: person, isLoading } = useApiDetail((params) => fetchPersonDetail(params.id as string))
 useDocumentMeta(
   () => person.value?.name,
-  () => person.value?.brief_intro?.slice(0, 160),
+  () => person.value?.about?.slice(0, 160),
 )
 
 const totalWorksCount = computed(() => {
