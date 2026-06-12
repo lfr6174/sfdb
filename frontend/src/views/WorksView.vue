@@ -211,7 +211,6 @@ const clearCatalogue = () => {
 const changePage = (dir: number) => {
   currentPage.value += dir
   fetchWorks()
-  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 

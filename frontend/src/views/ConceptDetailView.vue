@@ -18,7 +18,6 @@ const { data: concept, isLoading } = useApiDetail(
     onRefetch: () => {
       isExamplesExpanded.value = false
       clearRevealedSpoilers()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
   },
 )

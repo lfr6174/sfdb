@@ -60,7 +60,6 @@ export function useListView<T>(
   const changePage = (dir: number) => {
     currentPage.value += dir
     fetch()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return {

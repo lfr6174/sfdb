@@ -273,8 +273,7 @@ const visiblePublications = computed(() => {
 
                   <div
                     v-if="
-                      pub.manifestation_display_name &&
-                      pub.manifestation_display_name !== pub.title
+                      pub.manifestation_display_name && pub.manifestation_display_name !== pub.title
                     "
                     class="text-primary/80 mt-0.5 text-xs"
                   >

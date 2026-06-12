@@ -102,7 +102,10 @@ onMounted(async () => {
     <div class="grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr] lg:gap-14">
       <!-- ══ Left Column: Random Concept Works ══ -->
       <section class="flex flex-col">
-        <SectionTitle v-if="currentConcept" class="mb-4">
+        <SectionTitle
+          v-if="currentConcept"
+          class="mb-4"
+        >
           與
           <router-link
             :to="`/concepts/${currentConcept.slug}`"
