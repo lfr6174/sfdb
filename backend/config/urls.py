@@ -9,10 +9,6 @@ admin.site.index_title = "資料"
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
-    # OpenAPI Schema and API documentation
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     # Core APIs
     path("api/", include("apps.core.urls")),
     path("api/", include("apps.agent.urls")),
@@ -26,4 +22,8 @@ if settings.DEBUG:
 
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
+        # OpenAPI Schema and API documentation (development only)
+        path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+        path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+        path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     ]
