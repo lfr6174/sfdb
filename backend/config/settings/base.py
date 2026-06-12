@@ -172,3 +172,19 @@ UNFOLD = {
     "SITE_HEADER": "TSFDB管理",
     "SITE_TITLE": "TSFDB管理",
 }
+
+
+# AXES (Brute Force Protection) Settings
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
+
+AXES_META_PRECEDENCE_ORDER = [
+    "HTTP_X_FORWARDED_FOR",
+    "REMOTE_ADDR",
+]
+# Prevent X-Forwarded-For IP spoofing when deployed behind Railway proxy.
+# Railway acts as a single reverse proxy layer, appending the real client IP to the rightmost position.
+# Setting PROXY_COUNT = 1 ensures Axes strictly reads the rightmost IP, ignoring any spoofed IPs on the left.
+AXES_PROXY_COUNT = 1
