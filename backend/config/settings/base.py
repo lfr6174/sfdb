@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.work",
     "apps.concept",
     "apps.post",
+    "apps.commit",
     "axes",  # Brute-force protection
     "unfold.contrib.simple_history",  # Unfold styling for simple_history
     "simple_history",  # Model history tracking
