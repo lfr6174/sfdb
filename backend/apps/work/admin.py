@@ -149,7 +149,8 @@ class WorkForm(forms.ModelForm):
         if result:
             obj.ori_date, obj.ori_date_precision = result
         else:
-            obj.ori_date = obj.ori_date_precision = None
+            obj.ori_date = None
+            obj.ori_date_precision = "year"
         if commit:
             obj.save()
             self.save_m2m()
@@ -189,7 +190,8 @@ class PublicationForm(forms.ModelForm):
         if result:
             obj.pub_date, obj.pub_date_precision = result
         else:
-            obj.pub_date = obj.pub_date_precision = None
+            obj.pub_date = None
+            obj.pub_date_precision = "year"
         if commit:
             obj.save()
             self.save_m2m()
