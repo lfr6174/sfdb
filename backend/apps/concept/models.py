@@ -35,8 +35,7 @@ class Concept(TimeStampedModel):
         ordering = ["category", "name"]
         verbose_name = "概念"
         verbose_name_plural = "概念"
-        # Enforce name uniqueness within a category
-        unique_together = [["name", "category"]]
+        constraints = [models.UniqueConstraint(fields=["name", "category"], name="unique_concept_name_category")]
         indexes = [
             models.Index(fields=["category"]),
         ]
@@ -57,6 +56,7 @@ class ConceptLink(models.Model):
         ordering = ["order"]
         verbose_name = "概念連結"
         verbose_name_plural = "概念連結"
+        constraints = [models.UniqueConstraint(fields=["concept", "url"], name="unique_concept_url")]
 
     def __str__(self):
         return f"{self.title} ({self.concept.name})"

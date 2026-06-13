@@ -58,7 +58,7 @@ class AgentAlias(models.Model):
         ordering = ["name"]
         verbose_name = "人物/組織別名"
         verbose_name_plural = "人物/組織別名"
-        unique_together = [["agent", "name"]]
+        constraints = [models.UniqueConstraint(fields=["agent", "name"], name="unique_agent_alias")]
         indexes = [
             models.Index(fields=["name"]),
         ]
@@ -82,6 +82,7 @@ class AgentLink(models.Model):
         ordering = ["label"]
         verbose_name = "人物/組織連結"
         verbose_name_plural = "人物/組織連結"
+        constraints = [models.UniqueConstraint(fields=["agent", "url"], name="unique_agent_url")]
 
     def __str__(self):
         return f"{self.agent.name} - {self.label}"

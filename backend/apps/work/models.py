@@ -325,7 +325,7 @@ class WorkAgent(models.Model):
     )
 
     class Meta:
-        unique_together = [("work", "agent", "role")]
+        constraints = [models.UniqueConstraint(fields=["work", "agent", "role"], name="unique_work_agent_role")]
         ordering = ["order"]
         verbose_name = "作品創作者"
         verbose_name_plural = "作品創作者"
@@ -353,7 +353,7 @@ class WorkConcept(models.Model):
     order = models.PositiveSmallIntegerField(default=0, verbose_name="顯示順序")
 
     class Meta:
-        unique_together = [("work", "concept")]
+        constraints = [models.UniqueConstraint(fields=["work", "concept"], name="unique_work_concept")]
         ordering = ["order"]
         verbose_name = "作品相關概念"
         verbose_name_plural = "作品相關概念"
@@ -377,7 +377,7 @@ class Manifestation(models.Model):
     )
 
     class Meta:
-        unique_together = [("work", "publication")]
+        constraints = [models.UniqueConstraint(fields=["work", "publication"], name="unique_manifestation")]
         verbose_name = "收錄紀錄"
         verbose_name_plural = "收錄紀錄"
 
@@ -419,7 +419,9 @@ class ManifestationAgent(models.Model):
     )
 
     class Meta:
-        unique_together = [("manifestation", "agent", "role")]
+        constraints = [
+            models.UniqueConstraint(fields=["manifestation", "agent", "role"], name="unique_manifestation_agent_role")
+        ]
         ordering = ["order"]
         verbose_name = "收錄作品的參與者"
         verbose_name_plural = "收錄作品的參與者"
@@ -643,7 +645,9 @@ class PublicationAgent(models.Model):
     )
 
     class Meta:
-        unique_together = [("publication", "agent", "role")]
+        constraints = [
+            models.UniqueConstraint(fields=["publication", "agent", "role"], name="unique_publication_agent_role")
+        ]
         ordering = ["order"]
         verbose_name = "出版品參與者"
         verbose_name_plural = "出版品參與者"
@@ -708,7 +712,7 @@ class Catalogue(TimeStampedModel):
         verbose_name = "精選"
         verbose_name_plural = "精選"
         ordering = ["title"]
-        unique_together = [("title", "year")]
+        constraints = [models.UniqueConstraint(fields=["title", "year"], name="unique_catalogue")]
 
     def __str__(self):
         if self.year:
@@ -742,7 +746,7 @@ class WorkCatalogue(TimeStampedModel):
     )
 
     class Meta:
-        unique_together = [("catalogue", "work", "category")]
+        constraints = [models.UniqueConstraint(fields=["catalogue", "work", "category"], name="unique_work_catalogue")]
         verbose_name = "獎項與書單收錄紀錄"
         verbose_name_plural = "獎項與書單收錄紀錄"
 
