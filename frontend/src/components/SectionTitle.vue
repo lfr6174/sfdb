@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * SectionTitle — Aesthetic divider for organizing detail pages (e.g., Concept Applications).
+ * Features an integrated visual line and a slot for inline actions (like provenance filters).
+ */
 // Fallthrough attributes (e.g., class="mb-5") automatically bind to the root div
 </script>
 

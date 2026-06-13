@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * ConceptPickerModal — Dialog for rapidly searching and selecting sci-fi concepts.
+ * Used for advanced filtering or navigating conceptual relationships.
+ */
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import SectionTitle from './SectionTitle.vue'
 import BaseSearchInput from './BaseSearchInput.vue'

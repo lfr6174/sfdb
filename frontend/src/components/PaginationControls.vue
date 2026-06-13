@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * PaginationControls — Paginator for long list views (Works, Concepts).
+ * Disables boundaries dynamically based on DRF's total page count.
+ */
 defineProps<{
   currentPage: number
   totalPages: number

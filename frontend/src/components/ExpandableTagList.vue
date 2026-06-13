@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * ExpandableTagList — Collapsible container for dense concept arrays attached to a Work.
+ * Truncates tags to prevent UI clutter, offering an expand/collapse toggle for deep exploration.
+ */
 import { ref, computed } from 'vue'
 import ConceptTag from './ConceptTag.vue'
 

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * BaseSearchInput — Primary search bar for filtering concepts or works.
+ * Features an integrated clear button (Escape) and delegates debouncing to the parent.
+ */
 import { ref } from 'vue'
 
 const model = defineModel<string>({ default: '' })

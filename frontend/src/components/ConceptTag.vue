@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * ConceptTag — Standardized pill for displaying a sci-fi Concept (e.g., Time Travel).
+ * Includes category-specific colors and routes directly to the concept's detail page.
+ */
 withDefaults(
   defineProps<{
     concept: {

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * HoverListItem — Interactive wrapper for TSFDB catalog entries (Works, Concepts, Agents).
+ * Groups hover effects (background, text color) for seamless list navigation.
+ */
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 

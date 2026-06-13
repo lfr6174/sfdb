@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * FilterChip — Toggleable UI chip for refining search results in the database.
+ * Used for filtering works by genre, era, or origin (e.g., Original vs. Licensed).
+ */
 defineProps<{ label: string }>()
 defineEmits<{ remove: [] }>()
 </script>

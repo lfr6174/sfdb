@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * BackLink — Standardized return navigation for detail pages (Works, Concepts, Posts).
+ * Ensures visual consistency when returning to master lists.
+ */
 defineProps<{
   to: string | object
   text: string

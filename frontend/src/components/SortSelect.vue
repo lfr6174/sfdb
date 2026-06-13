@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * SortSelect — Dropdown for sorting TSFDB query results (Works, Concepts, Agents).
+ * Maps directly to backend ordering fields (e.g., -ori_date, title).
+ */
 defineProps<{
   modelValue: string
   options: { value: string; label: string }[]

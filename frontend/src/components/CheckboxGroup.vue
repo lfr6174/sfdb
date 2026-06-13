@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * CheckboxGroup — Multi-select input for complex database filters (e.g., Work Genres).
+ * Synchronizes selected arrays directly with URL search parameters.
+ */
 withDefaults(
   defineProps<{
     options: { value: string; label: string }[]
