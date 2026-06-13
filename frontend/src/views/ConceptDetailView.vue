@@ -28,10 +28,15 @@ useDocumentMeta(
   () => concept.value?.description?.slice(0, 160),
 )
 
+const activeFilter = ref<'all' | 'original' | 'licensed'>('all')
+
 const validWorkConcepts = computed(() => {
   if (!concept.value?.work_concepts) return []
   return concept.value.work_concepts.filter(
-    (item) => item.description && item.description.trim() !== '',
+    (item) =>
+      item.description &&
+      item.description.trim() !== '' &&
+      (activeFilter.value === 'all' || item.provenance === activeFilter.value),
   )
 })
 
@@ -96,7 +101,30 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
 
           <!-- ── Application Examples ── -->
           <section class="mt-12">
-            <SectionTitle class="mb-3">概念應用範例</SectionTitle>
+            <SectionTitle class="mb-3">
+              概念應用範例
+              <template #action>
+                <div class="flex items-center gap-2 text-sm">
+                  <button
+                    class="transition-colors"
+                    :class="activeFilter === 'all' ? 'text-primary font-medium' : 'text-main/50 hover:text-main'"
+                    @click="activeFilter = 'all'"
+                  >全部</button>
+                  <span class="text-main/20">/</span>
+                  <button
+                    class="transition-colors"
+                    :class="activeFilter === 'original' ? 'text-primary font-medium' : 'text-main/50 hover:text-main'"
+                    @click="activeFilter = 'original'"
+                  >原創</button>
+                  <span class="text-main/20">/</span>
+                  <button
+                    class="transition-colors"
+                    :class="activeFilter === 'licensed' ? 'text-primary font-medium' : 'text-main/50 hover:text-main'"
+                    @click="activeFilter = 'licensed'"
+                  >代理</button>
+                </div>
+              </template>
+            </SectionTitle>
 
             <div
               v-if="validWorkConcepts.length > 0"
@@ -108,15 +136,23 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                 :key="item.id"
                 class="border-main/10 flex flex-col gap-1.5 border-b py-4 last:border-0"
               >
-                <div class="flex items-baseline gap-2">
-                  <router-link
-                    :to="`/works/${item.work}`"
-                    class="text-main hover:text-primary text-sm font-medium no-underline transition-colors"
+                <div class="flex items-baseline justify-between gap-2">
+                  <div class="flex items-baseline gap-2">
+                    <router-link
+                      :to="`/works/${item.work}`"
+                      class="text-main hover:text-primary text-sm font-medium no-underline transition-colors"
+                    >
+                      {{ item.work_title || '未知作品' }}
+                    </router-link>
+                    <span class="text-main/35 shrink-0 text-xs">
+                      {{ item.year || '-' }}
+                    </span>
+                  </div>
+                  <span
+                    v-if="item.provenance === 'original' || item.provenance === 'licensed'"
+                    class="text-main/40 shrink-0 text-xs"
                   >
-                    {{ item.work_title || '未知作品' }}
-                  </router-link>
-                  <span class="text-main/35 shrink-0 text-xs">
-                    {{ item.year || '-' }}
+                    {{ item.provenance === 'original' ? '原創' : '代理' }}
                   </span>
                 </div>
 
