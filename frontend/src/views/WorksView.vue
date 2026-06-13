@@ -29,11 +29,24 @@ const LENGTH_OPTIONS = [
   { value: 'long', label: '長篇' },
   { value: 'short', label: '中短篇' },
 ]
+const PROVENANCE_OPTIONS = [
+  { value: 'original', label: '原創' },
+  { value: 'licensed', label: '代理' },
+]
+const LANGUAGE_OPTIONS = [
+  { value: 'zh-hant', label: '繁體中文' },
+  { value: 'zh-hans', label: '簡體中文' },
+  { value: 'en', label: '英文' },
+  { value: 'ja', label: '日文' },
+  { value: 'other', label: '其他' },
+]
 
 // State
 const searchQuery = ref('')
 const selectedGenres = ref<string[]>([])
 const selectedLengths = ref<string[]>([])
+const selectedProvenances = ref<string[]>([])
+const selectedLanguages = ref<string[]>([])
 const selectedConcepts = ref<Concept[]>([])
 const yearMin = ref<number | ''>('')
 const yearMax = ref<number | ''>('')
@@ -82,6 +95,8 @@ const fetchWorks = async () => {
     if (searchQuery.value) params.search = searchQuery.value
     if (selectedGenres.value.length) params.genre = selectedGenres.value.join(',')
     if (selectedLengths.value.length) params.work_length = selectedLengths.value.join(',')
+    if (selectedProvenances.value.length) params.provenance = selectedProvenances.value.join(',')
+    if (selectedLanguages.value.length) params.language = selectedLanguages.value.join(',')
     if (selectedConcepts.value.length)
       params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
     if (yearMin.value) params.year_min = yearMin.value
@@ -110,7 +125,17 @@ const triggerFetch = useDebounceFn(() => {
 
 // Watch all filter states and trigger fetch
 watch(
-  [searchQuery, selectedGenres, selectedLengths, selectedConcepts, yearMin, yearMax, ordering],
+  [
+    searchQuery,
+    selectedGenres,
+    selectedLengths,
+    selectedProvenances,
+    selectedLanguages,
+    selectedConcepts,
+    yearMin,
+    yearMax,
+    ordering,
+  ],
   () => {
     triggerFetch()
   },
@@ -186,6 +211,8 @@ const clearAllFilters = () => {
   searchQuery.value = ''
   selectedGenres.value = []
   selectedLengths.value = []
+  selectedProvenances.value = []
+  selectedLanguages.value = []
   selectedConcepts.value = []
   yearMin.value = ''
   yearMax.value = ''
@@ -256,6 +283,15 @@ const changePage = (dir: number) => {
           <CheckboxGroup
             v-model="selectedLengths"
             :options="LENGTH_OPTIONS"
+          />
+        </div>
+
+        <!-- Provenance -->
+        <div class="mb-6">
+          <SectionTitle class="mb-3">作品來源</SectionTitle>
+          <CheckboxGroup
+            v-model="selectedProvenances"
+            :options="PROVENANCE_OPTIONS"
           />
         </div>
 
@@ -362,7 +398,7 @@ const changePage = (dir: number) => {
           v-if="isAdvancedMode"
           class="border-main/10 mb-8 border-b pb-10"
         >
-          <SectionTitle class="mb-6">
+          <SectionTitle class="mb-8">
             進階搜尋
             <template #action>
               <button
@@ -374,105 +410,156 @@ const changePage = (dir: number) => {
             </template>
           </SectionTitle>
 
-          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
+          <!-- Definition-list style form: each row = label (left) + content (right) -->
+          <dl class="divide-main/10 divide-y">
+            <!-- 關鍵字 -->
+            <div class="pt-0 pb-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
                 關鍵字
-              </label>
-              <input
-                v-model="searchQuery"
-                type="text"
-                name="search"
-                placeholder="標題、作者、筆名等"
-                class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2"
-              />
+              </dt>
+              <dd class="flex-1">
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="標題、作者、筆名等"
+                  class="text-main placeholder:text-main/30 border-main/20 focus:border-primary/50 w-full border-b bg-transparent pb-2 text-base transition-colors outline-none"
+                />
+              </dd>
             </div>
 
-            <div>
-              <label class="text-main/40 mb-2 block text-sm font-medium tracking-widest uppercase">
-                發表日期區間
-              </label>
-              <div class="flex items-center gap-2">
-                <input
-                  v-model="yearMin"
-                  type="number"
-                  name="year-min"
-                  placeholder="YYYY"
-                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2"
-                />
-                <span class="text-main/40 shrink-0 text-xs">至</span>
-                <input
-                  v-model="yearMax"
-                  type="number"
-                  name="year-max"
-                  placeholder="YYYY"
-                  class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent px-0 py-2 text-base transition-colors outline-none focus-visible:outline-2"
-                />
-              </div>
-            </div>
-
-            <div class="space-y-5">
-              <div>
-                <label
-                  class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
+            <!-- 發表年份 -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                發表年份
+              </dt>
+              <dd class="flex-1">
+                <div
+                  class="search-input border-main/20 focus-within:border-primary/50 inline-flex items-center border-b transition-colors"
                 >
-                  作品體裁
-                </label>
+                  <input
+                    v-model="yearMin"
+                    type="number"
+                    placeholder="YYYY"
+                    class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
+                  />
+                  <span class="text-main/30 px-3 font-mono">—</span>
+                  <input
+                    v-model="yearMax"
+                    type="number"
+                    placeholder="YYYY"
+                    class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
+                  />
+                </div>
+              </dd>
+            </div>
+
+            <!-- 作品體裁 -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                作品體裁
+              </dt>
+              <dd class="flex-1">
                 <CheckboxGroup
                   v-model="selectedGenres"
                   :options="GENRE_OPTIONS"
-                  layout-class="flex flex-wrap gap-x-5 gap-y-2"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
                 />
-              </div>
-              <div>
-                <label
-                  class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
-                >
-                  作品篇幅
-                </label>
+              </dd>
+            </div>
+
+            <!-- 作品篇幅 -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                作品篇幅
+              </dt>
+              <dd class="flex-1">
                 <CheckboxGroup
                   v-model="selectedLengths"
                   :options="LENGTH_OPTIONS"
-                  layout-class="flex flex-wrap gap-x-5 gap-y-2"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
                 />
-              </div>
+              </dd>
             </div>
 
-            <div>
-              <label
-                class="text-main/40 mb-2.5 block text-sm font-medium tracking-widest uppercase"
+            <!-- 作品來源 -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                作品來源
+              </dt>
+              <dd class="flex-1">
+                <CheckboxGroup
+                  v-model="selectedProvenances"
+                  :options="PROVENANCE_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
+                />
+              </dd>
+            </div>
+
+            <!-- 原始語言 -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                原始語言
+              </dt>
+              <dd class="flex-1">
+                <CheckboxGroup
+                  v-model="selectedLanguages"
+                  :options="LANGUAGE_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
+                />
+              </dd>
+            </div>
+
+            <!-- 概念標籤 -->
+            <div class="pt-6 pb-0 md:flex md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 pt-0.5 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
               >
                 概念標籤
-              </label>
-              <button
-                class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 w-full text-left text-base underline underline-offset-4 transition-colors"
-                @click="openModal"
-              >
-                + 點擊選取概念標籤
-              </button>
-              <div
-                v-if="selectedConcepts.length > 0"
-                class="mt-3 flex flex-wrap gap-1.5"
-              >
-                <span
-                  v-for="concept in selectedConcepts"
-                  :key="concept.id"
-                  class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+              </dt>
+              <dd class="flex-1">
+                <button
+                  class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-left text-base underline underline-offset-4 transition-colors"
+                  @click="openModal"
                 >
-                  {{ concept.name }}
-                  <button
-                    class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
-                    :aria-label="`移除 ${concept.name}`"
-                    @click.stop="toggleConcept(concept)"
+                  + 點擊選取概念標籤
+                </button>
+                <div
+                  v-if="selectedConcepts.length > 0"
+                  class="mt-3 flex flex-wrap gap-1.5"
+                >
+                  <span
+                    v-for="concept in selectedConcepts"
+                    :key="concept.id"
+                    class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
                   >
-                    &times;
-                  </button>
-                </span>
-              </div>
+                    {{ concept.name }}
+                    <button
+                      class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
+                      :aria-label="`移除 ${concept.name}`"
+                      @click.stop="toggleConcept(concept)"
+                    >
+                      &times;
+                    </button>
+                  </span>
+                </div>
+              </dd>
             </div>
-          </div>
+          </dl>
 
-          <div class="border-main/10 mt-8 flex justify-end gap-3 border-t pt-5">
+          <!-- Footer Actions -->
+          <div class="border-main/10 mt-10 flex justify-end gap-3 border-t pt-6">
             <button
               class="text-main/50 hover:text-primary px-3 py-1.5 text-sm transition-colors"
               @click="clearAllFilters"
@@ -480,10 +567,10 @@ const changePage = (dir: number) => {
               清除條件
             </button>
             <button
-              class="text-bg bg-primary px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-85"
+              class="bg-primary text-bg px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-85"
               @click="isAdvancedMode = false"
             >
-              查看結果（{{ totalWorks }}）
+              查看結果 ({{ totalWorks }})
             </button>
           </div>
         </section>
@@ -695,3 +782,20 @@ const changePage = (dir: number) => {
     />
   </div>
 </template>
+
+<style scoped>
+/* 移除 input number 的上下箭頭 */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* 自訂 Focus 狀態 */
+.search-input:focus-within {
+  border-color: rgba(194, 113, 78, 0.5); /* primary/50 */
+}
+</style>
