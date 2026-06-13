@@ -17,7 +17,7 @@ useDocumentMeta(
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl pb-20">
+  <div class="mx-auto max-w-4xl px-5 pb-24 md:px-0">
     <div
       v-if="isLoading"
       class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
@@ -34,7 +34,7 @@ useDocumentMeta(
 
     <template v-else-if="post">
       <!-- Back Link -->
-      <div class="mb-9 pt-6 md:pt-10">
+      <div class="mb-10 pt-8 md:pt-12">
         <BackLink
           to="/posts"
           text="返回文章列表"
@@ -42,24 +42,30 @@ useDocumentMeta(
       </div>
 
       <article class="flex flex-col">
-        <h1 class="text-main mb-6 text-2xl font-medium md:text-3xl">
-          {{ post.title }}
-        </h1>
+        <header class="border-main/10 mb-6 border-b pb-4">
+          <h1 class="text-main mb-4 text-3xl font-medium tracking-tight md:text-4xl">
+            {{ post.title }}
+          </h1>
 
-        <div class="text-main/50 mb-8 flex items-center gap-2 text-base">
-          <span>{{ post.author_name || '管理員' }}</span>
-          <span class="text-main/20">·</span>
-          <time>{{ formatDate(post.created_at) }}</time>
-        </div>
+          <div class="text-main/45 flex items-center gap-3 text-sm font-medium tracking-wide">
+            <span>{{ post.author_name || '管理員' }}</span>
+            <span class="text-main/20">·</span>
+            <time>{{ formatDate(post.created_at) }}</time>
+          </div>
+        </header>
 
         <!-- content -->
-        <div class="text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg">
+        <div
+          class="text-main/70 max-w-none text-base leading-[1.8] tracking-wide whitespace-pre-wrap md:text-lg"
+        >
           {{ post.body || '無內容' }}
         </div>
 
-        <div class="border-main/10 mt-16 flex justify-end border-t pt-6">
-          <span class="text-main/40 text-xs">最後更新於 {{ formatDate(post.updated_at) }}</span>
-        </div>
+        <footer class="border-main/10 mt-20 flex justify-end border-t pt-8">
+          <span class="text-main/45 text-sm tracking-wide">
+            最後更新於 {{ formatDate(post.updated_at) }}
+          </span>
+        </footer>
       </article>
     </template>
   </div>

@@ -107,21 +107,39 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                 <div class="flex items-center gap-2 text-sm">
                   <button
                     class="transition-colors"
-                    :class="activeFilter === 'all' ? 'text-primary font-medium' : 'text-main/50 hover:text-main'"
+                    :class="
+                      activeFilter === 'all'
+                        ? 'text-primary font-medium'
+                        : 'text-main/50 hover:text-main'
+                    "
                     @click="activeFilter = 'all'"
-                  >全部</button>
+                  >
+                    全部
+                  </button>
                   <span class="text-main/20">/</span>
                   <button
                     class="transition-colors"
-                    :class="activeFilter === 'original' ? 'text-primary font-medium' : 'text-main/50 hover:text-main'"
+                    :class="
+                      activeFilter === 'original'
+                        ? 'text-primary font-medium'
+                        : 'text-main/50 hover:text-main'
+                    "
                     @click="activeFilter = 'original'"
-                  >原創</button>
+                  >
+                    原創
+                  </button>
                   <span class="text-main/20">/</span>
                   <button
                     class="transition-colors"
-                    :class="activeFilter === 'licensed' ? 'text-primary font-medium' : 'text-main/50 hover:text-main'"
+                    :class="
+                      activeFilter === 'licensed'
+                        ? 'text-primary font-medium'
+                        : 'text-main/50 hover:text-main'
+                    "
                     @click="activeFilter = 'licensed'"
-                  >代理</button>
+                  >
+                    代理
+                  </button>
                 </div>
               </template>
             </SectionTitle>

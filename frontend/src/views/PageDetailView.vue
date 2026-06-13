@@ -17,7 +17,7 @@ useDocumentMeta(
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl space-y-4 pb-20">
+  <div class="mx-auto max-w-4xl px-5 pb-24 md:px-0">
     <div
       v-if="isLoading"
       class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
@@ -33,24 +33,31 @@ useDocumentMeta(
     </div>
 
     <template v-else-if="pageData">
-      <article class="pt-6 md:pt-10">
-        <h1 class="text-main mb-6 text-2xl leading-snug font-normal md:text-3xl">
-          {{ pageData.title }}
-        </h1>
+      <div class="mb-10 pt-8 md:pt-12">
+        <BackLink
+          to="/"
+          text="返回首頁"
+        />
+      </div>
 
-        <div class="border-main/10 mb-8 border-b"></div>
+      <article class="flex flex-col">
+        <header class="border-main/10 mb-6 border-b pb-4">
+          <h1 class="text-main text-3xl font-normal tracking-tight md:text-4xl">
+            {{ pageData.title }}
+          </h1>
+        </header>
 
-        <div class="text-main/80 max-w-none text-base leading-loose whitespace-pre-wrap lg:text-lg">
+        <div
+          class="text-main/70 max-w-none text-base leading-[1.8] tracking-wide whitespace-pre-wrap md:text-lg"
+        >
           {{ pageData.body || '無內容' }}
         </div>
 
-        <div class="border-main/10 mt-16 flex items-center justify-between border-t pt-6">
-          <BackLink
-            to="/"
-            text="返回首頁"
-          />
-          <span class="text-main/40 text-xs">最後更新於 {{ formatDate(pageData.updated_at) }}</span>
-        </div>
+        <footer class="border-main/10 mt-20 flex justify-end border-t pt-8">
+          <span class="text-main/45 text-sm tracking-wide">
+            最後更新於 {{ formatDate(pageData.updated_at) }}
+          </span>
+        </footer>
       </article>
     </template>
   </div>
