@@ -7,3 +7,4 @@ python-decouple
 django-unfold
 django-axes
 django-csp
+argon2-cffi
