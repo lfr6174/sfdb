@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from apps.core.models import TimeStampedModel
 
@@ -25,6 +26,7 @@ class Post(TimeStampedModel):
     body = models.TextField(verbose_name="內文", help_text="支援 Markdown。")
 
     is_pinned = models.BooleanField(default=False, verbose_name="置頂", help_text="僅對公告有效，需手動取消。")
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ["-created_at"]
@@ -43,6 +45,7 @@ class Page(TimeStampedModel):
     slug = models.SlugField(max_length=50, unique=True, verbose_name="網址代稱", help_text="例如: about, faq, terms")
     title = models.CharField(max_length=300, verbose_name="標題")
     body = models.TextField(verbose_name="內文", help_text="支援 Markdown。")
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "靜態頁面"

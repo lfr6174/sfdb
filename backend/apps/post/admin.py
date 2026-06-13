@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin
 from unfold.contrib.filters.admin import ChoicesDropdownFilter
 
@@ -6,7 +7,7 @@ from .models import Page, Post
 
 
 @admin.register(Post)
-class PostAdmin(ModelAdmin):
+class PostAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("title", "post_type", "author", "is_pinned", "created_at", "updated_at")
     search_fields = ("title", "body", "author__username")
     list_filter = (("post_type", ChoicesDropdownFilter), "is_pinned")
@@ -19,7 +20,7 @@ class PostAdmin(ModelAdmin):
 
 
 @admin.register(Page)
-class PageAdmin(ModelAdmin):
+class PageAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("title", "slug", "created_at", "updated_at")
     search_fields = ("title", "slug", "body")
     readonly_fields = ("created_at", "updated_at")

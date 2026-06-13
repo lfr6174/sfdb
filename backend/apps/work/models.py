@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from apps.core.models import TimeStampedModel
 
@@ -81,6 +82,7 @@ class Cycle(TimeStampedModel):
     note = models.TextField(
         blank=True, verbose_name="備註", help_text="任何補充說明，例如系列別名或歷史沿革。可留空。"
     )
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ["title"]
@@ -168,6 +170,7 @@ class Work(TimeStampedModel):
     publications = models.ManyToManyField(
         "Publication", through="Manifestation", related_name="works", verbose_name="收錄於哪些出版物"
     )
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ["-ori_date", "title"]
@@ -461,6 +464,7 @@ class Series(TimeStampedModel):
 
     title = models.CharField(max_length=300, verbose_name="叢書名稱")
     note = models.TextField(blank=True, verbose_name="備註")
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ["title"]
@@ -557,6 +561,7 @@ class Publication(TimeStampedModel):
         verbose_name="人物/組織",
         blank=True,
     )
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ["pub_date", "title"]
@@ -707,6 +712,7 @@ class Catalogue(TimeStampedModel):
         verbose_name="維護者",
         help_text="負責評選或維護此獎項/書單的人物/組織。",
     )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "精選"

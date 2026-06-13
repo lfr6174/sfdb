@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from apps.core.models import TimeStampedModel
 
@@ -23,11 +24,8 @@ class Concept(TimeStampedModel):
     is_featured = models.BooleanField(default=False, verbose_name="精選標籤", help_text="是否顯示作品檢索頁側欄。")
     featured_order = models.PositiveIntegerField(default=0, verbose_name="側欄排序")
 
-    description = models.TextField(
-        blank=True,
-        verbose_name="概述",
-        help_text="若有外部連結則保持內容精簡。",
-    )
+    description = models.TextField(blank=True, verbose_name="描述", help_text="解釋這個概念的定義或背景。可留空。")
+    history = HistoricalRecords()
 
     related_concepts = models.ManyToManyField("self", blank=True, symmetrical=True, verbose_name="相關概念")
 

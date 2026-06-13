@@ -3,6 +3,7 @@ import datetime
 from django import forms
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.contrib.filters.admin import (
     ChoicesDropdownFilter,
@@ -310,21 +311,21 @@ class RoleAdmin(ModelAdmin):
 
 
 @admin.register(Cycle)
-class CycleAdmin(ModelAdmin):
+class CycleAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(Series)
-class SeriesAdmin(ModelAdmin):
+class SeriesAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("title", "created_at", "updated_at")
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
 
 
 @admin.register(Work)
-class WorkAdmin(ModelAdmin):
+class WorkAdmin(SimpleHistoryAdmin, ModelAdmin):
     form = WorkForm
     list_display = (
         "title",
@@ -376,7 +377,7 @@ class WorkAdmin(ModelAdmin):
 
 
 @admin.register(Publication)
-class PublicationAdmin(ModelAdmin):
+class PublicationAdmin(SimpleHistoryAdmin, ModelAdmin):
     form = PublicationForm
     list_display = (
         "title",
@@ -445,7 +446,7 @@ class ManifestationAdmin(ModelAdmin):
 
 
 @admin.register(Catalogue)
-class CatalogueAdmin(ModelAdmin):
+class CatalogueAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("title", "catalogue_type", "year")
     list_filter = (
         ("catalogue_type", ChoicesDropdownFilter),

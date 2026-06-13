@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 from apps.core.models import TimeStampedModel
 
@@ -26,6 +27,7 @@ class Agent(TimeStampedModel):
     about = models.TextField(
         blank=True, verbose_name="簡介", help_text="關於此人物或組織的生平、經歷與背景介紹。可留空。"
     )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "人物/組織"

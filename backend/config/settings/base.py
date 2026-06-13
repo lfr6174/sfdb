@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     "apps.concept",
     "apps.post",
     "axes",  # Brute-force protection
+    "unfold.contrib.simple_history",  # Unfold styling for simple_history
+    "simple_history",  # Model history tracking
 ]
+
+SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD = True
 
 MIDDLEWARE = [
     # Custom: CORS middleware must be placed as high as possible
@@ -53,6 +57,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
     "csp.middleware.CSPMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

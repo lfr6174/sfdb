@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin, TabularInline
 
 from .models import Agent, AgentAlias, AgentLink
@@ -17,7 +18,7 @@ class AgentLinkInline(TabularInline):
 
 
 @admin.register(Agent)
-class AgentAdmin(ModelAdmin):
+class AgentAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("name", "agent_type", "short_about", "created_at", "updated_at")
     search_fields = ("name",)
     list_filter = ["agent_type", ("about", admin.EmptyFieldListFilter)]

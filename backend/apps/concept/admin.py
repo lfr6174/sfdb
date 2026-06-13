@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.contrib.filters.admin import ChoicesDropdownFilter
 
@@ -14,7 +15,7 @@ class ConceptLinkInline(TabularInline):
 
 
 @admin.register(Concept)
-class ConceptAdmin(ModelAdmin):
+class ConceptAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_display = ("name", "category", "is_featured", "featured_order", "created_at", "updated_at")
     list_editable = ("category", "is_featured", "featured_order")
     list_filter = (("category", ChoicesDropdownFilter), "is_featured")
