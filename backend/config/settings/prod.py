@@ -12,10 +12,8 @@ ADMIN_URL = config("ADMIN_URL")
 # Explicitly require ALLOWED_HOSTS in production environment variables
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
 
-# Production CORS setup (Should be set via environment variable)
-CORS_ALLOWED_ORIGINS = config(
-    "CORS_ALLOWED_ORIGINS", default="", cast=lambda v: [s.strip() for s in v.split(",")] if v else []
-)
+# Production CORS setup (Must be explicitly provided)
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(",")])
 CORS_ALLOW_CREDENTIALS = False
 CORS_ALLOW_METHODS = ["GET", "OPTIONS"]
 
@@ -26,9 +24,7 @@ X_FRAME_OPTIONS = "DENY"
 # Railway Reverse Proxy Settings
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
-CSRF_TRUSTED_ORIGINS = config(
-    "CSRF_TRUSTED_ORIGINS", default="", cast=lambda v: [s.strip() for s in v.split(",")] if v else []
-)
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(",")])
 
 # HTTPS / TLS / Cookie hardening
 SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
@@ -100,7 +96,8 @@ LOGGING = {
 
 # Database (Production uses PostgreSQL via DATABASE_URL)
 DATABASES = {
-    "default": dj_database_url.config(
+    "default": dj_database_url.parse(
+        config("DATABASE_URL"),
         conn_max_age=600,
         conn_health_checks=True,
     )
