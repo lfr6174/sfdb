@@ -102,3 +102,6 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
+
+# Disable DRF Browsable API in production (force JSON only) to reduce attack surface
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
