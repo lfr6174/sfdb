@@ -1,3 +1,4 @@
+import dj_database_url
 from decouple import config
 
 from .base import *
@@ -95,4 +96,12 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+# Database (Production uses PostgreSQL via DATABASE_URL)
+DATABASES = {
+    "default": dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }

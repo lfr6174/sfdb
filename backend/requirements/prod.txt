@@ -1,3 +1,4 @@
 -r base.txt
-# gunicorn
-# psycopg2-binary
+gunicorn
+psycopg2-binary
+dj-database-url
