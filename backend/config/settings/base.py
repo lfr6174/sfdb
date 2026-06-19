@@ -192,8 +192,8 @@ AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]
 
 # Prevent X-Forwarded-For IP spoofing when deployed behind Railway proxy.
-# We must use django-ipware (Axes v8+ delegates IP parsing to it).
-AXES_CLIENT_IP_CALLABLE = "axes.helpers.get_client_ip_address"
+# Axes v8+ automatically delegates IP parsing to django-ipware if installed.
+AXES_CLIENT_IP_CALLABLE = None
 
 # django-ipware configuration
 IPWARE_META_PRECEDENCE_ORDER = [
