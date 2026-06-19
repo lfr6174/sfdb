@@ -128,3 +128,17 @@ def test_work_relation_undirected_normalization():
 
     assert rel1.subject_work_id == smaller.id
     assert rel1.object_work_id == larger.id
+
+
+# Prevents: LimitedSearchFilter regression — oversized search terms must not raise 500
+@pytest.mark.django_db
+def test_search_long_input_returns_200(api_client):
+    response = api_client.get(reverse("work:work-list"), {"search": "a" * 500})
+    assert response.status_code == 200
+
+
+# Prevents: concepts_in with many IDs bypassing the [:20] cap and causing complex JOIN
+@pytest.mark.django_db
+def test_concepts_in_large_list_returns_200(api_client):
+    response = api_client.get(reverse("work:work-list"), {"concepts_in": ",".join(str(i) for i in range(100))})
+    assert response.status_code == 200
