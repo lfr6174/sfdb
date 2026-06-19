@@ -68,7 +68,7 @@ class PartialDateWidget(forms.MultiWidget):
             )
             parts.append(f"{rendered} <span style='margin:0 8px 0 2px'>{label}</span>")
 
-        return mark_safe("".join(parts))
+        return mark_safe("".join(parts))  # noqa: S308 — label is hardcoded; rendered is Django-escaped widget HTML
 
     def decompress(self, value):
         if not value:

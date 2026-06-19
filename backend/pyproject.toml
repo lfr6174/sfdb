@@ -21,6 +21,7 @@ select = [
     "B",    # flake8-bugbear: common bug patterns and design smells
     "C90",  # McCabe complexity
     "DJ",   # flake8-django: Django-specific anti-patterns
+    "S",    # flake8-bandit: security static analysis
     "T20",  # no print() / pprint() left in code
     "RUF",  # Ruff-native rules
 ]
@@ -39,7 +40,8 @@ max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
 "config/settings/*.py" = ["F403", "F405"]
-"tests/**/*.py"        = ["T20"]  # print() is acceptable in tests
+"tests/**/*.py"        = ["T20", "S101"]  # assert and print() are acceptable in tests
+"**/tests.py"          = ["S101"]         # assert is the test assertion mechanism
 "**/management/commands/*.py" = ["T20"]  # print() is the output mechanism here
 
 [tool.ruff.format]

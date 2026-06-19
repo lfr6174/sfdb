@@ -33,6 +33,6 @@ def get_random_concept_with_works(max_works: int = 6, min_works_required: int = 
             .order_by("?")[:max_works],
             to_attr="random_works",
         )
-    ).get(id=random.choice(ids))
+    ).get(id=random.choice(ids))  # noqa: S311 — non-cryptographic UI sampling
 
     return concept

@@ -7,7 +7,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 INSTALLED_APPS += ["debug_toolbar"]
 
 # Ensure DebugToolbarMiddleware is placed early in the middleware list
-MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware", *MIDDLEWARE]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
