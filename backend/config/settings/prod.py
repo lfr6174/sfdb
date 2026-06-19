@@ -34,21 +34,31 @@ SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
+# Session hardening
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_AGE = 604800
+SESSION_SERIALIZER = "django.contrib.sessions.serializers.JSONSerializer"
+
 # Security Headers
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 
-# Content Security Policy (via django-csp)
+# Content Security Policy (via django-csp v4.0)
 # Note: 'unsafe-inline' is often required by Django Admin / Unfold UI and DRF Browsable APIs.
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'")
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
-CSP_IMG_SRC = ("'self'",)
-CSP_FONT_SRC = ("'self'",)
-CSP_OBJECT_SRC = ("'none'",)
-CSP_BASE_URI = ("'none'",)
-CSP_FORM_ACTION = ("'self'",)
-CSP_FRAME_ANCESTORS = ("'none'",)
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'", "data:"],
+        "font-src": ["'self'"],
+        "object-src": ["'none'"],
+        "base-uri": ["'none'"],
+        "form-action": ["'self'"],
+        "frame-ancestors": ["'none'"],
+    }
+}
 
 # LOGGING (Production)
 LOGGING = {
