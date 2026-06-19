@@ -2,6 +2,8 @@ from django.db.models import Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 
+from apps.core.filters import LimitedSearchFilter
+
 from .filters import WorkFilter
 from .models import Manifestation, Work, WorkRelation
 from .serializers import (
@@ -12,7 +14,7 @@ from .serializers import (
 
 class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = WorkDetailSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, LimitedSearchFilter, filters.OrderingFilter]
     filterset_class = WorkFilter
     search_fields = [
         "title",

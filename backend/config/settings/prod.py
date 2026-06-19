@@ -105,12 +105,17 @@ LOGGING = {
 }
 
 # Database (Production uses PostgreSQL via DATABASE_URL)
+# statement_timeout: DB-level circuit breaker — kills any query exceeding 3s.
+# Guards against slow-query DoS that bypasses Cloudflare and DRF throttling.
 DATABASES = {
-    "default": dj_database_url.parse(
-        config("DATABASE_URL"),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    "default": {
+        **dj_database_url.parse(
+            config("DATABASE_URL"),
+            conn_max_age=600,
+            conn_health_checks=True,
+        ),
+        "OPTIONS": {"options": "-c statement_timeout=5000"},
+    }
 }
 
 # Disable DRF Browsable API in production (force JSON only) to reduce attack surface

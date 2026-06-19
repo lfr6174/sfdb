@@ -37,7 +37,7 @@ class WorkFilter(django_filters.FilterSet):
         if not value:
             return queryset
 
-        concept_ids = list(set([int(c_id) for c_id in value.split(",") if c_id.isdigit()]))
+        concept_ids = list(set(int(c_id) for c_id in value.split(",") if c_id.isdigit()))[:20]
         if not concept_ids:
             return queryset
 
