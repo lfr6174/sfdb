@@ -1,0 +1,9 @@
+# Production dependencies.
+# Edit this file, then run:
+#   pip-compile requirements/prod.in -o requirements/prod.txt
+# to regenerate the pinned lockfile.
+
+-r base.in
+gunicorn
+psycopg2-binary
+dj-database-url
