@@ -46,17 +46,23 @@ const LANGUAGE_OPTIONS = [
 const route = useRoute()
 const router = useRouter()
 
-// Filter state. Search, ordering, pagination and fetching live in useListView.
-const selectedGenres = ref<string[]>([])
-const selectedLengths = ref<string[]>([])
-const selectedProvenances = ref<string[]>([])
-const selectedLanguages = ref<string[]>([])
+const q0 = route.query
+
+// Filter state, initialized from the URL query so a shared or refreshed link
+// restores the same search. Search, ordering and pagination live in useListView
+// (also seeded from the URL below).
+const selectedGenres = ref<string[]>(q0.genre ? String(q0.genre).split(',') : [])
+const selectedLengths = ref<string[]>(q0.work_length ? String(q0.work_length).split(',') : [])
+const selectedProvenances = ref<string[]>(q0.provenance ? String(q0.provenance).split(',') : [])
+const selectedLanguages = ref<string[]>(q0.language ? String(q0.language).split(',') : [])
 const selectedConcepts = ref<Concept[]>([])
-const yearMin = ref<number | ''>('')
-const yearMax = ref<number | ''>('')
-const selectedPublicationId = ref((route.query.publication as string) || '')
-const selectedPublicationTitle = ref((route.query.publication_title as string) || '')
-const selectedCatalogueTitle = ref((route.query.catalogue as string) || '')
+const yearMin = ref<number | ''>(q0.year_min ? Number(q0.year_min) : '')
+const yearMax = ref<number | ''>(q0.year_max ? Number(q0.year_max) : '')
+const selectedPublicationId = ref((q0.publication as string) || '')
+const selectedPublicationTitle = ref((q0.publication_title as string) || '')
+const selectedCatalogueTitle = ref((q0.catalogue as string) || '')
+// Concept slugs from the URL, resolved to objects once allConcepts loads.
+const pendingConceptSlugs = ref<string[]>(q0.concept ? String(q0.concept).split(',') : [])
 
 const allConcepts = ref<Concept[]>([])
 const isModalOpen = ref(false)
@@ -90,9 +96,91 @@ const {
   changePage,
   triggerFetch,
 } = useListView<Work>(fetchWorksApi, {
-  defaultOrdering: '-updated_at',
+  defaultOrdering: (q0.ordering as string) || '-updated_at',
+  initialSearch: (q0.search as string) || '',
+  initialPage: q0.page ? Number(q0.page) : 1,
   extraParams: filterParams,
 })
+
+// ── URL <-> state synchronization ──
+// The URL query mirrors the filter state. Each direction skips itself by
+// checking whether the URL already matches the state (sameQuery), so the two
+// watchers below never ping-pong.
+
+const buildQuery = (): Record<string, string> => {
+  const q: Record<string, string> = {}
+  if (searchQuery.value) q.search = searchQuery.value
+  if (ordering.value !== '-updated_at') q.ordering = ordering.value
+  if (currentPage.value > 1) q.page = String(currentPage.value)
+  if (selectedGenres.value.length) q.genre = selectedGenres.value.join(',')
+  if (selectedLengths.value.length) q.work_length = selectedLengths.value.join(',')
+  if (selectedProvenances.value.length) q.provenance = selectedProvenances.value.join(',')
+  if (selectedLanguages.value.length) q.language = selectedLanguages.value.join(',')
+  if (selectedConcepts.value.length) q.concept = selectedConcepts.value.map((c) => c.slug).join(',')
+  if (yearMin.value) q.year_min = String(yearMin.value)
+  if (yearMax.value) q.year_max = String(yearMax.value)
+  if (selectedPublicationId.value) {
+    q.publication = selectedPublicationId.value
+    if (selectedPublicationTitle.value) q.publication_title = selectedPublicationTitle.value
+  }
+  if (selectedCatalogueTitle.value) q.catalogue = selectedCatalogueTitle.value
+  return q
+}
+
+const sameQuery = (a: Record<string, unknown>, b: Record<string, unknown>) => {
+  const norm = (o: Record<string, unknown>) =>
+    Object.entries(o)
+      .filter(([, v]) => v != null && v !== '')
+      .map(([k, v]) => `${k}=${Array.isArray(v) ? v.join(',') : v}`)
+      .sort()
+      .join('&')
+  return norm(a) === norm(b)
+}
+
+const applyConceptSlugs = (slugs: string[]) => {
+  if (!allConcepts.value.length) {
+    pendingConceptSlugs.value = slugs
+    return
+  }
+  selectedConcepts.value = slugs
+    .map((s) => allConcepts.value.find((c) => c.slug === s))
+    .filter((c): c is Concept => !!c)
+  pendingConceptSlugs.value = []
+}
+
+const applyQueryToState = (q: typeof route.query) => {
+  searchQuery.value = (q.search as string) || ''
+  ordering.value = (q.ordering as string) || '-updated_at'
+  currentPage.value = q.page ? Number(q.page) : 1
+  selectedGenres.value = q.genre ? String(q.genre).split(',') : []
+  selectedLengths.value = q.work_length ? String(q.work_length).split(',') : []
+  selectedProvenances.value = q.provenance ? String(q.provenance).split(',') : []
+  selectedLanguages.value = q.language ? String(q.language).split(',') : []
+  yearMin.value = q.year_min ? Number(q.year_min) : ''
+  yearMax.value = q.year_max ? Number(q.year_max) : ''
+  selectedPublicationId.value = (q.publication as string) || ''
+  selectedPublicationTitle.value = (q.publication_title as string) || ''
+  selectedCatalogueTitle.value = (q.catalogue as string) || ''
+  applyConceptSlugs(q.concept ? String(q.concept).split(',') : [])
+}
+
+// state -> URL
+watch(
+  () => buildQuery(),
+  (q) => {
+    if (!sameQuery(q, route.query)) router.replace({ query: q })
+  },
+  { deep: true },
+)
+
+// URL -> state (external navigation: links from other pages, back/forward)
+watch(
+  () => route.query,
+  (q) => {
+    if (sameQuery(buildQuery(), q)) return
+    applyQueryToState(q)
+  },
+)
 
 // Refetch (back to page 1) when a filter changes; search and ordering are
 // already watched inside useListView.
@@ -105,20 +193,11 @@ watch(
     selectedConcepts,
     yearMin,
     yearMax,
+    selectedPublicationId,
+    selectedCatalogueTitle,
   ],
   () => triggerFetch(),
   { deep: true },
-)
-
-// Keep the publication/catalogue filters in sync with the URL query.
-watch(
-  () => route.query,
-  (q) => {
-    selectedPublicationId.value = (q.publication as string) || ''
-    selectedPublicationTitle.value = (q.publication_title as string) || ''
-    selectedCatalogueTitle.value = (q.catalogue as string) || ''
-    triggerFetch()
-  },
 )
 
 const fetchAllConcepts = async () => {
@@ -131,16 +210,11 @@ const fetchAllConcepts = async () => {
 }
 
 onMounted(async () => {
-  // 1. Wait for all concepts to load, so we can find the corresponding object by slug.
+  // Concepts arrive as slugs in the URL; resolve them to objects once the full
+  // concept list is loaded. The resulting change triggers a refetch.
   await fetchAllConcepts()
-
-  // 2. Check if the URL has a 'concept' query parameter.
-  const conceptSlug = route.query.concept
-  if (conceptSlug) {
-    const matchedConcept = allConcepts.value.find((c) => c.slug === conceptSlug)
-    if (matchedConcept && !selectedConcepts.value.some((c) => c.id === matchedConcept.id)) {
-      selectedConcepts.value.push(matchedConcept)
-    }
+  if (pendingConceptSlugs.value.length) {
+    applyConceptSlugs(pendingConceptSlugs.value)
   }
 })
 
@@ -184,6 +258,7 @@ const clearYearFilter = () => {
   yearMax.value = ''
 }
 
+// Clearing state is enough; the URL and refetch follow via the watchers above.
 const clearAllFilters = () => {
   searchQuery.value = ''
   selectedGenres.value = []
@@ -193,26 +268,18 @@ const clearAllFilters = () => {
   selectedConcepts.value = []
   yearMin.value = ''
   yearMax.value = ''
-  if (route.query.publication || route.query.catalogue) {
-    const query = { ...route.query }
-    delete query.publication
-    delete query.publication_title
-    delete query.catalogue
-    router.replace({ query })
-  }
+  selectedPublicationId.value = ''
+  selectedPublicationTitle.value = ''
+  selectedCatalogueTitle.value = ''
 }
 
 const clearPublication = () => {
-  const query = { ...route.query }
-  delete query.publication
-  delete query.publication_title
-  router.replace({ query })
+  selectedPublicationId.value = ''
+  selectedPublicationTitle.value = ''
 }
 
 const clearCatalogue = () => {
-  const query = { ...route.query }
-  delete query.catalogue
-  router.replace({ query })
+  selectedCatalogueTitle.value = ''
 }
 </script>
 

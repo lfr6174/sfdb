@@ -16,14 +16,16 @@ export function useListView<T>(
   options?: {
     defaultOrdering?: string
     extraParams?: () => Record<string, string | number | boolean>
+    initialSearch?: string
+    initialPage?: number
   },
 ) {
   const items = ref<T[]>([]) as import('vue').Ref<T[]>
   const isLoading = ref(false)
   const hasError = ref(false)
-  const searchQuery = ref('')
+  const searchQuery = ref(options?.initialSearch || '')
   const ordering = ref(options?.defaultOrdering || '-created_at')
-  const currentPage = ref(1)
+  const currentPage = ref(options?.initialPage || 1)
   const totalCount = ref(0)
   const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / DEFAULT_PAGE_SIZE)))
   const hasNext = ref(false)
