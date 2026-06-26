@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useSpoiler } from '../composables/useSpoiler'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
-import HoverListItem from '../components/HoverListItem.vue'
+import SidebarRow from '../components/SidebarRow.vue'
 import ListState from '../components/ListState.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -211,81 +211,68 @@ const visiblePublications = computed(() => {
             <SectionTitle class="mb-4">出版與發行</SectionTitle>
 
             <div class="flex flex-col">
-              <div
+              <SidebarRow
                 v-for="pub in visiblePublications"
                 :key="pub.manifestation_id || pub.id"
-                class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
+                :label="pub.year"
+                :badge="pub.media_display"
               >
-                <!-- Left: year + media badge -->
-                <div class="flex w-12 shrink-0 flex-col items-start gap-1.5 pt-0.5">
-                  <span class="text-main/50 text-xs">{{ pub.year || '-' }}</span>
-                  <!-- Gray filled badge — visually distinct from concept tags -->
-                  <span
-                    v-if="pub.media_display"
-                    class="text-main/50 bg-main/5 px-1.5 py-0.5 font-mono text-[10px] tracking-wide whitespace-nowrap"
-                  >
-                    {{ pub.media_display }}
-                  </span>
+                <router-link
+                  :to="{
+                    path: '/works',
+                    query: { publication: pub.id, publication_title: pub.title },
+                  }"
+                  class="text-main hover:text-primary block text-base font-medium no-underline transition-colors"
+                >
+                  {{ pub.title }}
+                </router-link>
+
+                <div
+                  v-if="
+                    pub.manifestation_display_name && pub.manifestation_display_name !== pub.title
+                  "
+                  class="text-primary/70 mt-0.5 text-xs"
+                >
+                  ↳ {{ pub.manifestation_display_name }}
                 </div>
 
-                <div class="min-w-0 flex-1">
-                  <router-link
-                    :to="{
-                      path: '/works',
-                      query: { publication: pub.id, publication_title: pub.title },
-                    }"
-                    class="text-main hover:text-primary block text-base font-medium no-underline transition-colors"
-                  >
-                    {{ pub.title }}
-                  </router-link>
-
-                  <div
-                    v-if="
-                      pub.manifestation_display_name && pub.manifestation_display_name !== pub.title
-                    "
-                    class="text-primary/70 mt-0.5 text-xs"
-                  >
-                    ↳ {{ pub.manifestation_display_name }}
-                  </div>
-
-                  <div
-                    v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
-                    class="text-main/50 mt-0.5 flex flex-wrap gap-x-1 text-xs"
-                  >
-                    <template v-if="pub.credit && pub.credit.length">
+                <div
+                  v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
+                  class="text-main/50 mt-0.5 flex flex-wrap gap-x-1 text-xs"
+                >
+                  <template v-if="pub.credit && pub.credit.length">
+                    <template
+                      v-for="(group, gIdx) in pub.credit"
+                      :key="gIdx"
+                    >
                       <template
-                        v-for="(group, gIdx) in pub.credit"
-                        :key="gIdx"
+                        v-for="(agent, aIdx) in group.agents"
+                        :key="aIdx"
                       >
-                        <template
-                          v-for="(agent, aIdx) in group.agents"
-                          :key="aIdx"
-                        >
-                          {{ agent.text }}
-                          <span v-if="aIdx < group.agents.length - 1">、</span>
-                        </template>
-                        <span v-if="group.role">{{ group.role }}</span>
-                        <span v-if="gIdx < pub.credit.length - 1">；</span>
+                        {{ agent.text }}
+                        <span v-if="aIdx < group.agents.length - 1">、</span>
                       </template>
-                      <span
-                        v-if="pub.publisher?.name"
-                        class="text-main/25 px-0.5"
-                      >
-                        /
-                      </span>
+                      <span v-if="group.role">{{ group.role }}</span>
+                      <span v-if="gIdx < pub.credit.length - 1">；</span>
                     </template>
-                    <span v-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
-                  </div>
-
-                  <div
-                    v-if="pub.isbn || pub.binding_display"
-                    class="text-main/40 selection:bg-primary/20 mt-1.5 font-mono text-xs"
-                  >
-                    <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
-                    <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
-                  </div>
+                    <span
+                      v-if="pub.publisher?.name"
+                      class="text-main/25 px-0.5"
+                    >
+                      /
+                    </span>
+                  </template>
+                  <span v-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
                 </div>
-              </div>
+
+                <div
+                  v-if="pub.isbn || pub.binding_display"
+                  class="text-main/40 selection:bg-primary/20 mt-1.5 font-mono text-xs"
+                >
+                  <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
+                  <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
+                </div>
+              </SidebarRow>
 
               <!-- Expand row -->
               <button
@@ -311,66 +298,53 @@ const visiblePublications = computed(() => {
             <SectionTitle class="mb-4">收錄與獲獎</SectionTitle>
 
             <div class="flex flex-col">
-              <div
+              <SidebarRow
                 v-for="entry in sortedCatalogues"
                 :key="entry.id"
-                class="border-main/10 flex items-start gap-3 border-b py-3 last:border-0"
+                :label="entry.catalogue.year"
+                :badge="entry.catalogue.catalogue_type_display"
               >
-                <div class="flex w-12 shrink-0 flex-col items-start gap-1.5 pt-0.5">
-                  <span class="text-main/50 text-xs">
-                    {{ entry.catalogue.year || '-' }}
+                <router-link
+                  :to="{ path: '/works', query: { catalogue: entry.catalogue.title } }"
+                  class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
+                >
+                  {{ entry.catalogue.title }}
+                </router-link>
+
+                <div
+                  v-if="entry.category || entry.status_display || entry.note"
+                  class="text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs"
+                >
+                  <span
+                    v-if="entry.category"
+                    class="text-main/65 font-medium"
+                  >
+                    {{ entry.category }}
                   </span>
                   <span
-                    v-if="entry.catalogue.catalogue_type_display"
-                    class="text-main/50 bg-main/5 px-1.5 py-0.5 font-mono text-[10px] tracking-wide whitespace-nowrap"
+                    v-if="entry.category && entry.status_display"
+                    class="text-main/20"
                   >
-                    {{ entry.catalogue.catalogue_type_display }}
+                    ·
+                  </span>
+                  <span
+                    v-if="entry.status_display"
+                    :class="
+                      ['得獎', '首獎', '入選'].includes(entry.status_display)
+                        ? 'text-primary'
+                        : 'text-main/35'
+                    "
+                  >
+                    {{ entry.status_display }}
+                  </span>
+                  <span
+                    v-if="entry.note"
+                    class="text-main/40"
+                  >
+                    ({{ entry.note }})
                   </span>
                 </div>
-
-                <div class="min-w-0 flex-1">
-                  <router-link
-                    :to="{ path: '/works', query: { catalogue: entry.catalogue.title } }"
-                    class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
-                  >
-                    {{ entry.catalogue.title }}
-                  </router-link>
-
-                  <div
-                    v-if="entry.category || entry.status_display || entry.note"
-                    class="text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs"
-                  >
-                    <span
-                      v-if="entry.category"
-                      class="text-main/65 font-medium"
-                    >
-                      {{ entry.category }}
-                    </span>
-                    <span
-                      v-if="entry.category && entry.status_display"
-                      class="text-main/20"
-                    >
-                      ·
-                    </span>
-                    <span
-                      v-if="entry.status_display"
-                      :class="
-                        ['得獎', '首獎', '入選'].includes(entry.status_display)
-                          ? 'text-primary'
-                          : 'text-main/35'
-                      "
-                    >
-                      {{ entry.status_display }}
-                    </span>
-                    <span
-                      v-if="entry.note"
-                      class="text-main/40"
-                    >
-                      ({{ entry.note }})
-                    </span>
-                  </div>
-                </div>
-              </div>
+              </SidebarRow>
             </div>
           </section>
           <!-- Relations -->
@@ -381,25 +355,18 @@ const visiblePublications = computed(() => {
             <SectionTitle class="mb-4">關聯作品</SectionTitle>
 
             <div class="flex flex-col">
-              <HoverListItem
+              <SidebarRow
                 v-for="rel in work.relations"
                 :key="rel.id"
+                :label="rel.label"
                 :to="`/works/${rel.other_work.id}`"
-                class="block py-2"
               >
-                <div class="flex items-center gap-3">
-                  <div class="flex w-14 shrink-0 flex-col items-start">
-                    <span class="text-main/50 text-xs">{{ rel.label }}</span>
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <span
-                      class="text-main group-hover:text-primary text-base font-medium transition-colors"
-                    >
-                      {{ rel.other_work.title }}
-                    </span>
-                  </div>
-                </div>
-              </HoverListItem>
+                <span
+                  class="text-main group-hover:text-primary text-base font-medium transition-colors"
+                >
+                  {{ rel.other_work.title }}
+                </span>
+              </SidebarRow>
             </div>
           </section>
         </aside>
