@@ -15,9 +15,9 @@ import CheckboxGroup from '../components/CheckboxGroup.vue'
 import CustomCheckbox from '../components/CustomCheckbox.vue'
 import ListState from '../components/ListState.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
-import { useDebounceFn } from '../composables/useDebounce'
+import { useListView } from '../composables/useListView'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
-import { CONCEPT_CATEGORY_MAP, DEFAULT_PAGE_SIZE } from '../utils/constants'
+import { CONCEPT_CATEGORY_MAP } from '../utils/constants'
 
 useDocumentMeta('作品列表', '')
 
@@ -43,8 +43,10 @@ const LANGUAGE_OPTIONS = [
   { value: 'other', label: '其他' },
 ]
 
-// State
-const searchQuery = ref('')
+const route = useRoute()
+const router = useRouter()
+
+// Filter state. Search, ordering, pagination and fetching live in useListView.
 const selectedGenres = ref<string[]>([])
 const selectedLengths = ref<string[]>([])
 const selectedProvenances = ref<string[]>([])
@@ -52,79 +54,50 @@ const selectedLanguages = ref<string[]>([])
 const selectedConcepts = ref<Concept[]>([])
 const yearMin = ref<number | ''>('')
 const yearMax = ref<number | ''>('')
-const ordering = ref('-updated_at')
-const selectedPublicationId = ref('')
-const selectedPublicationTitle = ref('')
-const selectedCatalogueTitle = ref('')
-
-const works = ref<Work[]>([])
-const totalWorks = ref(0)
-const isLoading = ref(false)
-const hasError = ref(false)
-const currentPage = ref(1)
+const selectedPublicationId = ref((route.query.publication as string) || '')
+const selectedPublicationTitle = ref((route.query.publication_title as string) || '')
+const selectedCatalogueTitle = ref((route.query.catalogue as string) || '')
 
 const allConcepts = ref<Concept[]>([])
 const isModalOpen = ref(false)
-
 const isAdvancedMode = ref(false)
 
-const route = useRoute()
-const router = useRouter()
-
-// FIX: Compute total pages for pagination display
-const totalPages = computed(() => Math.max(1, Math.ceil(totalWorks.value / DEFAULT_PAGE_SIZE)))
-
-// Data Fetching
-const fetchAllConcepts = async () => {
-  try {
-    const res = await fetchAllConceptsApi()
-    allConcepts.value = res.data || []
-  } catch (err) {
-    console.error('Failed to fetch concepts', err)
-  }
+// Active filters, mapped to query params for the works endpoint.
+const filterParams = () => {
+  const params: Record<string, string | number | boolean> = {}
+  if (selectedGenres.value.length) params.genre = selectedGenres.value.join(',')
+  if (selectedLengths.value.length) params.work_length = selectedLengths.value.join(',')
+  if (selectedProvenances.value.length) params.provenance = selectedProvenances.value.join(',')
+  if (selectedLanguages.value.length) params.language = selectedLanguages.value.join(',')
+  if (selectedConcepts.value.length)
+    params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
+  if (yearMin.value) params.year_min = yearMin.value
+  if (yearMax.value) params.year_max = yearMax.value
+  if (selectedPublicationId.value) params.publication = selectedPublicationId.value
+  if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
+  return params
 }
 
-const fetchWorks = async () => {
-  isLoading.value = true
-  hasError.value = false
-  try {
-    const params: Record<string, string | number | boolean> = {
-      page: currentPage.value,
-      ordering: ordering.value,
-    }
-    if (searchQuery.value) params.search = searchQuery.value
-    if (selectedGenres.value.length) params.genre = selectedGenres.value.join(',')
-    if (selectedLengths.value.length) params.work_length = selectedLengths.value.join(',')
-    if (selectedProvenances.value.length) params.provenance = selectedProvenances.value.join(',')
-    if (selectedLanguages.value.length) params.language = selectedLanguages.value.join(',')
-    if (selectedConcepts.value.length)
-      params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
-    if (yearMin.value) params.year_min = yearMin.value
-    if (yearMax.value) params.year_max = yearMax.value
-    if (selectedPublicationId.value) params.publication = selectedPublicationId.value
-    if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
+const {
+  items: works,
+  isLoading,
+  hasError,
+  searchQuery,
+  ordering,
+  currentPage,
+  totalPages,
+  totalCount: totalWorks,
+  changePage,
+  triggerFetch,
+} = useListView<Work>(fetchWorksApi, {
+  defaultOrdering: '-updated_at',
+  extraParams: filterParams,
+})
 
-    const res = await fetchWorksApi(params)
-    works.value = res.data.results || []
-    totalWorks.value = res.data.count || 0
-  } catch (err) {
-    console.error('Failed to fetch works', err)
-    hasError.value = true
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// Debounce Strategy for Real-time Search
-const triggerFetch = useDebounceFn(() => {
-  currentPage.value = 1
-  fetchWorks()
-}, 300)
-
-// Watch all filter states and trigger fetch
+// Refetch (back to page 1) when a filter changes; search and ordering are
+// already watched inside useListView.
 watch(
   [
-    searchQuery,
     selectedGenres,
     selectedLengths,
     selectedProvenances,
@@ -132,14 +105,12 @@ watch(
     selectedConcepts,
     yearMin,
     yearMax,
-    ordering,
   ],
-  () => {
-    triggerFetch()
-  },
+  () => triggerFetch(),
   { deep: true },
 )
 
+// Keep the publication/catalogue filters in sync with the URL query.
 watch(
   () => route.query,
   (q) => {
@@ -148,8 +119,16 @@ watch(
     selectedCatalogueTitle.value = (q.catalogue as string) || ''
     triggerFetch()
   },
-  { immediate: true },
 )
+
+const fetchAllConcepts = async () => {
+  try {
+    const res = await fetchAllConceptsApi()
+    allConcepts.value = res.data || []
+  } catch (err) {
+    console.error('Failed to fetch concepts', err)
+  }
+}
 
 onMounted(async () => {
   // 1. Wait for all concepts to load, so we can find the corresponding object by slug.
@@ -234,12 +213,6 @@ const clearCatalogue = () => {
   const query = { ...route.query }
   delete query.catalogue
   router.replace({ query })
-}
-
-const changePage = (page: number) => {
-  currentPage.value = page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  fetchWorks()
 }
 </script>
 
