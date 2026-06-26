@@ -11,6 +11,7 @@ import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import HoverListItem from '../components/HoverListItem.vue'
+import Icon from '../components/Icon.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 
 useDocumentMeta(null, '')
@@ -142,20 +143,11 @@ onMounted(async () => {
               class="text-main/40 hover:text-primary flex items-center gap-1 text-sm whitespace-nowrap transition-colors"
               @click="refreshRandomConcept"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.8"
-                stroke="currentColor"
+              <Icon
+                name="refresh"
+                :stroke-width="1.8"
                 class="h-3.5 w-3.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                />
-              </svg>
+              />
               換一個
             </button>
           </template>
@@ -220,20 +212,11 @@ onMounted(async () => {
           v-else
           class="flex flex-col items-center gap-2 py-10 text-center"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.2"
-            stroke="currentColor"
+          <Icon
+            name="box"
+            :stroke-width="1.2"
             class="text-main/15 h-10 w-10"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"
-            />
-          </svg>
+          />
           <span class="text-main/35 text-sm">目前該概念下暫無作品。</span>
         </div>
       </section>
@@ -267,20 +250,11 @@ onMounted(async () => {
             v-else-if="announcements.length === 0"
             class="flex flex-col items-center gap-2 py-6 text-center"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.2"
-              stroke="currentColor"
+            <Icon
+              name="bell-off"
+              :stroke-width="1.2"
               class="text-main/20 h-8 w-8"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.97m1.965-2.277L21 21m-4.225-4.225a23.81 23.81 0 0 0 .498-2.242M3 3l4.241 4.241m0 0A23.94 23.94 0 0 1 12 6c2.57 0 5.026.4 7.334 1.15m-7.078 7.078L3 3"
-              />
-            </svg>
+            />
             <span class="text-main/30 text-sm">目前尚無最新公告</span>
           </div>
 
