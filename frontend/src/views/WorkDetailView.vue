@@ -240,10 +240,17 @@ const visiblePublications = computed(() => {
                       path: '/works',
                       query: { publication: pub.id, publication_title: pub.title },
                     }"
-                    class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
+                    class="text-main hover:text-primary block text-base font-medium no-underline transition-colors"
                   >
                     {{ pub.title }}
                   </router-link>
+
+                  <div
+                    v-if="pub.manifestation_display_name && pub.manifestation_display_name !== pub.title"
+                    class="text-primary/70 mt-0.5 text-xs"
+                  >
+                    ↳ {{ pub.manifestation_display_name }}
+                  </div>
 
                   <div
                     v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
@@ -275,17 +282,8 @@ const visiblePublications = computed(() => {
                   </div>
 
                   <div
-                    v-if="
-                      pub.manifestation_display_name && pub.manifestation_display_name !== pub.title
-                    "
-                    class="text-primary/80 mt-0.5 text-xs"
-                  >
-                    ↳ {{ pub.manifestation_display_name }}
-                  </div>
-
-                  <div
                     v-if="pub.isbn || pub.binding_display"
-                    class="text-main/40 selection:bg-primary/20 mt-2 font-mono text-xs"
+                    class="text-main/40 selection:bg-primary/20 mt-1.5 font-mono text-xs"
                   >
                     <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
                     <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
