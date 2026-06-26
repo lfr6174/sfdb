@@ -14,6 +14,7 @@ import ConceptPickerModal from '../components/ConceptPickerModal.vue'
 import CheckboxGroup from '../components/CheckboxGroup.vue'
 import CustomCheckbox from '../components/CustomCheckbox.vue'
 import ListState from '../components/ListState.vue'
+import SkeletonList from '../components/SkeletonList.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useListView } from '../composables/useListView'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -699,9 +700,11 @@ const clearCatalogue = () => {
             :loading="isLoading"
             :error="hasError"
             :empty="works.length === 0"
-            loading-text="搜尋中…"
             empty-text="找不到符合條件的作品。"
           >
+            <template #loading>
+              <SkeletonList />
+            </template>
             <div class="flex flex-col">
               <HoverListItem
                 v-for="work in works"

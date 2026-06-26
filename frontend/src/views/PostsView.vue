@@ -4,6 +4,7 @@ import type { Post } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import ListState from '../components/ListState.vue'
+import SkeletonList from '../components/SkeletonList.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { formatDate } from '../utils/formatters'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -55,9 +56,11 @@ const {
       :loading="isLoading"
       :error="hasError"
       :empty="posts.length === 0"
-      loading-text="正在讀取文章列表..."
       empty-text="找不到符合條件的文章。"
     >
+      <template #loading>
+        <SkeletonList />
+      </template>
       <div class="flex flex-col">
         <!-- Count -->
         <p

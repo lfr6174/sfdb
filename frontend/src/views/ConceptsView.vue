@@ -6,6 +6,7 @@ import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Concept } from '../types'
 import ConceptTag from '../components/ConceptTag.vue'
 import ListState from '../components/ListState.vue'
+import SkeletonList from '../components/SkeletonList.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
 
@@ -99,8 +100,13 @@ const groupedConcepts = computed(() => {
     <ListState
       :loading="isLoading"
       :error="hasError"
-      loading-text="正在讀取全站概念..."
     >
+      <template #loading>
+        <SkeletonList
+          variant="tags"
+          :tags="24"
+        />
+      </template>
       <div class="pb-20">
         <div
           v-if="Object.keys(groupedConcepts).length > 0"

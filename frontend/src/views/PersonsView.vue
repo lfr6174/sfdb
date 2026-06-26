@@ -4,6 +4,7 @@ import type { Person } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import ListState from '../components/ListState.vue'
+import SkeletonList from '../components/SkeletonList.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { useListView } from '../composables/useListView'
@@ -52,9 +53,11 @@ const {
       :loading="isLoading"
       :error="hasError"
       :empty="persons.length === 0"
-      loading-text="正在讀取人物資料..."
       empty-text="找不到符合條件的人物。"
     >
+      <template #loading>
+        <SkeletonList />
+      </template>
       <div class="pb-20">
         <!-- Count -->
         <p

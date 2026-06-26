@@ -36,12 +36,15 @@ withDefaults(
 </script>
 
 <template>
-  <div
-    v-if="loading"
-    class="text-main/50 animate-pulse py-16 text-center font-medium"
-    :class="size === 'sm' ? 'text-sm' : 'text-base'"
-  >
-    {{ loadingText }}
+  <div v-if="loading">
+    <slot name="loading">
+      <div
+        class="text-main/50 animate-pulse py-16 text-center font-medium"
+        :class="size === 'sm' ? 'text-sm' : 'text-base'"
+      >
+        {{ loadingText }}
+      </div>
+    </slot>
   </div>
   <div
     v-else-if="error"
