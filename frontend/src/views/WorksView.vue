@@ -239,15 +239,15 @@ const clearCatalogue = () => {
   router.replace({ query })
 }
 
-const changePage = (dir: number) => {
-  currentPage.value += dir
+const changePage = (page: number) => {
+  currentPage.value = page
   fetchWorks()
 }
 </script>
 
 <template>
   <div>
-    <div class="mx-auto flex max-w-4xl flex-col items-start gap-0 pb-20 lg:flex-row lg:gap-12">
+    <div class="mx-auto flex max-w-4xl flex-col gap-0 pb-20 lg:flex-row lg:items-start lg:gap-12">
       <!-- ══ Left Sidebar ══ -->
       <aside
         class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
@@ -759,11 +759,9 @@ const changePage = (dir: number) => {
           </div>
 
           <PaginationControls
-            v-if="works.length > 0 && (hasPrev || hasNext)"
+            v-if="totalPages > 1"
             :current-page="currentPage"
             :total-pages="totalPages"
-            :has-prev="hasPrev"
-            :has-next="hasNext"
             @change-page="changePage"
           />
         </template>

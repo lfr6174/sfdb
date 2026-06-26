@@ -18,8 +18,6 @@ const {
   ordering: sortBy,
   currentPage,
   totalPages,
-  hasNext,
-  hasPrev,
   changePage,
   totalCount,
 } = useListView<Person>(fetchPersonsApi, { defaultOrdering: 'name' })
@@ -128,8 +126,6 @@ const {
         v-if="totalPages > 1"
         :current-page="currentPage"
         :total-pages="totalPages"
-        :has-prev="hasPrev"
-        :has-next="hasNext"
         @change-page="changePage"
       />
     </div>

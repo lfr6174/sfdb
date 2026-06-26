@@ -99,7 +99,7 @@ const apply = () => {
     @keydown.esc="$emit('close')"
   >
     <div
-      class="bg-black/50 absolute inset-0"
+      class="absolute inset-0 bg-black/50"
       @click="$emit('close')"
     ></div>
     <div

@@ -60,8 +60,8 @@ export function useListView<T>(
   watch([searchQuery, ordering], () => triggerFetch())
   onMounted(fetch)
 
-  const changePage = (dir: number) => {
-    currentPage.value += dir
+  const changePage = (page: number) => {
+    currentPage.value = page
     fetch()
   }
 
