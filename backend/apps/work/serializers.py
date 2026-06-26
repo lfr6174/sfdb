@@ -86,6 +86,7 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
     publisher = AgentMinimalSerializer(read_only=True)
     source_display = serializers.CharField(source="get_source_display", read_only=True)
     media_display = serializers.CharField(source="composite_media_display", read_only=True)
+    binding_display = serializers.CharField(source="get_binding_display", read_only=True)
     year = serializers.IntegerField(read_only=True)
     contributions = PublicationAgentSerializer(many=True, read_only=True)
 
@@ -96,6 +97,7 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
             "title",
             "source_display",
             "media_display",
+            "binding_display",
             "language_display",
             "year",
             "isbn",

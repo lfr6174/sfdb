@@ -456,6 +456,13 @@ class PublicationMediaType(models.TextChoices):
     AUDIO = "audio", "有聲"
 
 
+class BindingType(models.TextChoices):
+    HARDCOVER = "hardcover", "精裝"
+    PAPERBACK = "paperback", "平裝"
+    SOFTCOVER = "softcover", "軟精裝"
+    SADDLE = "saddle", "騎馬釘"
+
+
 # --- Models ---
 
 
@@ -529,6 +536,13 @@ class Publication(TimeStampedModel):
         choices=PublicationMediaType.choices,
         default=PublicationMediaType.PRINT,
         verbose_name="出版媒介",
+    )
+    binding = models.CharField(
+        max_length=20,
+        choices=BindingType.choices,
+        blank=True,
+        verbose_name="裝訂",
+        help_text="僅適用於紙本出版品，非紙本留空。",
     )
     # Removed legacy `year` field
     pub_date = models.DateField(
@@ -608,10 +622,14 @@ class Publication(TimeStampedModel):
             raise ValidationError({"media": "網站的出版媒介只能設定為「電子」。"})
         if self.series_order is not None and self.series_id is None:
             raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
+        if self.binding and self.media != PublicationMediaType.PRINT:
+            raise ValidationError({"binding": "裝訂方式僅適用於紙本出版品。"})
 
     def save(self, *args, **kwargs):
         if self.source == PublicationSource.WEBSITE:
             self.media = PublicationMediaType.DIGITAL
+        if self.media != PublicationMediaType.PRINT:
+            self.binding = ""
         if self.isbn:
             self.isbn = self.isbn.replace("-", "").replace(" ", "").upper()
         super().save(*args, **kwargs)
