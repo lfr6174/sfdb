@@ -78,7 +78,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
             </h1>
 
             <p class="text-main/80 mb-5 text-base leading-relaxed whitespace-pre-wrap">
-              {{ concept.description || '目前暫無關於此概念的詳細描述。' }}
+              {{ concept.description || '暫無此概念的簡介。' }}
             </p>
 
             <!-- External Links -->
@@ -102,7 +102,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
           <!-- ── Application Examples ── -->
           <section class="mt-12">
             <SectionTitle class="mb-3">
-              概念應用範例
+              概念範例
               <template #action>
                 <div class="flex items-center gap-2 text-sm">
                   <button
@@ -196,7 +196,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                 class="bg-main/3 hover:bg-primary/3 hover:text-primary text-main/60 w-full py-3 text-center text-sm transition-colors"
                 @click="isExamplesExpanded = true"
               >
-                ↓ 展開其餘 {{ validWorkConcepts.length - 5 }} 個應用範例
+                ↓ 展開其餘 {{ validWorkConcepts.length - 5 }} 個範例
               </button>
             </div>
             <div
@@ -217,7 +217,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                   d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"
                 />
               </svg>
-              <span class="text-main/35 text-sm">目前尚無收錄此概念的應用範例。</span>
+              <span class="text-main/35 text-sm">目前未收錄此概念範例。</span>
             </div>
 
             <!-- Link to all works -->
@@ -270,7 +270,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
               v-else
               class="text-main/40 text-sm"
             >
-              尚未與任何概念建立關聯。
+              尚無相關概念。
             </div>
           </div>
         </aside>

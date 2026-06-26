@@ -49,7 +49,7 @@ const isExpandedPublications = ref(false)
 const visiblePublications = computed(() => {
   const sorted = sortedPublications.value
   if (isExpandedPublications.value) return sorted
-  return sorted.slice(0, 5)
+  return sorted.slice(0, 3)
 })
 </script>
 
@@ -176,7 +176,7 @@ const visiblePublications = computed(() => {
             v-if="conceptDescriptions.length > 0"
             class="mt-12"
           >
-            <SectionTitle class="mb-3">概念應用詳述</SectionTitle>
+            <SectionTitle class="mb-3">概念詳述</SectionTitle>
 
             <div class="flex flex-col">
               <div
@@ -284,22 +284,23 @@ const visiblePublications = computed(() => {
                   </div>
 
                   <div
-                    v-if="pub.isbn"
+                    v-if="pub.isbn || pub.binding_display"
                     class="text-main/40 selection:bg-primary/20 mt-2 font-mono text-xs"
                   >
-                    ISBN {{ pub.isbn }}
+                    <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
+                    <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
                   </div>
                 </div>
               </div>
 
               <!-- Expand row -->
               <button
-                v-if="sortedPublications.length > 5"
+                v-if="sortedPublications.length > 3"
                 class="text-main/50 hover:text-primary group mt-2 flex w-full cursor-pointer items-center justify-between py-2 text-sm transition-colors"
                 @click="isExpandedPublications = !isExpandedPublications"
               >
                 <span>
-                  {{ isExpandedPublications ? '收起' : `＋ ${sortedPublications.length - 5} 筆` }}
+                  {{ isExpandedPublications ? '收起' : `＋ ${sortedPublications.length - 3} 筆` }}
                 </span>
                 <span
                   class="transition-transform duration-200"
