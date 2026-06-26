@@ -3,6 +3,8 @@
  * CheckboxGroup — Multi-select input for complex database filters (e.g., Work Genres).
  * Synchronizes selected arrays directly with URL search parameters.
  */
+import CustomCheckbox from './CustomCheckbox.vue'
+
 withDefaults(
   defineProps<{
     options: { value: string; label: string }[]
@@ -24,12 +26,10 @@ defineEmits<{ 'update:modelValue': [val: string[]] }>()
       :key="opt.value"
       class="group flex cursor-pointer items-start gap-2"
     >
-      <input
-        type="checkbox"
+      <CustomCheckbox
         :name="opt.value"
         :value="opt.value"
         :checked="modelValue.includes(opt.value)"
-        class="border-main/30 ring-offset-bg hover:border-primary/50 focus-visible:ring-primary/30 checked:border-primary checked:bg-primary custom-checkbox peer h-[14px] w-[14px] shrink-0 cursor-pointer appearance-none rounded-[2px] border transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
         @change="
           $emit(
             'update:modelValue',
@@ -47,21 +47,3 @@ defineEmits<{ 'update:modelValue': [val: string[]] }>()
     </label>
   </div>
 </template>
-
-<style scoped>
-.custom-checkbox {
-  position: relative;
-  margin-top: 2px;
-}
-.custom-checkbox:checked::after {
-  content: '';
-  position: absolute;
-  top: 1.5px;
-  left: 4.5px;
-  width: 3.5px;
-  height: 7.5px;
-  border: solid #f8f8f6;
-  border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg);
-}
-</style>

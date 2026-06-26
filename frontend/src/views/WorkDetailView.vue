@@ -246,7 +246,9 @@ const visiblePublications = computed(() => {
                   </router-link>
 
                   <div
-                    v-if="pub.manifestation_display_name && pub.manifestation_display_name !== pub.title"
+                    v-if="
+                      pub.manifestation_display_name && pub.manifestation_display_name !== pub.title
+                    "
                     class="text-primary/70 mt-0.5 text-xs"
                   >
                     ↳ {{ pub.manifestation_display_name }}

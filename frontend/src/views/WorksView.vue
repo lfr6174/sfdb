@@ -12,6 +12,7 @@ import SectionTitle from '../components/SectionTitle.vue'
 import FilterChip from '../components/FilterChip.vue'
 import ConceptPickerModal from '../components/ConceptPickerModal.vue'
 import CheckboxGroup from '../components/CheckboxGroup.vue'
+import CustomCheckbox from '../components/CustomCheckbox.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -310,11 +311,9 @@ const changePage = (dir: number) => {
                 :key="concept.id"
                 class="group flex cursor-pointer items-center gap-2"
               >
-                <input
-                  type="checkbox"
+                <CustomCheckbox
                   name="selected-concept"
                   :checked="true"
-                  class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                   @change="toggleConcept(concept)"
                 />
                 <span class="text-primary text-sm font-medium">{{ concept.name }}</span>
@@ -331,11 +330,9 @@ const changePage = (dir: number) => {
                 :key="concept.id"
                 class="group flex cursor-pointer items-center gap-2"
               >
-                <input
-                  type="checkbox"
+                <CustomCheckbox
                   name="featured-concept"
                   :checked="false"
-                  class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                   @change="toggleConcept(concept)"
                 />
                 <span class="text-main/60 group-hover:text-primary text-sm transition-colors">

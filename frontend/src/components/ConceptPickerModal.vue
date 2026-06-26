@@ -6,6 +6,7 @@
 import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import SectionTitle from './SectionTitle.vue'
 import BaseSearchInput from './BaseSearchInput.vue'
+import CustomCheckbox from './CustomCheckbox.vue'
 import { CONCEPT_CATEGORY_ORDER, CONCEPT_CATEGORY_MAP } from '../utils/constants'
 import type { Concept } from '../types'
 
@@ -166,11 +167,9 @@ const apply = () => {
                   :key="concept.id"
                   class="group hover:bg-primary/5 flex cursor-pointer items-center gap-2 px-2 py-1.5 transition-colors"
                 >
-                  <input
-                    type="checkbox"
+                  <CustomCheckbox
                     name="concept"
                     :checked="tempSelectedConcepts.some((c) => c.id === concept.id)"
-                    class="text-primary border-main/25 h-4 w-4 shrink-0 cursor-pointer rounded-none focus:ring-0 focus:ring-offset-0"
                     @change="toggleTempConcept(concept)"
                   />
                   <span
