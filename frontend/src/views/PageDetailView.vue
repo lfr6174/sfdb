@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatDate } from '../utils/formatters'
 import BackLink from '../components/BackLink.vue'
+import ListState from '../components/ListState.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchPageDetail } from '../api/pages'
 import { useApiDetail } from '../composables/useApiDetail'
@@ -18,21 +19,15 @@ useDocumentMeta(
 
 <template>
   <div class="mx-auto max-w-4xl px-5 pb-24 md:px-0">
-    <div
-      v-if="isLoading"
-      class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
-    >
-      正在讀取頁面資料...
-    </div>
+    <ListState
+      :loading="isLoading"
+      :error="hasError"
+      size="sm"
+      loading-text="正在讀取頁面資料..."
+      error-text="找不到該頁面。"
+    />
 
-    <div
-      v-else-if="hasError"
-      class="text-main/50 py-16 text-center text-sm font-medium"
-    >
-      找不到該頁面。
-    </div>
-
-    <template v-else-if="pageData">
+    <template v-if="pageData">
       <div class="mb-10 pt-8 md:pt-12">
         <BackLink
           to="/"

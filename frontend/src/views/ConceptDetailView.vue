@@ -4,6 +4,7 @@ import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
+import ListState from '../components/ListState.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchConceptDetail } from '../api/concepts'
 import { useApiDetail } from '../composables/useApiDetail'
@@ -45,21 +46,14 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
 
 <template>
   <div class="mx-auto max-w-4xl">
-    <div
-      v-if="isLoading"
-      class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
-    >
-      正在讀取概念資料...
-    </div>
+    <ListState
+      :loading="isLoading"
+      :error="hasError"
+      size="sm"
+      loading-text="正在讀取概念資料..."
+    />
 
-    <div
-      v-else-if="hasError"
-      class="text-main/50 py-16 text-center text-sm font-medium"
-    >
-      資料讀取發生問題，請稍後再試。
-    </div>
-
-    <template v-else-if="concept">
+    <template v-if="concept">
       <!-- Back Link -->
       <div class="mb-9 pt-6 md:pt-10">
         <BackLink

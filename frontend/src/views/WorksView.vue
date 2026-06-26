@@ -13,6 +13,7 @@ import FilterChip from '../components/FilterChip.vue'
 import ConceptPickerModal from '../components/ConceptPickerModal.vue'
 import CheckboxGroup from '../components/CheckboxGroup.vue'
 import CustomCheckbox from '../components/CustomCheckbox.vue'
+import ListState from '../components/ListState.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useDebounceFn } from '../composables/useDebounce'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -61,8 +62,6 @@ const totalWorks = ref(0)
 const isLoading = ref(false)
 const hasError = ref(false)
 const currentPage = ref(1)
-const hasNext = ref(false)
-const hasPrev = ref(false)
 
 const allConcepts = ref<Concept[]>([])
 const isModalOpen = ref(false)
@@ -108,8 +107,6 @@ const fetchWorks = async () => {
     const res = await fetchWorksApi(params)
     works.value = res.data.results || []
     totalWorks.value = res.data.count || 0
-    hasNext.value = !!res.data.next
-    hasPrev.value = !!res.data.previous
   } catch (err) {
     console.error('Failed to fetch works', err)
     hasError.value = true
@@ -657,114 +654,88 @@ const changePage = (page: number) => {
             </div>
           </div>
 
-          <!-- Works List -->
-          <div
-            v-if="isLoading"
-            class="text-main/40 animate-pulse py-16 text-center text-base"
+          <!-- Works List (loading / error / empty / results) -->
+          <ListState
+            :loading="isLoading"
+            :error="hasError"
+            :empty="works.length === 0"
+            loading-text="搜尋中…"
+            empty-text="找不到符合條件的作品。"
           >
-            搜尋中…
-          </div>
-          <div
-            v-else-if="hasError"
-            class="text-main/50 py-16 text-center text-base font-medium"
-          >
-            資料讀取發生問題，請稍後再試。
-          </div>
-          <div
-            v-else-if="works.length === 0"
-            class="flex flex-col items-center gap-2 py-16 text-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.2"
-              stroke="currentColor"
-              class="text-main/15 h-10 w-10"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776"
-              />
-            </svg>
-            <span class="text-main/35 text-sm">找不到符合條件的作品。</span>
-          </div>
-
-          <div
-            v-else
-            class="flex flex-col"
-          >
-            <HoverListItem
-              v-for="work in works"
-              :key="work.id"
-              tag="div"
-              class="flex flex-col justify-between gap-3 py-4 md:flex-row md:items-start"
-            >
-              <!-- Left: title + meta -->
-              <div class="min-w-0 flex-1">
-                <router-link
-                  :to="`/works/${work.id}`"
-                  class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
-                >
-                  {{ work.title }}
-                </router-link>
-
-                <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
-                  <span
-                    v-if="work.byline && work.byline.length"
-                    class="flex flex-wrap items-center gap-x-0.5"
-                  >
-                    <template
-                      v-for="(agent, idx) in work.byline"
-                      :key="idx"
-                    >
-                      <router-link
-                        v-if="agent.id && agent.agent_type === 'person'"
-                        :to="`/persons/${agent.id}`"
-                        class="hover:text-primary no-underline transition-colors"
-                      >
-                        {{ agent.text }}
-                      </router-link>
-                      <span v-else>{{ agent.text }}</span>
-                      <span v-if="idx < work.byline.length - 1">、</span>
-                    </template>
-                  </span>
-                  <span v-else>佚名</span>
-
-                  <span class="text-main/20">·</span>
-                  <span>{{ work.year || '未知' }}</span>
-                  <template
-                    v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
-                  >
-                    <span class="text-main/20">·</span>
-                    <span>
-                      {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
-                    </span>
-                  </template>
-                </div>
-              </div>
-
-              <!-- Right: concept tags -->
-              <div
-                v-if="work.work_concepts && work.work_concepts.length"
-                class="flex flex-wrap gap-1.5 md:max-w-[45%] md:justify-end"
+            <div class="flex flex-col">
+              <HoverListItem
+                v-for="work in works"
+                :key="work.id"
+                tag="div"
+                class="flex flex-col justify-between gap-3 py-4 md:flex-row md:items-start"
               >
-                <ConceptTag
-                  v-for="wc in work.work_concepts"
-                  :key="wc.concept.slug"
-                  :concept="wc.concept"
-                />
-              </div>
-            </HoverListItem>
-          </div>
+                <!-- Left: title + meta -->
+                <div class="min-w-0 flex-1">
+                  <router-link
+                    :to="`/works/${work.id}`"
+                    class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
+                  >
+                    {{ work.title }}
+                  </router-link>
 
-          <PaginationControls
-            v-if="totalPages > 1"
-            :current-page="currentPage"
-            :total-pages="totalPages"
-            @change-page="changePage"
-          />
+                  <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
+                    <span
+                      v-if="work.byline && work.byline.length"
+                      class="flex flex-wrap items-center gap-x-0.5"
+                    >
+                      <template
+                        v-for="(agent, idx) in work.byline"
+                        :key="idx"
+                      >
+                        <router-link
+                          v-if="agent.id && agent.agent_type === 'person'"
+                          :to="`/persons/${agent.id}`"
+                          class="hover:text-primary no-underline transition-colors"
+                        >
+                          {{ agent.text }}
+                        </router-link>
+                        <span v-else>{{ agent.text }}</span>
+                        <span v-if="idx < work.byline.length - 1">、</span>
+                      </template>
+                    </span>
+                    <span v-else>佚名</span>
+
+                    <span class="text-main/20">·</span>
+                    <span>{{ work.year || '未知' }}</span>
+                    <template
+                      v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
+                    >
+                      <span class="text-main/20">·</span>
+                      <span>
+                        {{
+                          [work.work_length_display, work.genre_display].filter(Boolean).join('')
+                        }}
+                      </span>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Right: concept tags -->
+                <div
+                  v-if="work.work_concepts && work.work_concepts.length"
+                  class="flex flex-wrap gap-1.5 md:max-w-[45%] md:justify-end"
+                >
+                  <ConceptTag
+                    v-for="wc in work.work_concepts"
+                    :key="wc.concept.slug"
+                    :concept="wc.concept"
+                  />
+                </div>
+              </HoverListItem>
+            </div>
+
+            <PaginationControls
+              v-if="totalPages > 1"
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              @change-page="changePage"
+            />
+          </ListState>
         </template>
       </main>
     </div>

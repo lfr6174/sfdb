@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import BackLink from '../components/BackLink.vue'
 import SectionTitle from '../components/SectionTitle.vue'
+import ListState from '../components/ListState.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import HoverListItem from '../components/HoverListItem.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -54,21 +55,14 @@ const personAwards = computed(() => {
 
 <template>
   <div class="mx-auto max-w-4xl">
-    <div
-      v-if="isLoading"
-      class="text-main/50 animate-pulse py-16 text-center text-sm font-medium"
-    >
-      正在讀取人物資料...
-    </div>
+    <ListState
+      :loading="isLoading"
+      :error="hasError"
+      size="sm"
+      loading-text="正在讀取人物資料..."
+    />
 
-    <div
-      v-else-if="hasError"
-      class="text-main/50 py-16 text-center text-sm font-medium"
-    >
-      資料讀取發生問題，請稍後再試。
-    </div>
-
-    <template v-else-if="person">
+    <template v-if="person">
       <!-- Back Link -->
       <div class="mb-9 pt-6 md:pt-10">
         <BackLink

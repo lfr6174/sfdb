@@ -5,6 +5,7 @@ import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Concept } from '../types'
 import ConceptTag from '../components/ConceptTag.vue'
+import ListState from '../components/ListState.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
 
@@ -94,62 +95,49 @@ const groupedConcepts = computed(() => {
       </div>
     </div>
 
-    <!-- ── Loading ── -->
-    <div
-      v-if="isLoading"
-      class="text-main/50 animate-pulse py-16 text-center text-base font-medium"
+    <!-- ── Loading / Error / Concept Groups ── -->
+    <ListState
+      :loading="isLoading"
+      :error="hasError"
+      loading-text="正在讀取全站概念..."
     >
-      正在讀取全站概念...
-    </div>
-
-    <!-- ── Error ── -->
-    <div
-      v-else-if="hasError"
-      class="text-main/50 py-16 text-center text-base font-medium"
-    >
-      資料讀取發生問題，請稍後再試。
-    </div>
-
-    <!-- ── Concept Groups ── -->
-    <div
-      v-else
-      class="pb-20"
-    >
-      <div
-        v-if="Object.keys(groupedConcepts).length > 0"
-        class="flex flex-col"
-      >
+      <div class="pb-20">
         <div
-          v-for="(concepts, category) in groupedConcepts"
-          :key="category"
-          class="py-8"
+          v-if="Object.keys(groupedConcepts).length > 0"
+          class="flex flex-col"
         >
-          <!-- Category eyebrow, no rule -->
-          <span class="text-main/40 mb-5 block text-sm font-medium tracking-widest uppercase">
-            {{ category }}
-          </span>
+          <div
+            v-for="(concepts, category) in groupedConcepts"
+            :key="category"
+            class="py-8"
+          >
+            <!-- Category eyebrow, no rule -->
+            <span class="text-main/40 mb-5 block text-sm font-medium tracking-widest uppercase">
+              {{ category }}
+            </span>
 
-          <!-- Tag cloud -->
-          <div class="flex flex-wrap gap-1.5">
-            <ConceptTag
-              v-for="concept in concepts"
-              :key="concept.id"
-              :concept="concept"
-              size="md"
-            />
+            <!-- Tag cloud -->
+            <div class="flex flex-wrap gap-1.5">
+              <ConceptTag
+                v-for="concept in concepts"
+                :key="concept.id"
+                :concept="concept"
+                size="md"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Empty State -->
-      <div
-        v-else
-        class="text-main/50 py-16 text-center text-base"
-      >
-        找不到任何包含「
-        <span class="text-primary">{{ searchQuery }}</span>
-        」的概念。
+        <!-- Empty State -->
+        <div
+          v-else
+          class="text-main/50 py-16 text-center text-base"
+        >
+          找不到任何包含「
+          <span class="text-primary">{{ searchQuery }}</span>
+          」的概念。
+        </div>
       </div>
-    </div>
+    </ListState>
   </div>
 </template>
