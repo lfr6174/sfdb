@@ -256,7 +256,7 @@ const personAwards = computed(() => {
                 <span>{{ award.title }}</span>
                 <span
                   v-if="award.count > 1"
-                  class="text-main/40 font-mono text-[10px]"
+                  class="text-main/40 font-mono text-xs"
                 >
                   {{ award.count }}
                 </span>

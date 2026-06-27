@@ -37,7 +37,7 @@ useDocumentMeta(
 
       <article class="flex flex-col">
         <header class="border-main/10 mb-6 border-b pb-4">
-          <h1 class="text-main mb-4 text-3xl font-medium tracking-tight md:text-4xl">
+          <h1 class="text-main mb-4 text-2xl font-medium tracking-tight md:text-3xl">
             {{ post.title }}
           </h1>
 

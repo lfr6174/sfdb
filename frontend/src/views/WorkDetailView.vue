@@ -182,12 +182,12 @@ const visiblePublications = computed(() => {
                 >
                   {{ wc.concept.name }}
                 </router-link>
-                <span class="text-main/25 mx-2">—</span>
+                <span class="text-main/20 mx-2">—</span>
                 <span
                   :class="[
                     isSpoilerProtected && !revealedSpoilers.has(wc.id)
                       ? 'text-main/40 cursor-pointer blur-sm transition-all duration-200 select-none hover:blur-[2px]'
-                      : 'text-main/65',
+                      : 'text-main/60',
                   ]"
                   @click="
                     isSpoilerProtected && !revealedSpoilers.has(wc.id) && revealSpoiler(wc.id)
@@ -255,7 +255,7 @@ const visiblePublications = computed(() => {
                     </template>
                     <span
                       v-if="pub.publisher?.name"
-                      class="text-main/25 px-0.5"
+                      class="text-main/20 px-0.5"
                     >
                       /
                     </span>
@@ -313,7 +313,7 @@ const visiblePublications = computed(() => {
                   v-if="entry.category || entry.result"
                   class="text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs"
                 >
-                  <span class="text-main/65 font-medium">
+                  <span class="text-main/60 font-medium">
                     {{ entry.category }}<span
                       v-if="entry.result"
                       class="text-main/45 font-normal"

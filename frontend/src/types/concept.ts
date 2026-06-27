@@ -19,6 +19,7 @@ export interface ConceptWorkEntry {
   work_title: string
   year: number | null
   description: string
+  provenance: 'original' | 'licensed' | ''
 }
 
 export interface Concept {

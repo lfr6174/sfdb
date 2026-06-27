@@ -141,7 +141,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                     >
                       {{ item.work_title || '未知作品' }}
                     </router-link>
-                    <span class="text-main/35 shrink-0 text-xs">
+                    <span class="text-main/40 shrink-0 text-xs">
                       {{ item.year || '-' }}
                     </span>
                   </div>
@@ -163,7 +163,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                 </p>
                 <p
                   v-else
-                  class="text-main/55 text-sm leading-relaxed"
+                  class="text-main/60 text-sm leading-relaxed"
                 >
                   {{ item.description }}
                 </p>

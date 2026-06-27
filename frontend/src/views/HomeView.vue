@@ -200,7 +200,7 @@ onMounted(async () => {
               </span>
               <span
                 v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
-                class="text-main/30 ml-2 text-sm"
+                class="text-main/45 ml-2 text-sm"
               >
                 {{ [work.work_length_display, work.genre_display].filter(Boolean).join('') }}
               </span>

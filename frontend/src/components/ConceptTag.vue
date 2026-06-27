@@ -31,7 +31,7 @@ withDefaults(
     <span>{{ concept.name }}</span>
     <span
       v-if="concept.works_count !== undefined"
-      class="text-main/40 font-mono text-[10px]"
+      class="text-main/40 font-mono text-xs"
     >
       {{ concept.works_count }}
     </span>

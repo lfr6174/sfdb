@@ -27,7 +27,7 @@ defineProps<{
         <span class="text-main/50 text-xs">{{ label ?? '-' }}</span>
         <span
           v-if="badge"
-          class="text-main/50 bg-main/5 px-1.5 py-0.5 font-mono text-[10px] tracking-wide whitespace-nowrap"
+          class="text-main/50 bg-main/5 px-1.5 py-0.5 font-mono text-xs tracking-wide whitespace-nowrap"
         >
           {{ badge }}
         </span>
