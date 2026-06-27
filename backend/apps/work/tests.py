@@ -8,6 +8,7 @@ from apps.concept.models import Concept
 from apps.work.models import (
     Catalogue,
     CatalogueType,
+    Category,
     Manifestation,
     Publication,
     RelationKind,
@@ -98,8 +99,10 @@ def test_filter_by_catalogue_duplicate_entries_returns_distinct(api_client):
     cat = Catalogue.objects.create(title="Cat with Duplicates", catalogue_type=CatalogueType.AWARD)
 
     # Same work appears twice in the same catalogue under different categories
-    WorkCatalogue.objects.create(work=w1, catalogue=cat, category="Category 1")
-    WorkCatalogue.objects.create(work=w1, catalogue=cat, category="Category 2")
+    cat1 = Category.objects.create(catalogue=cat, name="Category 1")
+    cat2 = Category.objects.create(catalogue=cat, name="Category 2")
+    WorkCatalogue.objects.create(work=w1, catalogue=cat, category=cat1)
+    WorkCatalogue.objects.create(work=w1, catalogue=cat, category=cat2)
 
     # Since we filter by title now
     data = api_client.get(reverse("work:work-list"), {"catalogue": cat.title}).json()

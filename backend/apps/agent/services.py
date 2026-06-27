@@ -29,7 +29,9 @@ def get_agent_works(agent):
             "concepts",
             Prefetch(
                 "work_catalogues",
-                queryset=WorkCatalogue.objects.filter(catalogue__catalogue_type="award").select_related("catalogue"),
+                queryset=WorkCatalogue.objects.filter(catalogue__catalogue_type="award").select_related(
+                    "catalogue", "category"
+                ),
                 to_attr="award_catalogues",
             ),
         )
@@ -50,9 +52,9 @@ def get_agent_works(agent):
                 {
                     "catalogue_id": wc.catalogue.id,
                     "title": wc.catalogue.title,
-                    "year": wc.catalogue.year,
-                    "category": wc.category,
-                    "status": wc.get_status_display(),
+                    "year": wc.year,
+                    "category": wc.category.name if wc.category else None,
+                    "result": wc.result,
                 }
                 for wc in getattr(w, "award_catalogues", [])
             ],

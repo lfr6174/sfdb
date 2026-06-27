@@ -5,7 +5,7 @@ from rest_framework import filters, viewsets
 from apps.core.filters import LimitedSearchFilter
 
 from .filters import WorkFilter
-from .models import Manifestation, Work, WorkRelation
+from .models import Manifestation, Work, WorkCatalogue, WorkRelation
 from .serializers import (
     WorkDetailSerializer,
     WorkListSerializer,
@@ -54,7 +54,10 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
                 ),
                 to_attr="prefetched_manifestations",
             ),
-            "work_catalogues__catalogue__agents",
+            Prefetch(
+                "work_catalogues",
+                queryset=WorkCatalogue.objects.select_related("catalogue", "category"),
+            ),
         )
 
     def get_serializer_class(self):

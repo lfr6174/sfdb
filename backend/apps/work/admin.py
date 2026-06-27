@@ -14,6 +14,7 @@ from unfold.contrib.filters.admin import (
 
 from .models import (
     Catalogue,
+    Category,
     Cycle,
     Manifestation,
     ManifestationAgent,
@@ -286,15 +287,33 @@ class ManifestationInlineForPublication(TabularInline):
 class WorkCatalogueInlineForWork(TabularInline):
     model = WorkCatalogue
     extra = 0
-    autocomplete_fields = ("catalogue",)
+    fields = ("catalogue", "year", "category", "result", "note")
+    # Category cannot be scoped here because each row may target a different catalogue;
+    # an invalid (catalogue, category) pairing is rejected by WorkCatalogue.clean().
+    autocomplete_fields = ("catalogue", "category")
     classes = ["collapse"]
+
+
+class CategoryInline(TabularInline):
+    model = Category
+    extra = 0
 
 
 class WorkCatalogueInlineForCatalogue(TabularInline):
     model = WorkCatalogue
     extra = 0
+    fields = ("work", "year", "category", "result", "note")
     autocomplete_fields = ("work",)
     classes = ["collapse"]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Scope the category dropdown to the catalogue currently being edited.
+        if db_field.name == "category":
+            catalogue_id = request.resolver_match.kwargs.get("object_id")
+            kwargs["queryset"] = (
+                Category.objects.filter(catalogue_id=catalogue_id) if catalogue_id else Category.objects.none()
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 # ============================================================================
@@ -449,12 +468,28 @@ class ManifestationAdmin(ModelAdmin):
 
 @admin.register(Catalogue)
 class CatalogueAdmin(SimpleHistoryAdmin, ModelAdmin):
-    list_display = ("title", "catalogue_type", "year")
-    list_filter = (
-        ("catalogue_type", ChoicesDropdownFilter),
-        ("year", RangeNumericFilter),
-    )
-    search_fields = ("title", "agents__name")
-    autocomplete_fields = ("agents",)
-    inlines = [WorkCatalogueInlineForCatalogue]
+    list_display = ("title", "catalogue_type")
+    list_filter = (("catalogue_type", ChoicesDropdownFilter),)
+    search_fields = ("title",)
+    inlines = [CategoryInline, WorkCatalogueInlineForCatalogue]
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Category)
+class CategoryAdmin(ModelAdmin):
+    list_display = ("name", "catalogue", "order")
+    list_filter = (("catalogue", RelatedDropdownFilter),)
+    search_fields = ("name", "catalogue__title")
+    autocomplete_fields = ("catalogue",)
+
+
+@admin.register(WorkCatalogue)
+class WorkCatalogueAdmin(ModelAdmin):
+    list_display = ("catalogue", "year", "category", "work", "result")
+    list_filter = (
+        ("catalogue", RelatedDropdownFilter),
+        ("year", RangeNumericFilter),
+        ("category", RelatedDropdownFilter),
+    )
+    search_fields = ("work__title", "catalogue__title")
+    autocomplete_fields = ("catalogue", "work", "category")

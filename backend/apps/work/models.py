@@ -693,19 +693,20 @@ class CatalogueType(models.TextChoices):
     READING_LIST = "reading_list", "書單"
 
 
-class AwardStatus(models.TextChoices):
-    SELECTED = "selected", "入選"
-    WINNER = "winner", "獲獎"
-
-
 # --- Models ---
 
 
 class Catalogue(TimeStampedModel):
-    """External collections, literary awards, or reading lists."""
+    """
+    A literary award or reading list as a *persistent* entity (not a single year's running).
+    Individual yearly results live on WorkCatalogue.year, so one award is a single row here.
+    """
 
     title = models.CharField(
-        max_length=300, verbose_name="名稱", help_text="獎項或書單的正式名稱，例如「星雲獎」、「紐約時報書單」。"
+        max_length=300,
+        unique=True,
+        verbose_name="名稱",
+        help_text="獎項或書單的正式名稱，例如「星雲獎」、「紐約時報書單」。不分年度，歷年共用同一筆。",
     )
     catalogue_type = models.CharField(
         max_length=20,
@@ -714,21 +715,9 @@ class Catalogue(TimeStampedModel):
         help_text="「獎項」用於有評選與得獎結果的文學獎；「書單」用於推薦清單、必讀書目等。",
     )
     about = models.TextField(
-        blank=True, verbose_name="簡介", help_text="說明這個獎項或書單的背景、評選標準或來源。可留空。"
-    )
-    year = models.PositiveSmallIntegerField(
-        null=True,
         blank=True,
-        validators=[validate_not_future_year],
-        verbose_name="舉辦年份",
-        help_text="不同年度舉辦的賽事各自獨立，所以要填寫獎項與書單的年份。偶發、不分年度的可留空。",
-    )
-    agents = models.ManyToManyField(
-        "agent.Agent",
-        blank=True,
-        related_name="curated_catalogues",
-        verbose_name="維護者",
-        help_text="負責評選或維護此獎項/書單的人物/組織。",
+        verbose_name="簡介",
+        help_text="說明這個獎項或書單的背景、評選標準、來源，以及歷年沿革或制度變遷。可留空。",
     )
     history = HistoricalRecords()
 
@@ -736,12 +725,34 @@ class Catalogue(TimeStampedModel):
         verbose_name = "精選"
         verbose_name_plural = "精選"
         ordering = ["title"]
-        constraints = [models.UniqueConstraint(fields=["title", "year"], name="unique_catalogue")]
 
     def __str__(self):
-        if self.year:
-            return f"{self.title} ({self.year})"
         return self.title
+
+
+class Category(models.Model):
+    """A division within a catalogue (e.g. 短篇小說組). Scoped to one catalogue, reused across years."""
+
+    catalogue = models.ForeignKey(
+        Catalogue, on_delete=models.CASCADE, related_name="categories", verbose_name="所屬獎項/書單"
+    )
+    name = models.CharField(
+        max_length=100,
+        verbose_name="組別名稱",
+        help_text="獎項的組別或書單的分組，例如「短篇小說組」、「新詩組」、「必讀」。",
+    )
+    order = models.PositiveSmallIntegerField(
+        default=0, verbose_name="顯示順序", help_text="數字越小越靠前，用來控制下拉選單中的排列順序。"
+    )
+
+    class Meta:
+        verbose_name = "組別"
+        verbose_name_plural = "組別"
+        ordering = ["order", "name"]
+        constraints = [models.UniqueConstraint(fields=["catalogue", "name"], name="unique_catalogue_category")]
+
+    def __str__(self):
+        return f"{self.catalogue.title}：{self.name}"
 
 
 class WorkCatalogue(TimeStampedModel):
@@ -749,18 +760,27 @@ class WorkCatalogue(TimeStampedModel):
         Catalogue, on_delete=models.CASCADE, related_name="work_catalogues", verbose_name="獎項/書單"
     )
     work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name="work_catalogues", verbose_name="作品")
-    category = models.CharField(
-        max_length=100,
+    year = models.PositiveSmallIntegerField(
+        null=True,
         blank=True,
-        verbose_name="項目",
-        help_text="獎項中的具體獎別，例如「最佳長篇小說」；書單中的分組，例如「必讀」、「推薦」。可留空。",
+        validators=[validate_not_future_year],
+        verbose_name="屆次/年份",
+        help_text="此筆收錄所屬的年份。可用來篩選歷年結果；不分年度的書單可留空。",
     )
-    status = models.CharField(
-        max_length=20,
-        choices=AwardStatus.choices,
-        default=AwardStatus.SELECTED,
-        verbose_name="入選狀態",
-        help_text="「入選」表示進入候選名單但未得獎；「獲獎」表示最終得獎。書單類型請維持「入選」即可。",
+    category = models.ForeignKey(
+        Category,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="work_catalogues",
+        verbose_name="組別",
+        help_text="此作品入選的組別，必須屬於同一個獎項/書單。無分組可留空。",
+    )
+    result = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name="結果",
+        help_text="獎別或評價，自由填寫，例如「首獎」、「佳作」、「優選」、「入選」、「五星」、「必讀」。可留空。",
     )
     note = models.CharField(
         max_length=255,
@@ -770,19 +790,19 @@ class WorkCatalogue(TimeStampedModel):
     )
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["catalogue", "work", "category"], name="unique_work_catalogue")]
+        constraints = [
+            models.UniqueConstraint(fields=["catalogue", "work", "year", "category"], name="unique_work_catalogue")
+        ]
+        ordering = ["-year"]
         verbose_name = "獎項與書單收錄紀錄"
         verbose_name_plural = "獎項與書單收錄紀錄"
 
     def __str__(self):
-        cat = str(self.catalogue)
-        return f"{cat}：{self.work.title}（{self.get_status_display()}）"
+        year_str = f" {self.year}" if self.year else ""
+        result_str = f"（{self.result}）" if self.result else ""
+        return f"{self.catalogue.title}{year_str}：{self.work.title}{result_str}"
 
     def clean(self):
         super().clean()
-        if (
-            self.status == AwardStatus.WINNER
-            and self.catalogue_id
-            and self.catalogue.catalogue_type != CatalogueType.AWARD
-        ):
-            raise ValidationError({"status": "只有「獎項」類型的精選才能標記為「獲獎」，書單請維持「入選」。"})
+        if self.category_id and self.catalogue_id and self.category.catalogue_id != self.catalogue_id:
+            raise ValidationError({"category": "所選組別必須屬於同一個獎項/書單。"})

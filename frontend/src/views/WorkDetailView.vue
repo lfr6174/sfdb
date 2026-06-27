@@ -35,9 +35,7 @@ const conceptDescriptions = computed(() => {
 const sortedCatalogues = computed(() => {
   if (!work.value?.work_catalogues) return []
   // Sort by year descending
-  return [...work.value.work_catalogues].sort(
-    (a, b) => (b.catalogue.year || 0) - (a.catalogue.year || 0),
-  )
+  return [...work.value.work_catalogues].sort((a, b) => (b.year || 0) - (a.year || 0))
 })
 
 const sortedPublications = computed(() => {
@@ -301,7 +299,7 @@ const visiblePublications = computed(() => {
               <SidebarRow
                 v-for="entry in sortedCatalogues"
                 :key="entry.id"
-                :label="entry.catalogue.year"
+                :label="entry.year"
                 :badge="entry.catalogue.catalogue_type_display"
               >
                 <router-link
@@ -312,36 +310,15 @@ const visiblePublications = computed(() => {
                 </router-link>
 
                 <div
-                  v-if="entry.category || entry.status_display || entry.note"
+                  v-if="entry.category || entry.result"
                   class="text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs"
                 >
-                  <span
-                    v-if="entry.category"
-                    class="text-main/65 font-medium"
-                  >
-                    {{ entry.category }}
-                  </span>
-                  <span
-                    v-if="entry.category && entry.status_display"
-                    class="text-main/20"
-                  >
-                    ·
-                  </span>
-                  <span
-                    v-if="entry.status_display"
-                    :class="
-                      ['得獎', '首獎', '入選'].includes(entry.status_display)
-                        ? 'text-primary'
-                        : 'text-main/35'
-                    "
-                  >
-                    {{ entry.status_display }}
-                  </span>
-                  <span
-                    v-if="entry.note"
-                    class="text-main/40"
-                  >
-                    ({{ entry.note }})
+                  <span class="text-main/65 font-medium">
+                    {{ entry.category }}<span
+                      v-if="entry.result"
+                      class="text-main/45 font-normal"
+                      >{{ entry.category ? `（${entry.result}）` : entry.result }}</span
+                    >
                   </span>
                 </div>
               </SidebarRow>

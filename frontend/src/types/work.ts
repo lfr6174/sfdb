@@ -19,17 +19,14 @@ export interface CatalogueBrief {
   id: number
   title: string
   catalogue_type_display: string
-  year: number | null
-  curators: AgentMinimal[]
 }
 
 export interface WorkCatalogue {
   id: number
   catalogue: CatalogueBrief
-  category: string
-  status: string
-  status_display: string
-  note: string
+  year: number | null
+  category: string | null
+  result: string
 }
 
 export interface WorkAgent {

@@ -114,20 +114,19 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
 
 class CatalogueBriefSerializer(serializers.ModelSerializer):
     catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
-    curators = AgentMinimalSerializer(many=True, read_only=True, source="agents")
 
     class Meta:
         model = Catalogue
-        fields = ["id", "title", "catalogue_type_display", "year", "curators"]
+        fields = ["id", "title", "catalogue_type_display"]
 
 
 class WorkCatalogueSerializer(serializers.ModelSerializer):
     catalogue = CatalogueBriefSerializer(read_only=True)
-    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    category = serializers.CharField(source="category.name", read_only=True, default=None)
 
     class Meta:
         model = WorkCatalogue
-        fields = ["id", "catalogue", "category", "status", "status_display", "note"]
+        fields = ["id", "catalogue", "year", "category", "result"]
 
 
 # ============================================================================

@@ -21,8 +21,8 @@ export interface ParticipatedWork {
     catalogue_id: number
     title: string
     year: number | null
-    category: string
-    status: string
+    category: string | null
+    result: string
   }[]
 }
 
