@@ -80,7 +80,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
 
           <!-- ── Application Examples ── -->
           <section class="mt-12">
-            <SectionTitle class="mb-3">
+            <SectionTitle class="mb-4">
               概念範例
               <template #action>
                 <div class="flex items-center gap-2 text-sm">
@@ -131,7 +131,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                 v-for="(item, index) in validWorkConcepts"
                 v-show="index < 5 || isExamplesExpanded"
                 :key="item.id"
-                class="border-main/10 flex flex-col gap-1.5 border-b py-4 last:border-0"
+                class="border-main/10 flex flex-col gap-1.5 border-b py-3 last:border-0"
               >
                 <div class="flex items-baseline justify-between gap-2">
                   <div class="flex items-baseline gap-2">
@@ -217,14 +217,14 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
         >
           <!-- Aliases -->
           <div v-if="concept.aliases && concept.aliases.length > 0">
-            <SectionTitle class="mb-2">概念別稱</SectionTitle>
+            <SectionTitle class="mb-3">概念別稱</SectionTitle>
             <div class="text-main/70 text-sm leading-relaxed">
               {{ concept.aliases.map((a) => a.name).join(' / ') }}
             </div>
           </div>
           <!-- Year range -->
           <div>
-            <SectionTitle class="mb-2">出現年份</SectionTitle>
+            <SectionTitle class="mb-3">出現年份</SectionTitle>
             <div class="flex items-baseline gap-2">
               <span class="text-main/70 text-sm">{{ yearRange.min ?? '—' }}</span>
               <span class="text-main/30 text-xs">—</span>
@@ -246,7 +246,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
 
           <!-- External Links -->
           <div v-if="concept.links && concept.links.length > 0">
-            <SectionTitle class="mb-2">參考連結</SectionTitle>
+            <SectionTitle class="mb-3">參考連結</SectionTitle>
             <div>
               <HoverListItem
                 v-for="link in concept.links"

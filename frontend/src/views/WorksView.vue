@@ -434,7 +434,7 @@ const clearCatalogue = () => {
           v-if="isAdvancedMode"
           class="border-main/10 mb-8 border-b pb-10"
         >
-          <SectionTitle class="mb-8">
+          <SectionTitle class="mb-4">
             進階搜尋
             <template #action>
               <button

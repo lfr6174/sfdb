@@ -18,7 +18,7 @@ useDocumentMeta(
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl px-5 pb-24 md:px-0">
+  <div class="mx-auto max-w-4xl px-5 pb-20 md:px-0">
     <ListState
       :loading="isLoading"
       :error="hasError"
@@ -28,7 +28,7 @@ useDocumentMeta(
 
     <template v-if="post">
       <!-- Back Link -->
-      <div class="mb-10 pt-8 md:pt-12">
+      <div class="mb-9 pt-8 md:pt-12">
         <BackLink
           to="/posts"
           text="返回文章列表"

@@ -168,7 +168,7 @@ const visiblePublications = computed(() => {
             v-if="conceptDescriptions.length > 0"
             class="mt-12"
           >
-            <SectionTitle class="mb-3">概念詳述</SectionTitle>
+            <SectionTitle class="mb-4">概念詳述</SectionTitle>
 
             <div class="flex flex-col">
               <div
@@ -202,11 +202,11 @@ const visiblePublications = computed(() => {
 
         <!-- ── Sidebar ── -->
         <aside
-          class="mt-6 flex w-full shrink-0 flex-col gap-10 md:sticky md:top-24 md:mt-0 md:w-5/12 lg:w-4/12"
+          class="mt-6 flex w-full shrink-0 flex-col gap-8 md:sticky md:top-24 md:mt-0 md:w-5/12 lg:w-4/12"
         >
           <!-- Publications -->
           <section v-if="work.publications && work.publications.length > 0">
-            <SectionTitle class="mb-4">出版與發行</SectionTitle>
+            <SectionTitle class="mb-3">出版與發行</SectionTitle>
 
             <div class="flex flex-col">
               <SidebarRow
@@ -293,7 +293,7 @@ const visiblePublications = computed(() => {
 
           <!-- Catalogues -->
           <section v-if="work.work_catalogues && work.work_catalogues.length > 0">
-            <SectionTitle class="mb-4">收錄與獲獎</SectionTitle>
+            <SectionTitle class="mb-3">收錄與獲獎</SectionTitle>
 
             <div class="flex flex-col">
               <SidebarRow
@@ -329,7 +329,7 @@ const visiblePublications = computed(() => {
             v-if="work.relations && work.relations.length > 0"
             class="mb-10"
           >
-            <SectionTitle class="mb-4">關聯作品</SectionTitle>
+            <SectionTitle class="mb-3">關聯作品</SectionTitle>
 
             <div class="flex flex-col">
               <SidebarRow

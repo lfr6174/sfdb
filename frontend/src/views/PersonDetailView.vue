@@ -110,8 +110,8 @@ const personAwards = computed(() => {
           </section>
 
           <!-- ── Participated Works ── -->
-          <section class="mt-10">
-            <SectionTitle class="mb-2">歷年作品</SectionTitle>
+          <section class="mt-12">
+            <SectionTitle class="mb-4">歷年作品</SectionTitle>
 
             <div
               v-if="person.participated_works && person.participated_works.length > 0"
@@ -169,9 +169,9 @@ const personAwards = computed(() => {
           <!-- ── Participated Publications ── -->
           <section
             v-if="person.participated_publications && person.participated_publications.length > 0"
-            class="mt-10"
+            class="mt-12"
           >
-            <SectionTitle class="mb-2">出版與其他參與</SectionTitle>
+            <SectionTitle class="mb-4">出版與其他參與</SectionTitle>
 
             <div class="flex flex-col">
               <div
@@ -216,13 +216,13 @@ const personAwards = computed(() => {
         >
           <!-- Work count -->
           <div>
-            <SectionTitle class="mb-2">作品總數</SectionTitle>
+            <SectionTitle class="mb-3">作品總數</SectionTitle>
             <span class="text-main text-xl">{{ totalWorksCount }}</span>
           </div>
 
           <!-- Active years -->
           <div>
-            <SectionTitle class="mb-2">活躍年份</SectionTitle>
+            <SectionTitle class="mb-3">活躍年份</SectionTitle>
             <span class="text-main text-base">{{ activeYears }}</span>
           </div>
 
