@@ -19,14 +19,18 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["category"]
-    search_fields = ["name"]
+    search_fields = ["name", "aliases__name"]
     ordering_fields = ["name", "created_at", "updated_at", "works_count"]
 
     def get_queryset(self):
-        qs = Concept.objects.annotate(works_count=Count("works", distinct=True)).order_by("category", "name")
+        # NOTE: distinct() prevents duplicate rows when searching across aliases (a reverse FK join).
+        qs = (
+            Concept.objects.annotate(works_count=Count("works", distinct=True)).order_by("category", "name").distinct()
+        )
 
         if self.action == "retrieve":
             qs = qs.prefetch_related(
+                "aliases",
                 "links",
                 "related_concepts",
                 Prefetch(

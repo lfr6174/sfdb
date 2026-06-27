@@ -1,5 +1,11 @@
 import type { BylineEntry } from './common'
 
+export interface ConceptAlias {
+  id: number
+  name: string
+  order: number
+}
+
 export interface ConceptLink {
   id: number
   title: string
@@ -26,6 +32,7 @@ export interface Concept {
   featured_order?: number
   description?: string
   works_count?: number
+  aliases?: ConceptAlias[]
   related_concepts?: Concept[]
   work_concepts?: ConceptWorkEntry[]
   links?: ConceptLink[]

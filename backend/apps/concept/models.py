@@ -42,6 +42,35 @@ class Concept(TimeStampedModel):
         return f"{self.name}"
 
 
+class ConceptAlias(models.Model):
+    """Other common names for a concept, such as translated names."""
+
+    concept = models.ForeignKey(
+        Concept,
+        on_delete=models.CASCADE,
+        related_name="aliases",
+        verbose_name="概念",
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name="別名",
+        help_text="此概念的其它稱呼，例如外文名或其它譯名。",
+    )
+    order = models.PositiveSmallIntegerField(default=0, verbose_name="顯示順序")
+
+    class Meta:
+        ordering = ["order", "name"]
+        verbose_name = "概念別名"
+        verbose_name_plural = "概念別名"
+        constraints = [models.UniqueConstraint(fields=["concept", "name"], name="unique_concept_alias")]
+        indexes = [
+            models.Index(fields=["name"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.concept.name})"
+
+
 class ConceptLink(models.Model):
     """External reference links for a concept (e.g., The Encyclopedia of Science Fiction)."""
 

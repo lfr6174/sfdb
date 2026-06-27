@@ -246,6 +246,13 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
             </div>
           </div>
 
+          <!-- Aliases -->
+          <div v-if="concept.aliases && concept.aliases.length > 0">
+            <SectionTitle class="mb-2">概念別稱</SectionTitle>
+            <div class="text-main/70 text-base leading-relaxed">
+              {{ concept.aliases.map((a) => a.name).join(' / ') }}
+            </div>
+          </div>
           <!-- Related Concepts -->
           <div>
             <SectionTitle class="mb-3">相關概念</SectionTitle>

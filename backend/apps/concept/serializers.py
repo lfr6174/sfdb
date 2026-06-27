@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from .models import Concept, ConceptLink
+from .models import Concept, ConceptAlias, ConceptLink
+
+
+class ConceptAliasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConceptAlias
+        fields = ["id", "name", "order"]
 
 
 class ConceptLinkSerializer(serializers.ModelSerializer):
@@ -24,6 +30,7 @@ class ConceptListSerializer(serializers.ModelSerializer):
 
 
 class ConceptDetailSerializer(serializers.ModelSerializer):
+    aliases = ConceptAliasSerializer(many=True, read_only=True)
     links = ConceptLinkSerializer(many=True, read_only=True)
     related_concepts = ConceptMinimalSerializer(many=True, read_only=True)
     works_count = serializers.IntegerField(read_only=True)
@@ -37,6 +44,7 @@ class ConceptDetailSerializer(serializers.ModelSerializer):
             "slug",
             "category",
             "description",
+            "aliases",
             "related_concepts",
             "work_concepts",
             "links",

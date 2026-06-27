@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from apps.concept.models import Concept, ConceptCategory
+from apps.concept.models import Concept, ConceptAlias, ConceptCategory
 from apps.work.models import Work, WorkConcept, WorkGenre, WorkLength
 
 
@@ -43,3 +43,33 @@ def test_concept_retrieve_manual_dict_contract(api_client):
 
     data = api_client.get(reverse("concept:concept-detail", kwargs={"slug": c.slug})).json()
     assert data["work_concepts"][0]["work_title"] == "TargetWork"
+
+
+@pytest.mark.django_db
+def test_concept_search_matches_aliases(api_client):
+    c = Concept.objects.create(name="賽博龐克", slug="cp", category=ConceptCategory.NOVUM)
+    ConceptAlias.objects.create(concept=c, name="Cyberpunk")
+
+    data = api_client.get(reverse("concept:concept-list"), {"search": "Cyberpunk"}).json()
+    assert [r["slug"] for r in data["results"]] == ["cp"]
+
+
+# Prevents: searching across the aliases reverse-FK join producing duplicate rows.
+@pytest.mark.django_db
+def test_concept_search_aliases_no_duplicates(api_client):
+    c = Concept.objects.create(name="賽博龐克", slug="cp", category=ConceptCategory.NOVUM)
+    ConceptAlias.objects.create(concept=c, name="Cyberpunk")
+    ConceptAlias.objects.create(concept=c, name="Cyber punk")
+
+    data = api_client.get(reverse("concept:concept-list"), {"search": "Cyber"}).json()
+    assert [r["slug"] for r in data["results"]] == ["cp"]
+
+
+@pytest.mark.django_db
+def test_concept_detail_exposes_aliases_in_order(api_client):
+    c = Concept.objects.create(name="賽博龐克", slug="cp", category=ConceptCategory.NOVUM)
+    ConceptAlias.objects.create(concept=c, name="Second", order=2)
+    ConceptAlias.objects.create(concept=c, name="First", order=1)
+
+    data = api_client.get(reverse("concept:concept-detail", kwargs={"slug": c.slug})).json()
+    assert [a["name"] for a in data["aliases"]] == ["First", "Second"]
