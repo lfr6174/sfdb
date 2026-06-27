@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useSpoiler } from '../composables/useSpoiler'
 import ConceptTag from '../components/ConceptTag.vue'
 import BackLink from '../components/BackLink.vue'
+import HoverListItem from '../components/HoverListItem.vue'
 import SectionTitle from '../components/SectionTitle.vue'
 import ListState from '../components/ListState.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -75,22 +76,6 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
               {{ concept.description || '暫無此概念的簡介。' }}
             </p>
 
-            <!-- External Links -->
-            <div
-              v-if="concept.links && concept.links.length > 0"
-              class="flex flex-wrap gap-4"
-            >
-              <a
-                v-for="link in concept.links"
-                :key="link.id"
-                :href="link.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-primary text-base no-underline transition-opacity hover:opacity-70"
-              >
-                ↗ {{ link.title }}
-              </a>
-            </div>
           </section>
 
           <!-- ── Application Examples ── -->
@@ -230,48 +215,53 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
         <aside
           class="mt-6 flex w-full shrink-0 flex-col gap-8 md:sticky md:top-24 md:mt-0 md:w-5/12 lg:w-4/12"
         >
-          <!-- Works count -->
-          <div>
-            <SectionTitle class="mb-2">收錄作品數</SectionTitle>
-            <span class="text-main text-xl">{{ concept.works_count || 0 }}</span>
+          <!-- Aliases -->
+          <div v-if="concept.aliases && concept.aliases.length > 0">
+            <SectionTitle class="mb-2">概念別稱</SectionTitle>
+            <div class="text-main/70 text-sm leading-relaxed">
+              {{ concept.aliases.map((a) => a.name).join(' / ') }}
+            </div>
           </div>
-
           <!-- Year range -->
           <div>
             <SectionTitle class="mb-2">出現年份</SectionTitle>
             <div class="flex items-baseline gap-2">
-              <span class="text-main text-base">{{ yearRange.min ?? '—' }}</span>
+              <span class="text-main/70 text-sm">{{ yearRange.min ?? '—' }}</span>
               <span class="text-main/30 text-xs">—</span>
-              <span class="text-main text-base">{{ yearRange.max ?? '—' }}</span>
+              <span class="text-main/70 text-sm">{{ yearRange.max ?? '—' }}</span>
             </div>
           </div>
 
-          <!-- Aliases -->
-          <div v-if="concept.aliases && concept.aliases.length > 0">
-            <SectionTitle class="mb-2">概念別稱</SectionTitle>
-            <div class="text-main/70 text-base leading-relaxed">
-              {{ concept.aliases.map((a) => a.name).join(' / ') }}
-            </div>
-          </div>
           <!-- Related Concepts -->
-          <div>
+          <div v-if="concept.related_concepts && concept.related_concepts.length > 0">
             <SectionTitle class="mb-3">相關概念</SectionTitle>
-
-            <div
-              v-if="concept.related_concepts && concept.related_concepts.length > 0"
-              class="flex flex-wrap gap-1.5"
-            >
+            <div class="flex flex-wrap gap-1.5">
               <ConceptTag
                 v-for="related in concept.related_concepts"
                 :key="related.slug"
                 :concept="related"
               />
             </div>
-            <div
-              v-else
-              class="text-main/40 text-sm"
-            >
-              尚無相關概念。
+          </div>
+
+          <!-- External Links -->
+          <div v-if="concept.links && concept.links.length > 0">
+            <SectionTitle class="mb-2">參考連結</SectionTitle>
+            <div>
+              <HoverListItem
+                v-for="link in concept.links"
+                :key="link.id"
+                tag="a"
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block no-underline"
+              >
+                <div class="flex items-center justify-between gap-2 py-2.5">
+                  <span class="text-main/70 group-hover:text-primary text-sm transition-colors">{{ link.title }}</span>
+                  <span class="text-main/40 group-hover:text-primary shrink-0 text-sm transition-colors">↗</span>
+                </div>
+              </HoverListItem>
             </div>
           </div>
         </aside>
