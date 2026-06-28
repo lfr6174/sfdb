@@ -3,20 +3,25 @@
 // Real users still get a fully working SPA shell — only <head> differs.
 //
 // Routing: vercel.json rewrites /works/:id (etc.) to /api/render?type=work&key=:id
+//
+// TODO: tighten CSP connect-src in vercel.json from `https:` to the actual API
+// domain once it's confirmed stable. vercel.json doesn't support env var
+// interpolation in header values, so it must be hardcoded there.
 
 export const config = { runtime: 'edge' }
 
-// Maps a frontend route type to its API collection path and the API fields
-// that supply the social title / description.
+// Maps a frontend route type to its API collection path, the URL path prefix
+// used to reconstruct the canonical URL, and the API fields that supply the
+// social title / description.
 const TYPE_MAP: Record<
   string,
-  { path: string; titleField: string; descField: string }
+  { path: string; prefix: string; titleField: string; descField: string }
 > = {
-  work: { path: 'works', titleField: 'title', descField: 'description' },
-  concept: { path: 'concepts', titleField: 'name', descField: 'description' },
-  person: { path: 'persons', titleField: 'name', descField: 'about' },
-  post: { path: 'posts', titleField: 'title', descField: 'body' },
-  page: { path: 'pages', titleField: 'title', descField: 'body' },
+  work:    { path: 'works',    prefix: 'works',    titleField: 'title', descField: 'description' },
+  concept: { path: 'concepts', prefix: 'concepts', titleField: 'name',  descField: 'description' },
+  person:  { path: 'persons',  prefix: 'persons',  titleField: 'name',  descField: 'about' },
+  post:    { path: 'posts',    prefix: 'posts',    titleField: 'title', descField: 'body' },
+  page:    { path: 'pages',    prefix: 'pages',    titleField: 'title', descField: 'body' },
 }
 
 const SITE_NAME = '臺灣科幻概念資料庫'
@@ -61,11 +66,14 @@ export default async function handler(req: Request): Promise<Response> {
         if (rawTitle) {
           const pageTitle = `${rawTitle} | ${SITE_NAME}`
           const desc = truncate(rawDesc || `${rawTitle}－${SITE_NAME}`)
-          const canonical = `${url.origin}${url.pathname}`
+          // Reconstruct the original public URL from type+key because
+          // url.pathname after Vercel's rewrite is always /api/render.
+          const canonical = `${url.origin}/${config.prefix}/${encodeURIComponent(key)}`
 
           const t = escapeHtml(pageTitle)
           const d = escapeHtml(desc)
           const og = [
+            `<title>${t}</title>`,
             `<meta name="description" content="${d}" />`,
             `<meta property="og:type" content="article" />`,
             `<meta property="og:site_name" content="${escapeHtml(SITE_NAME)}" />`,
@@ -78,9 +86,9 @@ export default async function handler(req: Request): Promise<Response> {
             `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
           ].join('\n    ')
 
-          html = html
-            .replace(/<title>[\s\S]*?<\/title>/, `<title>${t}</title>`)
-            .replace(/<!-- OG_META -->[\s\S]*?<!-- \/OG_META -->/, og)
+          // Use a function to avoid JS treating $& / $` / $' in og as special
+          // replacement tokens if the title or description happens to contain $.
+          html = html.replace(/<!-- OG_META -->[\s\S]*?<!-- \/OG_META -->/, () => og)
         }
       }
     } catch {

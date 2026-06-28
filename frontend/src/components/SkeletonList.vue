@@ -15,6 +15,10 @@ withDefaults(
   }>(),
   { variant: 'rows', rows: 6, tags: 12 },
 )
+
+// Four fixed widths cycling via n % 4: 48 → 72 → 96 → 120px.
+// Written as literals so Tailwind v4 includes them in the bundle.
+const TAG_WIDTHS = ['w-12', 'w-18', 'w-24', 'w-30'] as const
 </script>
 
 <template>
@@ -43,8 +47,7 @@ withDefaults(
       <div
         v-for="n in tags"
         :key="n"
-        class="bg-main/10 h-7 rounded"
-        :style="{ width: `${48 + (n % 4) * 24}px` }"
+        :class="['bg-main/10 h-7 rounded', TAG_WIDTHS[n % 4]]"
       ></div>
     </div>
   </div>

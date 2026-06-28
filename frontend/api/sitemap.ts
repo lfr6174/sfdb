@@ -31,8 +31,11 @@ async function fetchArray(apiUrl: string): Promise<Array<Record<string, unknown>
   return (await res.json()) as Array<Record<string, unknown>>
 }
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
+
 function urlEntry(loc: string, lastmod?: string): string {
-  const mod = lastmod ? `<lastmod>${lastmod.slice(0, 10)}</lastmod>` : ''
+  const date = lastmod?.slice(0, 10)
+  const mod = date && DATE_RE.test(date) ? `<lastmod>${date}</lastmod>` : ''
   return `<url><loc>${loc}</loc>${mod}</url>`
 }
 
@@ -53,11 +56,11 @@ export default async function handler(req: Request): Promise<Response> {
         fetchPaginated(`${apiBase}/pages/`),
       ])
 
-      for (const c of concepts) entries.push(urlEntry(`${origin}/concepts/${c.slug}`, c.updated_at as string))
-      for (const w of works) entries.push(urlEntry(`${origin}/works/${w.id}`, w.updated_at as string))
-      for (const p of persons) entries.push(urlEntry(`${origin}/persons/${p.id}`, p.updated_at as string))
-      for (const p of posts) entries.push(urlEntry(`${origin}/posts/${p.id}`, p.created_at as string))
-      for (const p of pages) entries.push(urlEntry(`${origin}/pages/${p.slug}`, p.updated_at as string))
+      for (const c of concepts) entries.push(urlEntry(`${origin}/concepts/${encodeURIComponent(String(c.slug))}`, c.updated_at as string))
+      for (const w of works) entries.push(urlEntry(`${origin}/works/${encodeURIComponent(String(w.id))}`, w.updated_at as string))
+      for (const p of persons) entries.push(urlEntry(`${origin}/persons/${encodeURIComponent(String(p.id))}`, p.updated_at as string))
+      for (const p of posts) entries.push(urlEntry(`${origin}/posts/${encodeURIComponent(String(p.id))}`, p.created_at as string))
+      for (const p of pages) entries.push(urlEntry(`${origin}/pages/${encodeURIComponent(String(p.slug))}`, p.updated_at as string))
     } catch {
       // On API failure, still return the static entries below.
     }
