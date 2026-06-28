@@ -56,11 +56,29 @@ export default async function handler(req: Request): Promise<Response> {
         fetchPaginated(`${apiBase}/pages/`),
       ])
 
-      for (const c of concepts) entries.push(urlEntry(`${origin}/concepts/${encodeURIComponent(String(c.slug))}`, c.updated_at as string))
-      for (const w of works) entries.push(urlEntry(`${origin}/works/${encodeURIComponent(String(w.id))}`, w.updated_at as string))
-      for (const p of persons) entries.push(urlEntry(`${origin}/persons/${encodeURIComponent(String(p.id))}`, p.updated_at as string))
-      for (const p of posts) entries.push(urlEntry(`${origin}/posts/${encodeURIComponent(String(p.id))}`, p.created_at as string))
-      for (const p of pages) entries.push(urlEntry(`${origin}/pages/${encodeURIComponent(String(p.slug))}`, p.updated_at as string))
+      for (const c of concepts)
+        entries.push(
+          urlEntry(
+            `${origin}/concepts/${encodeURIComponent(String(c.slug))}`,
+            c.updated_at as string,
+          ),
+        )
+      for (const w of works)
+        entries.push(
+          urlEntry(`${origin}/works/${encodeURIComponent(String(w.id))}`, w.updated_at as string),
+        )
+      for (const p of persons)
+        entries.push(
+          urlEntry(`${origin}/persons/${encodeURIComponent(String(p.id))}`, p.updated_at as string),
+        )
+      for (const p of posts)
+        entries.push(
+          urlEntry(`${origin}/posts/${encodeURIComponent(String(p.id))}`, p.created_at as string),
+        )
+      for (const p of pages)
+        entries.push(
+          urlEntry(`${origin}/pages/${encodeURIComponent(String(p.slug))}`, p.updated_at as string),
+        )
     } catch {
       // On API failure, still return the static entries below.
     }

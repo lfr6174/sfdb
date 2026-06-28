@@ -47,10 +47,18 @@ const isExpandedPublications = ref(false)
 
 const SERIAL_SOURCES = new Set(['newspaper', 'magazine', 'website'])
 
-function pubLink(pub: { id: number; title: string; source?: string; series?: { id: number; title: string } | null }) {
+function pubLink(pub: {
+  id: number
+  title: string
+  source?: string
+  series?: { id: number; title: string } | null
+}) {
   if (SERIAL_SOURCES.has(pub.source ?? '')) {
     if (pub.series) {
-      return { path: '/works', query: { publication_series: pub.series.id, publication_series_title: pub.series.title } }
+      return {
+        path: '/works',
+        query: { publication_series: pub.series.id, publication_series_title: pub.series.title },
+      }
     }
     return { path: '/works', query: { publication_name: pub.title } }
   }
@@ -271,9 +279,14 @@ const visiblePublications = computed(() => {
                   </template>
                   <router-link
                     v-if="pub.publisher?.id"
-                    :to="{ path: '/works', query: { publisher: pub.publisher.id, publisher_name: pub.publisher.name } }"
+                    :to="{
+                      path: '/works',
+                      query: { publisher: pub.publisher.id, publisher_name: pub.publisher.name },
+                    }"
                     class="hover:text-primary transition-colors"
-                  >{{ pub.publisher.name }}</router-link>
+                  >
+                    {{ pub.publisher.name }}
+                  </router-link>
                   <span v-else-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
                 </div>
 
@@ -328,11 +341,13 @@ const visiblePublications = computed(() => {
                   class="text-main/50 mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs"
                 >
                   <span class="text-main/60 font-medium">
-                    {{ entry.category }}<span
+                    {{ entry.category }}
+                    <span
                       v-if="entry.result"
                       class="text-main/45 font-normal"
-                      >{{ entry.category ? `（${entry.result}）` : entry.result }}</span
                     >
+                      {{ entry.category ? `（${entry.result}）` : entry.result }}
+                    </span>
                   </span>
                 </div>
               </SidebarRow>

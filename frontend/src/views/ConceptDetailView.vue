@@ -75,7 +75,6 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
             <p class="text-main/80 mb-5 text-base leading-relaxed whitespace-pre-wrap">
               {{ concept.description || '暫無此概念的簡介。' }}
             </p>
-
           </section>
 
           <!-- ── Application Examples ── -->
@@ -258,8 +257,14 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                 class="block no-underline"
               >
                 <div class="flex items-center justify-between gap-2 py-2.5">
-                  <span class="text-main/70 group-hover:text-primary text-sm transition-colors">{{ link.title }}</span>
-                  <span class="text-main/40 group-hover:text-primary shrink-0 text-sm transition-colors">↗</span>
+                  <span class="text-main/70 group-hover:text-primary text-sm transition-colors">
+                    {{ link.title }}
+                  </span>
+                  <span
+                    class="text-main/40 group-hover:text-primary shrink-0 text-sm transition-colors"
+                  >
+                    ↗
+                  </span>
                 </div>
               </HoverListItem>
             </div>

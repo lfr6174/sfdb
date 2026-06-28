@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchWorks as fetchWorksApi, fetchAllCatalogues as fetchAllCataloguesApi } from '../api/works'
+import {
+  fetchWorks as fetchWorksApi,
+  fetchAllCatalogues as fetchAllCataloguesApi,
+} from '../api/works'
 import type { CatalogueOption } from '../api/works'
 import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Work, Concept } from '../types'
@@ -88,7 +91,8 @@ const filterParams = () => {
   if (yearMin.value) params.year_min = yearMin.value
   if (yearMax.value) params.year_max = yearMax.value
   if (selectedPublicationId.value) params.publication = selectedPublicationId.value
-  if (selectedPublicationSeriesId.value) params.publication_series = selectedPublicationSeriesId.value
+  if (selectedPublicationSeriesId.value)
+    params.publication_series = selectedPublicationSeriesId.value
   if (selectedPublicationName.value) params.publication_name = selectedPublicationName.value
   if (selectedPublisherId.value) params.publisher = selectedPublisherId.value
   if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
@@ -136,7 +140,8 @@ const buildQuery = (): Record<string, string> => {
   }
   if (selectedPublicationSeriesId.value) {
     q.publication_series = selectedPublicationSeriesId.value
-    if (selectedPublicationSeriesTitle.value) q.publication_series_title = selectedPublicationSeriesTitle.value
+    if (selectedPublicationSeriesTitle.value)
+      q.publication_series_title = selectedPublicationSeriesTitle.value
   }
   if (selectedPublicationName.value) q.publication_name = selectedPublicationName.value
   if (selectedPublisherId.value) {
@@ -241,7 +246,9 @@ onMounted(async () => {
   await Promise.all([
     fetchAllConcepts(),
     fetchAllCataloguesApi()
-      .then((res) => { allCatalogues.value = res.data ?? [] })
+      .then((res) => {
+        allCatalogues.value = res.data ?? []
+      })
       .catch(() => {}),
   ])
   if (pendingConceptSlugs.value.length) {
@@ -622,7 +629,7 @@ const clearCatalogue = () => {
                 <div class="relative">
                   <select
                     v-model="selectedCatalogueTitle"
-                    class="text-main/70 border-main/20 focus:border-primary/50 w-full cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+                    class="text-main/70 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2"
                   >
                     <option value="">（不限）</option>
                     <template
@@ -647,7 +654,10 @@ const clearCatalogue = () => {
                     viewBox="0 0 10 6"
                     fill="none"
                   >
-                    <path d="M0 0l5 6 5-6z" fill="currentColor" />
+                    <path
+                      d="M0 0l5 6 5-6z"
+                      fill="currentColor"
+                    />
                   </svg>
                 </div>
               </dd>

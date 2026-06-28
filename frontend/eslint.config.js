@@ -3,6 +3,11 @@ import vueTsEslintConfig from '@vue/eslint-config-typescript'
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 
 export default [
+  // 0. Global ignore: never lint build output (mirrors .gitignore).
+  //    Without this, `eslint .` also checks the minified JS in dist/ and
+  //    reports hundreds of false errors.
+  { ignores: ['dist/**'] },
+
   // 1. Vue 3 官方推薦規則 (包含範本解析與基礎防呆)
   ...pluginVue.configs['flat/recommended'],
 

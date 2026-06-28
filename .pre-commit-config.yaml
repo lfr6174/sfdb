@@ -16,3 +16,33 @@ repos:
       - id: end-of-file-fixer    # Ensure file ends with a newline
       - id: check-yaml           # Check YAML syntax
       - id: check-added-large-files # Prevent accidentally committing large files
+
+  # Frontend checks. These call the project's OWN npm scripts (frontend/package.json)
+  # via `language: system`, so they always match what you run by hand and never
+  # drift in version. Requires `npm install` to have been run in frontend/ once
+  # (node_modules must exist). Each hook only triggers when a matching staged
+  # file lives under frontend/.
+  - repo: local
+    hooks:
+      - id: frontend-eslint
+        name: eslint --fix (frontend)
+        entry: bash -c 'cd frontend && npm run lint:fix'
+        language: system
+        files: ^frontend/.*\.(ts|vue|js|cjs|mjs)$
+        pass_filenames: false
+
+      - id: frontend-prettier
+        name: prettier --write (frontend)
+        entry: bash -c 'cd frontend && npm run format'
+        language: system
+        files: ^frontend/.*\.(ts|vue|js|cjs|mjs|json|css|md)$
+        pass_filenames: false
+
+      - id: frontend-typecheck
+        name: vue-tsc type-check (frontend)
+        # No dedicated npm script (vue-tsc is bundled inside `npm run build`),
+        # so call the type-checker directly without the vite build step.
+        entry: bash -c 'cd frontend && npx vue-tsc -b'
+        language: system
+        files: ^frontend/.*\.(ts|vue)$
+        pass_filenames: false

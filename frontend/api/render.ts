@@ -17,11 +17,11 @@ const TYPE_MAP: Record<
   string,
   { path: string; prefix: string; titleField: string; descField: string }
 > = {
-  work:    { path: 'works',    prefix: 'works',    titleField: 'title', descField: 'description' },
-  concept: { path: 'concepts', prefix: 'concepts', titleField: 'name',  descField: 'description' },
-  person:  { path: 'persons',  prefix: 'persons',  titleField: 'name',  descField: 'about' },
-  post:    { path: 'posts',    prefix: 'posts',    titleField: 'title', descField: 'body' },
-  page:    { path: 'pages',    prefix: 'pages',    titleField: 'title', descField: 'body' },
+  work: { path: 'works', prefix: 'works', titleField: 'title', descField: 'description' },
+  concept: { path: 'concepts', prefix: 'concepts', titleField: 'name', descField: 'description' },
+  person: { path: 'persons', prefix: 'persons', titleField: 'name', descField: 'about' },
+  post: { path: 'posts', prefix: 'posts', titleField: 'title', descField: 'body' },
+  page: { path: 'pages', prefix: 'pages', titleField: 'title', descField: 'body' },
 }
 
 const SITE_NAME = '臺灣科幻概念資料庫'
