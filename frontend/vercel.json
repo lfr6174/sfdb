@@ -1,3 +1,23 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/robots.txt", "destination": "/api/robots" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/works/:id", "destination": "/api/render?type=work&key=:id" },
+    { "source": "/concepts/:slug", "destination": "/api/render?type=concept&key=:slug" },
+    { "source": "/persons/:id", "destination": "/api/render?type=person&key=:id" },
+    { "source": "/posts/:id", "destination": "/api/render?type=post&key=:id" },
+    { "source": "/pages/:slug", "destination": "/api/render?type=page&key=:slug" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" }
+      ]
+    }
+  ]
 }
