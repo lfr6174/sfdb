@@ -69,10 +69,14 @@ SECURE_REFERRER_POLICY = "same-origin"
 
 # Content Security Policy (via django-csp v4.0)
 # Note: 'unsafe-inline' is often required by Django Admin / Unfold UI and DRF Browsable APIs.
+# 'unsafe-eval' is required by Unfold's bundled Alpine.js, which evaluates
+# directive expressions via new AsyncFunction(); without it the admin UI breaks
+# (overlays stay stuck, controls unclickable). This CSP only covers the Django
+# backend (admin + API); the public site runs on Vercel with its own stricter CSP.
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ["'self'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
+        "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         "style-src": ["'self'", "'unsafe-inline'"],
         "img-src": ["'self'", "data:"],
         "font-src": ["'self'"],
