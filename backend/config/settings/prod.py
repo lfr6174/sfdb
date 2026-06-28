@@ -105,7 +105,7 @@ LOGGING = {
 }
 
 # Database (Production uses PostgreSQL via DATABASE_URL)
-# statement_timeout: DB-level circuit breaker — kills any query exceeding 3s.
+# statement_timeout: DB-level circuit breaker — kills any query exceeding 5s.
 # Guards against slow-query DoS that bypasses Cloudflare and DRF throttling.
 DATABASES = {
     "default": {

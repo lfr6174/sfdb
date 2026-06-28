@@ -16,9 +16,7 @@ from .models import (
 )
 from .services import get_byline, get_credits
 
-# ============================================================================
-# MINIMAL / UTILITY SERIALIZERS
-# ============================================================================
+# --- Minimal / utility serializers ---
 
 
 class AgentMinimalSerializer(serializers.ModelSerializer):
@@ -27,9 +25,7 @@ class AgentMinimalSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "agent_type"]
 
 
-# ============================================================================
-# WORK SERIALIZERS
-# ============================================================================
+# --- Work serializers ---
 
 
 class CycleSerializer(serializers.ModelSerializer):
@@ -64,9 +60,7 @@ class WorkConceptSerializer(serializers.ModelSerializer):
         fields = ["id", "concept", "description"]
 
 
-# ============================================================================
-# PUBLICATION SERIALIZERS
-# ============================================================================
+# --- Publication serializers ---
 
 
 class PublicationAgentSerializer(serializers.ModelSerializer):
@@ -115,9 +109,7 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
         return None
 
 
-# ============================================================================
-# CATALOGUE ENTRY FOR WORK SERIALIZER
-# ============================================================================
+# --- Catalogue entry (nested in work) ---
 
 
 class CatalogueBriefSerializer(serializers.ModelSerializer):
@@ -137,9 +129,7 @@ class WorkCatalogueSerializer(serializers.ModelSerializer):
         fields = ["id", "catalogue", "year", "category", "result"]
 
 
-# ============================================================================
-# MAIN WORK SERIALIZER (The Aggregator)
-# ============================================================================
+# --- Main work serializer (the aggregator) ---
 
 
 class WorkListSerializer(serializers.ModelSerializer):

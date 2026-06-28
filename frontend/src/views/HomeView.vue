@@ -127,7 +127,7 @@ onMounted(async () => {
       v-else
       class="grid grid-cols-1 gap-10 lg:grid-cols-[3fr_2fr] lg:gap-14"
     >
-      <!-- ══ Left Column: Random Concept Works ══ -->
+      <!-- Left Column: Random Concept Works -->
       <section class="flex flex-col">
         <SectionTitle
           v-if="currentConcept"
@@ -224,9 +224,9 @@ onMounted(async () => {
         </div>
       </section>
 
-      <!-- ══ Right Column ══ -->
+      <!-- Right Column -->
       <aside class="lg:border-main/10 flex flex-col gap-10 lg:border-l lg:pl-10">
-        <!-- 最新資訊 -->
+        <!-- Latest news -->
         <section>
           <SectionTitle class="mb-4">
             最新資訊
@@ -285,7 +285,7 @@ onMounted(async () => {
           </ul>
         </section>
 
-        <!-- 近期新增概念 -->
+        <!-- Recently added concepts -->
         <section>
           <SectionTitle class="mb-4">近期新增概念</SectionTitle>
           <div

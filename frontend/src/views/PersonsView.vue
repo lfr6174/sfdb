@@ -27,7 +27,7 @@ const {
 
 <template>
   <div class="mx-auto max-w-4xl">
-    <!-- ── Controls ── -->
+    <!-- Controls -->
     <div class="flex flex-col justify-between gap-4 pt-6 pb-8 md:flex-row md:items-center md:pt-10">
       <div class="w-full md:w-56">
         <BaseSearchInput
@@ -48,7 +48,7 @@ const {
       </div>
     </div>
 
-    <!-- ── Loading / Error / Empty / List ── -->
+    <!-- Loading / Error / Empty / List -->
     <ListState
       :loading="isLoading"
       :error="hasError"

@@ -29,9 +29,7 @@ from .models import (
     WorkRelation,
 )
 
-# ============================================================================
-# PARTIAL DATE WIDGET / FIELD / FORMS
-# ============================================================================
+# --- Partial-date widget / field / forms ---
 
 _CY = datetime.date.today().year
 _YEAR_CHOICES = [("", "---")] + [(y, y) for y in range(_CY + 1, 1899, -1)]
@@ -201,9 +199,7 @@ class PublicationForm(forms.ModelForm):
         return obj
 
 
-# ============================================================================
-# INLINES
-# ============================================================================
+# --- Inlines ---
 
 
 class WorkAgentInline(TabularInline):
@@ -316,9 +312,7 @@ class WorkCatalogueInlineForCatalogue(TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-# ============================================================================
-# WORK ADMINS
-# ============================================================================
+# --- Work admins ---
 
 
 @admin.register(Role)
@@ -461,9 +455,7 @@ class ManifestationAdmin(ModelAdmin):
     get_contributions_display.short_description = "收錄作品的參與者"
 
 
-# ============================================================================
-# CATALOGUE ADMINS
-# ============================================================================
+# --- Catalogue admins ---
 
 
 @admin.register(Catalogue)

@@ -348,7 +348,7 @@ const clearCatalogue = () => {
 <template>
   <div>
     <div class="mx-auto flex max-w-4xl flex-col gap-0 pb-20 lg:flex-row lg:items-start lg:gap-12">
-      <!-- ══ Left Sidebar ══ -->
+      <!-- Left Sidebar -->
       <aside
         class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
       >
@@ -451,7 +451,7 @@ const clearCatalogue = () => {
         </div>
       </aside>
 
-      <!-- ══ Main Panel ══ -->
+      <!-- Main Panel -->
       <main class="min-w-0 flex-1 pt-6 md:pt-10">
         <!-- Search and Filter (Mobile) -->
         <div class="mb-6 flex items-center gap-3 lg:hidden">
@@ -490,7 +490,7 @@ const clearCatalogue = () => {
           </button>
         </div>
 
-        <!-- ── Advanced Search ── -->
+        <!-- Advanced Search -->
         <section
           v-if="isAdvancedMode"
           class="border-main/10 mb-8 border-b pb-10"
@@ -509,7 +509,7 @@ const clearCatalogue = () => {
 
           <!-- Definition-list style form: each row = label (left) + content (right) -->
           <dl class="divide-main/10 divide-y">
-            <!-- 關鍵字 -->
+            <!-- Keyword -->
             <div class="pt-0 pb-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -526,7 +526,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 發表年份 -->
+            <!-- Year published -->
             <div class="py-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -554,7 +554,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 作品體裁 -->
+            <!-- Genre -->
             <div class="py-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -570,7 +570,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 作品篇幅 -->
+            <!-- Length -->
             <div class="py-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -586,7 +586,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 作品來源 -->
+            <!-- Provenance -->
             <div class="py-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -602,7 +602,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 原始語言 -->
+            <!-- Original language -->
             <div class="py-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -618,7 +618,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 精選／獎項 -->
+            <!-- Catalogues / awards -->
             <div class="py-6 md:flex md:items-baseline md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -663,7 +663,7 @@ const clearCatalogue = () => {
               </dd>
             </div>
 
-            <!-- 概念標籤 -->
+            <!-- Concept tags -->
             <div class="pt-6 pb-0 md:flex md:gap-6">
               <dt
                 class="text-main/40 mb-2 shrink-0 pt-0.5 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
@@ -717,7 +717,7 @@ const clearCatalogue = () => {
           </div>
         </section>
 
-        <!-- ── Results View ── -->
+        <!-- Results View -->
         <template v-else>
           <!-- Active Filters + Sort Bar -->
           <div class="border-main/10 mb-1 flex flex-col gap-3 border-b pb-5">
@@ -907,7 +907,7 @@ const clearCatalogue = () => {
       </main>
     </div>
 
-    <!-- ══ Concept Modal ══ -->
+    <!-- Concept Modal -->
     <ConceptPickerModal
       v-model="selectedConcepts"
       :all-concepts="allConcepts"

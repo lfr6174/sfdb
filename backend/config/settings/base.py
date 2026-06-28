@@ -2,13 +2,11 @@ from pathlib import Path
 
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-# SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASES, CORS_ALLOWED_ORIGINS
-# will be defined in environment-specific settings files (e.g., dev.py, prod.py)
+# Settings shared by every environment. Values that differ per environment
+# (DEBUG, ALLOWED_HOSTS, DATABASES, CORS, ...) live in dev.py / prod.py.
+# Deployment checklist: https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
@@ -19,46 +17,51 @@ ADMIN_URL = config("ADMIN_URL", default="admin/")
 # Application definition
 
 INSTALLED_APPS = [
-    "unfold",  # Alternative admin GUI
+    # Admin theme: "unfold" MUST come before django.contrib.admin so it can
+    # override the admin templates. Order matters here.
+    "unfold",
     "unfold.contrib.filters",
+    # Django built-ins
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Third-party apps
-    "rest_framework",  # DRF
-    "django_filters",  # django-filter
-    "corsheaders",  # django-cors-headers
-    "drf_spectacular",  # API schema generator
-    # Local apps
+    # Third-party
+    "rest_framework",  # REST API toolkit
+    "django_filters",  # query-param filtering for DRF
+    "corsheaders",  # cross-origin requests from the frontend
+    "drf_spectacular",  # OpenAPI schema generation
+    # Local apps (one per bounded context)
     "apps.core",
     "apps.agent",
     "apps.work",
     "apps.concept",
     "apps.post",
     "apps.commit",
-    "axes",  # Brute-force protection
-    "unfold.contrib.simple_history",  # Unfold styling for simple_history
-    "simple_history",  # Model history tracking
+    # Third-party that hooks into the apps above; kept last so their signals
+    # and admin integrations register after our models are loaded.
+    "axes",  # brute-force login protection
+    "unfold.contrib.simple_history",  # unfold theming for the history admin
+    "simple_history",  # row-level audit trail on models
 ]
 
 SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD = True
 
+# Order matters: each request flows top -> bottom, each response bottom -> top.
 MIDDLEWARE = [
-    # Custom: CORS middleware must be placed as high as possible
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # must be near the top to set CORS headers early
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",  # sets request.user
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "axes.middleware.AxesMiddleware",
+    "axes.middleware.AxesMiddleware",  # after auth: records failed logins
     "csp.middleware.CSPMiddleware",
-    "simple_history.middleware.HistoryRequestMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",  # after auth: tags history rows with request.user
 ]
 
 ROOT_URLCONF = "config.urls"

@@ -1,10 +1,9 @@
 import axios from 'axios'
 
-// Create a centralized Axios instance
+// Shared API client. Every api/*.ts module imports this so the base URL,
+// timeout, and default headers are configured in exactly one place.
 const api = axios.create({
-  // Import the base URL from Vite's environment variables
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  // Set a reasonable timeout (e.g., 10 seconds)
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

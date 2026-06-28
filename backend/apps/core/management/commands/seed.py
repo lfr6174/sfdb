@@ -4,7 +4,7 @@ from django.db import transaction
 from apps.agent.models import Agent
 from apps.work.models import Role
 
-# 初始資料清單 依部署需求自行增修
+# Initial reference data — extend per deployment as needed.
 ROLES = [
     {"code": "author", "verb": "著", "noun": "作者", "order": 10},
     {"code": "illustrator", "verb": "繪", "noun": "繪師", "order": 20},

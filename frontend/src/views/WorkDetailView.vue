@@ -91,7 +91,7 @@ const visiblePublications = computed(() => {
       </div>
 
       <div class="flex flex-col items-start gap-10 pb-20 md:flex-row lg:gap-16">
-        <!-- ── Main Column ── -->
+        <!-- Main Column -->
         <div class="flex w-full flex-col md:w-7/12 lg:w-8/12">
           <section>
             <!-- Media type pill (gray filled badge, not a tag) -->
@@ -183,7 +183,7 @@ const visiblePublications = computed(() => {
             />
           </section>
 
-          <!-- ── Concept Descriptions ── -->
+          <!-- Concept Descriptions -->
           <section
             v-if="conceptDescriptions.length > 0"
             class="mt-12"
@@ -220,7 +220,7 @@ const visiblePublications = computed(() => {
           </section>
         </div>
 
-        <!-- ── Sidebar ── -->
+        <!-- Sidebar -->
         <aside
           class="mt-6 flex w-full shrink-0 flex-col gap-8 md:sticky md:top-24 md:mt-0 md:w-5/12 lg:w-4/12"
         >

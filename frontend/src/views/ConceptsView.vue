@@ -74,7 +74,7 @@ const groupedConcepts = computed(() => {
 </script>
 <template>
   <div class="mx-auto max-w-4xl">
-    <!-- ── Controls ── -->
+    <!-- Controls -->
     <div class="flex flex-col justify-between gap-4 pt-6 md:flex-row md:items-center md:pt-10">
       <div class="w-full md:w-56">
         <BaseSearchInput
@@ -96,7 +96,7 @@ const groupedConcepts = computed(() => {
       </div>
     </div>
 
-    <!-- ── Loading / Error / Concept Groups ── -->
+    <!-- Loading / Error / Concept Groups -->
     <ListState
       :loading="isLoading"
       :error="hasError"

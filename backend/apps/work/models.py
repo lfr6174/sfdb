@@ -6,10 +6,7 @@ from simple_history.models import HistoricalRecords
 
 from apps.core.models import TimeStampedModel
 
-# ============================================================================
-# WORK
-# Core entities representing abstract artistic creations and their relationships.
-# ============================================================================
+# --- Work: abstract creations and their relationships ---
 
 # --- Enums ---
 
@@ -121,7 +118,6 @@ class Work(TimeStampedModel):
         verbose_name="原始語言",
         help_text="作品最初發表時使用的語言。若作者採雙語發表，則各語系獨立登載。",
     )
-    # Removed legacy `year` field
     ori_date = models.DateField(
         null=True,
         blank=True,
@@ -434,10 +430,7 @@ class ManifestationAgent(models.Model):
         return f"{name_to_display} ({self.role.noun})"
 
 
-# ============================================================================
-# PUBLICATION
-# Represents physical or digital releases and their specific contributors.
-# ============================================================================
+# --- Publication: physical/digital releases and their contributors ---
 
 # --- Enums ---
 
@@ -544,7 +537,6 @@ class Publication(TimeStampedModel):
         verbose_name="裝訂",
         help_text="僅適用於紙本出版品，非紙本留空。",
     )
-    # Removed legacy `year` field
     pub_date = models.DateField(
         null=True,
         blank=True,
@@ -680,10 +672,7 @@ class PublicationAgent(models.Model):
         return f"{name_to_display} ({self.role.noun})"
 
 
-# ============================================================================
-# CATALOGUE
-# Represents collections, awards, and reading lists.
-# ============================================================================
+# --- Catalogue: awards and reading lists ---
 
 # --- Enums ---
 

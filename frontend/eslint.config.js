@@ -8,10 +8,10 @@ export default [
   //    reports hundreds of false errors.
   { ignores: ['dist/**'] },
 
-  // 1. Vue 3 官方推薦規則 (包含範本解析與基礎防呆)
+  // 1. Vue 3 recommended rules (template parsing + baseline safety).
   ...pluginVue.configs['flat/recommended'],
 
-  // 2. Vue 官方的 TypeScript 規則
+  // 2. Vue's official TypeScript rules.
   ...vueTsEslintConfig(),
 
   {
