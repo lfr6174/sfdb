@@ -89,12 +89,14 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
     binding_display = serializers.CharField(source="get_binding_display", read_only=True)
     year = serializers.IntegerField(read_only=True)
     contributions = PublicationAgentSerializer(many=True, read_only=True)
+    series = serializers.SerializerMethodField()
 
     class Meta:
         model = Publication
         fields = [
             "id",
             "title",
+            "source",
             "source_display",
             "media_display",
             "binding_display",
@@ -104,7 +106,13 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
             "note",
             "publisher",
             "contributions",
+            "series",
         ]
+
+    def get_series(self, obj):
+        if obj.series_id:
+            return {"id": obj.series_id, "title": obj.series.title}
+        return None
 
 
 # ============================================================================

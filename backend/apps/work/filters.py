@@ -22,6 +22,15 @@ class WorkFilter(django_filters.FilterSet):
     publication = django_filters.NumberFilter(
         field_name="manifestations__publication__id", lookup_expr="exact", distinct=True
     )
+    publication_name = django_filters.CharFilter(
+        field_name="manifestations__publication__title", lookup_expr="icontains", distinct=True
+    )
+    publication_series = django_filters.NumberFilter(
+        field_name="manifestations__publication__series__id", lookup_expr="exact", distinct=True
+    )
+    publisher = django_filters.NumberFilter(
+        field_name="manifestations__publication__publisher__id", lookup_expr="exact", distinct=True
+    )
     catalogue = django_filters.CharFilter(
         field_name="work_catalogues__catalogue__title", lookup_expr="exact", distinct=True
     )
