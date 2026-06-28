@@ -40,6 +40,7 @@ export interface WorkAgent {
 export interface Publication {
   id: number
   title: string
+  source?: string
   source_display: string
   media_display: string
   language_display: string
@@ -48,6 +49,7 @@ export interface Publication {
   binding_display: string
   note: string
   publisher: AgentMinimal | null
+  series?: { id: number; title: string } | null
   contributions: {
     id: number
     agent: AgentMinimal

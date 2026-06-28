@@ -61,6 +61,11 @@ const yearMin = ref<number | ''>(q0.year_min ? Number(q0.year_min) : '')
 const yearMax = ref<number | ''>(q0.year_max ? Number(q0.year_max) : '')
 const selectedPublicationId = ref((q0.publication as string) || '')
 const selectedPublicationTitle = ref((q0.publication_title as string) || '')
+const selectedPublicationSeriesId = ref((q0.publication_series as string) || '')
+const selectedPublicationSeriesTitle = ref((q0.publication_series_title as string) || '')
+const selectedPublicationName = ref((q0.publication_name as string) || '')
+const selectedPublisherId = ref((q0.publisher as string) || '')
+const selectedPublisherName = ref((q0.publisher_name as string) || '')
 const selectedCatalogueTitle = ref((q0.catalogue as string) || '')
 // Concept slugs from the URL, resolved to objects once allConcepts loads.
 const pendingConceptSlugs = ref<string[]>(q0.concept ? String(q0.concept).split(',') : [])
@@ -81,6 +86,9 @@ const filterParams = () => {
   if (yearMin.value) params.year_min = yearMin.value
   if (yearMax.value) params.year_max = yearMax.value
   if (selectedPublicationId.value) params.publication = selectedPublicationId.value
+  if (selectedPublicationSeriesId.value) params.publication_series = selectedPublicationSeriesId.value
+  if (selectedPublicationName.value) params.publication_name = selectedPublicationName.value
+  if (selectedPublisherId.value) params.publisher = selectedPublisherId.value
   if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
   return params
 }
@@ -124,6 +132,15 @@ const buildQuery = (): Record<string, string> => {
     q.publication = selectedPublicationId.value
     if (selectedPublicationTitle.value) q.publication_title = selectedPublicationTitle.value
   }
+  if (selectedPublicationSeriesId.value) {
+    q.publication_series = selectedPublicationSeriesId.value
+    if (selectedPublicationSeriesTitle.value) q.publication_series_title = selectedPublicationSeriesTitle.value
+  }
+  if (selectedPublicationName.value) q.publication_name = selectedPublicationName.value
+  if (selectedPublisherId.value) {
+    q.publisher = selectedPublisherId.value
+    if (selectedPublisherName.value) q.publisher_name = selectedPublisherName.value
+  }
   if (selectedCatalogueTitle.value) q.catalogue = selectedCatalogueTitle.value
   return q
 }
@@ -161,6 +178,11 @@ const applyQueryToState = (q: typeof route.query) => {
   yearMax.value = q.year_max ? Number(q.year_max) : ''
   selectedPublicationId.value = (q.publication as string) || ''
   selectedPublicationTitle.value = (q.publication_title as string) || ''
+  selectedPublicationSeriesId.value = (q.publication_series as string) || ''
+  selectedPublicationSeriesTitle.value = (q.publication_series_title as string) || ''
+  selectedPublicationName.value = (q.publication_name as string) || ''
+  selectedPublisherId.value = (q.publisher as string) || ''
+  selectedPublisherName.value = (q.publisher_name as string) || ''
   selectedCatalogueTitle.value = (q.catalogue as string) || ''
   applyConceptSlugs(q.concept ? String(q.concept).split(',') : [])
 }
@@ -195,6 +217,9 @@ watch(
     yearMin,
     yearMax,
     selectedPublicationId,
+    selectedPublicationSeriesId,
+    selectedPublicationName,
+    selectedPublisherId,
     selectedCatalogueTitle,
   ],
   () => triggerFetch(),
@@ -271,12 +296,25 @@ const clearAllFilters = () => {
   yearMax.value = ''
   selectedPublicationId.value = ''
   selectedPublicationTitle.value = ''
+  selectedPublicationSeriesId.value = ''
+  selectedPublicationSeriesTitle.value = ''
+  selectedPublicationName.value = ''
+  selectedPublisherId.value = ''
+  selectedPublisherName.value = ''
   selectedCatalogueTitle.value = ''
 }
 
 const clearPublication = () => {
   selectedPublicationId.value = ''
   selectedPublicationTitle.value = ''
+  selectedPublicationSeriesId.value = ''
+  selectedPublicationSeriesTitle.value = ''
+  selectedPublicationName.value = ''
+}
+
+const clearPublisher = () => {
+  selectedPublisherId.value = ''
+  selectedPublisherName.value = ''
 }
 
 const clearCatalogue = () => {
@@ -624,6 +662,9 @@ const clearCatalogue = () => {
                 yearMin ||
                 yearMax ||
                 selectedPublicationId ||
+                selectedPublicationSeriesId ||
+                selectedPublicationName ||
+                selectedPublisherId ||
                 selectedCatalogueTitle
               "
               class="flex flex-wrap items-center gap-1.5"
@@ -634,6 +675,21 @@ const clearCatalogue = () => {
                 v-if="selectedPublicationId"
                 :label="`出版物：${selectedPublicationTitle}`"
                 @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedPublicationSeriesId"
+                :label="`出版物：${selectedPublicationSeriesTitle}`"
+                @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedPublicationName"
+                :label="`出版物：${selectedPublicationName}`"
+                @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedPublisherId"
+                :label="`出版者：${selectedPublisherName}`"
+                @remove="clearPublisher"
               />
               <FilterChip
                 v-if="selectedCatalogueTitle"

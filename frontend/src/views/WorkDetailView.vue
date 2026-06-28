@@ -45,6 +45,18 @@ const sortedPublications = computed(() => {
 
 const isExpandedPublications = ref(false)
 
+const SERIAL_SOURCES = new Set(['newspaper', 'magazine', 'website'])
+
+function pubLink(pub: { id: number; title: string; source?: string; series?: { id: number; title: string } | null }) {
+  if (SERIAL_SOURCES.has(pub.source ?? '')) {
+    if (pub.series) {
+      return { path: '/works', query: { publication_series: pub.series.id, publication_series_title: pub.series.title } }
+    }
+    return { path: '/works', query: { publication_name: pub.title } }
+  }
+  return { path: '/works', query: { publication: pub.id, publication_title: pub.title } }
+}
+
 const visiblePublications = computed(() => {
   const sorted = sortedPublications.value
   if (isExpandedPublications.value) return sorted
@@ -216,10 +228,7 @@ const visiblePublications = computed(() => {
                 :badge="pub.media_display"
               >
                 <router-link
-                  :to="{
-                    path: '/works',
-                    query: { publication: pub.id, publication_title: pub.title },
-                  }"
+                  :to="pubLink(pub)"
                   class="text-main hover:text-primary block text-base font-medium no-underline transition-colors"
                 >
                   {{ pub.title }}
@@ -260,7 +269,12 @@ const visiblePublications = computed(() => {
                       /
                     </span>
                   </template>
-                  <span v-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
+                  <router-link
+                    v-if="pub.publisher?.id"
+                    :to="{ path: '/works', query: { publisher: pub.publisher.id, publisher_name: pub.publisher.name } }"
+                    class="hover:text-primary transition-colors"
+                  >{{ pub.publisher.name }}</router-link>
+                  <span v-else-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
                 </div>
 
                 <div
