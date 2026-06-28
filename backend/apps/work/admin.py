@@ -455,6 +455,19 @@ class ManifestationAdmin(ModelAdmin):
     get_contributions_display.short_description = "收錄作品的參與者"
 
 
+@admin.register(WorkConcept)
+class WorkConceptAdmin(SimpleHistoryAdmin, ModelAdmin):
+    list_display = ("work", "concept", "description", "order")
+    list_filter = (("concept", RelatedDropdownFilter),)
+    search_fields = ("work__title", "concept__name", "description")
+    autocomplete_fields = ("work", "concept")
+    ordering = ("work", "order")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related("work", "concept")
+
+
 # --- Catalogue admins ---
 
 

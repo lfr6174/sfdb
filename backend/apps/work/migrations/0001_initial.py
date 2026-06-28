@@ -3,24 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-def load_initial_roles(apps, schema_editor):
-    Role = apps.get_model('work', 'Role')
-    roles_data = [
-        {'code': 'author', 'noun': '作者', 'verb': '著', 'order': 10},
-        {'code': 'illustrator', 'noun': '繪師', 'verb': '繪', 'order': 20},
-        {'code': 'artist', 'noun': '作畫', 'verb': '畫', 'order': 30},
-        {'code': 'editor', 'noun': '編輯', 'verb': '編', 'order': 40},
-        {'code': 'translator', 'noun': '譯者', 'verb': '譯', 'order': 50},
-    ]
-    for role_data in roles_data:
-        Role.objects.get_or_create(
-            code=role_data['code'],
-            defaults={'noun': role_data['noun'], 'verb': role_data['verb'], 'order': role_data['order']}
-        )
-
-def unload_initial_roles(apps, schema_editor):
-    Role = apps.get_model('work', 'Role')
-    Role.objects.filter(code__in=['author', 'illustrator', 'artist', 'editor', 'translator']).delete()
 class Migration(migrations.Migration):
 
     initial = True
@@ -221,5 +203,4 @@ class Migration(migrations.Migration):
                 'unique_together': {('catalogue', 'work')},
             },
         ),
-        migrations.RunPython(load_initial_roles, reverse_code=unload_initial_roles),
     ]

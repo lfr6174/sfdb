@@ -351,6 +351,8 @@ class WorkConcept(models.Model):
     )
     order = models.PositiveSmallIntegerField(default=0, verbose_name="顯示順序")
 
+    history = HistoricalRecords()
+
     class Meta:
         constraints = [models.UniqueConstraint(fields=["work", "concept"], name="unique_work_concept")]
         ordering = ["order"]
