@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchWorks as fetchWorksApi } from '../api/works'
+import { fetchWorks as fetchWorksApi, fetchAllCatalogues as fetchAllCataloguesApi } from '../api/works'
+import type { CatalogueOption } from '../api/works'
 import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
 import type { Work, Concept } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
@@ -71,6 +72,7 @@ const selectedCatalogueTitle = ref((q0.catalogue as string) || '')
 const pendingConceptSlugs = ref<string[]>(q0.concept ? String(q0.concept).split(',') : [])
 
 const allConcepts = ref<Concept[]>([])
+const allCatalogues = ref<CatalogueOption[]>([])
 const isModalOpen = ref(false)
 const isAdvancedMode = ref(false)
 
@@ -236,12 +238,26 @@ const fetchAllConcepts = async () => {
 }
 
 onMounted(async () => {
-  // Concepts arrive as slugs in the URL; resolve them to objects once the full
-  // concept list is loaded. The resulting change triggers a refetch.
-  await fetchAllConcepts()
+  await Promise.all([
+    fetchAllConcepts(),
+    fetchAllCataloguesApi()
+      .then((res) => { allCatalogues.value = res.data ?? [] })
+      .catch(() => {}),
+  ])
   if (pendingConceptSlugs.value.length) {
     applyConceptSlugs(pendingConceptSlugs.value)
   }
+})
+
+// Catalogue grouped by type for <optgroup>
+const cataloguesByType = computed(() => {
+  const map = new Map<string, CatalogueOption[]>()
+  for (const c of allCatalogues.value) {
+    const group = map.get(c.catalogue_type_display) ?? []
+    group.push(c)
+    map.set(c.catalogue_type_display, group)
+  }
+  return map
 })
 
 // Concept Computed Properties
@@ -592,6 +608,37 @@ const clearCatalogue = () => {
                   :options="LANGUAGE_OPTIONS"
                   layout-class="flex flex-wrap gap-x-6 gap-y-2"
                 />
+              </dd>
+            </div>
+
+            <!-- 精選／獎項 -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                精選／獎項
+              </dt>
+              <dd class="flex-1">
+                <select
+                  v-model="selectedCatalogueTitle"
+                  class="text-main border-main/20 focus:border-primary/50 w-full cursor-pointer border-b bg-transparent py-2 text-base transition-colors outline-none"
+                >
+                  <option value="">（不限）</option>
+                  <template
+                    v-for="[type, items] in cataloguesByType"
+                    :key="type"
+                  >
+                    <optgroup :label="type">
+                      <option
+                        v-for="c in items"
+                        :key="c.id"
+                        :value="c.title"
+                      >
+                        {{ c.title }}
+                      </option>
+                    </optgroup>
+                  </template>
+                </select>
               </dd>
             </div>
 

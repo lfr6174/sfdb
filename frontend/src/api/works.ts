@@ -8,3 +8,13 @@ export function fetchWorks(params: Record<string, string | number | boolean>) {
 export function fetchWorkDetail(id: string | number) {
   return api.get<Work>(`/works/${id}/`)
 }
+
+export interface CatalogueOption {
+  id: number
+  title: string
+  catalogue_type_display: string
+}
+
+export function fetchAllCatalogues() {
+  return api.get<CatalogueOption[]>('/catalogues/')
+}
