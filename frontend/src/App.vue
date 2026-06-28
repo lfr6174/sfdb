@@ -112,12 +112,12 @@ onMounted(async () => {
         <div>
           本站內容採用
           <a
-            href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-Hant"
+            href="https://creativecommons.org/licenses/by/4.0/deed.zh-Hant"
             target="_blank"
             rel="noopener noreferrer"
             class="text-primary hover:text-primary/80 decoration-primary/30 font-medium underline underline-offset-4 transition-colors"
           >
-            CC BY-NC-SA 4.0 授權條款
+            CC BY 4.0 授權條款
           </a>
         </div>
 
