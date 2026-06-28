@@ -619,26 +619,37 @@ const clearCatalogue = () => {
                 精選／獎項
               </dt>
               <dd class="flex-1">
-                <select
-                  v-model="selectedCatalogueTitle"
-                  class="text-main border-main/20 focus:border-primary/50 w-full cursor-pointer border-b bg-transparent py-2 text-base transition-colors outline-none"
-                >
-                  <option value="">（不限）</option>
-                  <template
-                    v-for="[type, items] in cataloguesByType"
-                    :key="type"
+                <div class="relative">
+                  <select
+                    v-model="selectedCatalogueTitle"
+                    class="text-main/70 border-main/20 focus:border-primary/50 w-full cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
                   >
-                    <optgroup :label="type">
-                      <option
-                        v-for="c in items"
-                        :key="c.id"
-                        :value="c.title"
-                      >
-                        {{ c.title }}
-                      </option>
-                    </optgroup>
-                  </template>
-                </select>
+                    <option value="">（不限）</option>
+                    <template
+                      v-for="[type, items] in cataloguesByType"
+                      :key="type"
+                    >
+                      <optgroup :label="type">
+                        <option
+                          v-for="c in items"
+                          :key="c.id"
+                          :value="c.title"
+                        >
+                          {{ c.title }}
+                        </option>
+                      </optgroup>
+                    </template>
+                  </select>
+                  <svg
+                    class="text-main/40 pointer-events-none absolute top-1/2 right-2 -translate-y-1/2"
+                    width="9"
+                    height="5"
+                    viewBox="0 0 10 6"
+                    fill="none"
+                  >
+                    <path d="M0 0l5 6 5-6z" fill="currentColor" />
+                  </svg>
+                </div>
               </dd>
             </div>
 
