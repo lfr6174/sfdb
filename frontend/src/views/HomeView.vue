@@ -6,7 +6,10 @@ import {
   fetchRandomConcept as fetchRandomConceptApi,
 } from '../api/concepts'
 import { fetchPosts as fetchPostsApi } from '../api/posts'
-import type { Work, Concept, Post } from '../types'
+import type { Concept, Post } from '../types'
+
+// The homepage spotlight list holds a concept's random_works (a trimmed work shape).
+type SpotlightWork = NonNullable<Concept['random_works']>[number]
 import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
@@ -16,7 +19,7 @@ import { useDocumentMeta } from '../composables/useDocumentTitle'
 
 useDocumentMeta(null, '')
 
-const works = ref<Work[]>([])
+const works = ref<SpotlightWork[]>([])
 const isLoading = ref(true)
 const hasError = ref(false)
 

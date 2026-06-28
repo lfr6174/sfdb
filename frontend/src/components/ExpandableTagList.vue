@@ -30,7 +30,7 @@ const hiddenCount = computed(() => Math.max(0, props.concepts.length - props.lim
   <div class="flex flex-wrap gap-1.5">
     <ConceptTag
       v-for="concept in displayedConcepts"
-      :key="concept.slug || concept.id"
+      :key="concept.slug"
       :concept="concept"
     />
 
