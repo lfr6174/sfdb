@@ -37,12 +37,13 @@
 |---|---|
 | `DJANGO_SETTINGS_MODULE` | `config.settings.prod` |
 | `SECRET_KEY` | 用 `python -c "from django.core.management.utils import get_random_secret_key as k; print(k())"` 產生 |
-| `ALLOWED_HOSTS` | 部署後取得的 Railway 網域，例如 `sfdb-api.up.railway.app` |
 | `CORS_ALLOWED_ORIGINS` | 前端 Vercel 網域，例如 `https://tsfdb.vercel.app` |
-| `CSRF_TRUSTED_ORIGINS` | 後端自己的網域，例如 `https://sfdb-api.up.railway.app` |
 | `ADMIN_URL` | 隨機字串，例如 `myadmin-xk29/`（結尾要有 `/`） |
 
 > `DATABASE_URL` 由 Railway PostgreSQL 外掛自動注入，不用手填。
+>
+> `ALLOWED_HOSTS` 與 `CSRF_TRUSTED_ORIGINS` 會自動帶入 Railway 注入的
+> `RAILWAY_PUBLIC_DOMAIN`，不必手填；只有要加自訂網域時才需設定（逗號分隔多個）。
 
 ### 1-4 部署流程
 
