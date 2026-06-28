@@ -37,10 +37,13 @@
 |---|---|
 | `DJANGO_SETTINGS_MODULE` | `config.settings.prod` |
 | `SECRET_KEY` | 用 `python -c "from django.core.management.utils import get_random_secret_key as k; print(k())"` 產生 |
-| `CORS_ALLOWED_ORIGINS` | 前端 Vercel 網域，例如 `https://tsfdb.vercel.app` |
+| `DATABASE_URL` | 引用 PostgreSQL service：`${{Postgres.DATABASE_URL}}`（見下方說明） |
+| `CORS_ALLOWED_ORIGINS` | 前端 Vercel 網域，例如 `https://tsfdb.vercel.app`（**結尾不要 `/`**，否則 corsheaders 會報 E014） |
 | `ADMIN_URL` | 隨機字串，例如 `myadmin-xk29/`（結尾要有 `/`） |
 
-> `DATABASE_URL` 由 Railway PostgreSQL 外掛自動注入，不用手填。
+> `DATABASE_URL` **不會**自動進到後端 service。PostgreSQL 是獨立的 service，
+> 需在後端 service 的 Variables 用 Add Reference 引用它：`${{Postgres.DATABASE_URL}}`
+> （`Postgres` 換成你資料庫 service 的實際名稱）。
 >
 > `ALLOWED_HOSTS` 與 `CSRF_TRUSTED_ORIGINS` 會自動帶入 Railway 注入的
 > `RAILWAY_PUBLIC_DOMAIN`，不必手填；只有要加自訂網域時才需設定（逗號分隔多個）。

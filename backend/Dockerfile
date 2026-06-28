@@ -26,6 +26,13 @@ RUN pip install -r requirements/prod.txt
 # Application source.
 COPY . .
 
+# Run as an unprivileged user instead of root. collectstatic writes to
+# STATIC_ROOT (/app/staticfiles) at boot, so that dir must be owned by appuser.
+RUN useradd --create-home --uid 10001 appuser \
+    && mkdir -p /app/staticfiles \
+    && chown -R appuser:appuser /app
+USER appuser
+
 EXPOSE 8000
 
 # migrate + collectstatic run at boot because they need runtime env vars / the
