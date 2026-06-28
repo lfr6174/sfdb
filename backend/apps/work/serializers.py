@@ -1,0 +1,266 @@
+from rest_framework import serializers
+
+from apps.agent.models import Agent
+from apps.concept.serializers import ConceptMinimalSerializer
+
+from .models import (
+    Catalogue,
+    Cycle,
+    Publication,
+    PublicationAgent,
+    Work,
+    WorkAgent,
+    WorkCatalogue,
+    WorkConcept,
+    WorkRelation,
+)
+from .services import get_byline, get_credits
+
+# --- Minimal / utility serializers ---
+
+
+class AgentMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agent
+        fields = ["id", "name", "agent_type"]
+
+
+# --- Work serializers ---
+
+
+class CycleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cycle
+        fields = ["id", "title", "note", "created_at", "updated_at"]
+
+
+class WorkAgentSerializer(serializers.ModelSerializer):
+    agent = AgentMinimalSerializer(read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", read_only=True)
+    role_display = serializers.CharField(source="role.noun", read_only=True)
+
+    class Meta:
+        model = WorkAgent
+        fields = ["id", "agent", "role", "role_display", "order"]
+
+
+class WorkConceptListSerializer(serializers.ModelSerializer):
+    concept = ConceptMinimalSerializer(read_only=True)
+
+    class Meta:
+        model = WorkConcept
+        fields = ["id", "concept"]
+
+
+class WorkConceptSerializer(serializers.ModelSerializer):
+    concept = ConceptMinimalSerializer(read_only=True)
+
+    class Meta:
+        model = WorkConcept
+        fields = ["id", "concept", "description"]
+
+
+# --- Publication serializers ---
+
+
+class PublicationAgentSerializer(serializers.ModelSerializer):
+    agent = AgentMinimalSerializer(read_only=True)
+    role = serializers.SlugRelatedField(slug_field="code", read_only=True)
+    role_display = serializers.CharField(source="role.noun", read_only=True)
+
+    class Meta:
+        model = PublicationAgent
+        fields = ["id", "agent", "display_name", "role", "role_display", "order"]
+
+
+class PublicationInWorkSerializer(serializers.ModelSerializer):
+    """Publication serializer for use inside WorkSerializer - excludes manifestations to avoid redundancy."""
+
+    language_display = serializers.CharField(source="get_language_display", read_only=True)
+    publisher = AgentMinimalSerializer(read_only=True)
+    source_display = serializers.CharField(source="get_source_display", read_only=True)
+    media_display = serializers.CharField(source="composite_media_display", read_only=True)
+    binding_display = serializers.CharField(source="get_binding_display", read_only=True)
+    year = serializers.IntegerField(read_only=True)
+    contributions = PublicationAgentSerializer(many=True, read_only=True)
+    series = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Publication
+        fields = [
+            "id",
+            "title",
+            "source",
+            "source_display",
+            "media_display",
+            "binding_display",
+            "language_display",
+            "year",
+            "isbn",
+            "note",
+            "publisher",
+            "contributions",
+            "series",
+        ]
+
+    def get_series(self, obj):
+        if obj.series_id:
+            return {"id": obj.series_id, "title": obj.series.title}
+        return None
+
+
+# --- Catalogue entry (nested in work) ---
+
+
+class CatalogueBriefSerializer(serializers.ModelSerializer):
+    catalogue_type_display = serializers.CharField(source="get_catalogue_type_display", read_only=True)
+
+    class Meta:
+        model = Catalogue
+        fields = ["id", "title", "catalogue_type_display"]
+
+
+class WorkCatalogueSerializer(serializers.ModelSerializer):
+    catalogue = CatalogueBriefSerializer(read_only=True)
+    category = serializers.CharField(source="category.name", read_only=True, default=None)
+
+    class Meta:
+        model = WorkCatalogue
+        fields = ["id", "catalogue", "year", "category", "result"]
+
+
+# --- Main work serializer (the aggregator) ---
+
+
+class WorkListSerializer(serializers.ModelSerializer):
+    byline = serializers.SerializerMethodField()
+    genre_display = serializers.CharField(source="get_genre_display", read_only=True)
+    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    year = serializers.IntegerField(read_only=True)
+    work_concepts = WorkConceptListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Work
+        fields = [
+            "id",
+            "title",
+            "year",
+            "byline",
+            "genre_display",
+            "work_length_display",
+            "work_concepts",
+        ]
+
+    def get_byline(self, obj):
+        return get_byline(obj.contributions.all())
+
+
+RELATION_LABELS = {
+    "based_on": {"as_subject": "原作", "as_object": "衍生"},
+    "continues": {"as_subject": "前作", "as_object": "續作"},
+    "homage": {"as_subject": "原典", "as_object": "致敬"},
+    "related": {"as_subject": "相關", "as_object": "相關"},
+}
+
+
+class WorkRelationSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    direction = serializers.SerializerMethodField()
+    other_work = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkRelation
+        fields = ["id", "label", "direction", "other_work"]
+
+    def get_label(self, obj):
+        current_id = self.context.get("current_work_id")
+        direction = "as_subject" if obj.subject_work_id == current_id else "as_object"
+        return RELATION_LABELS.get(obj.kind, {}).get(direction, obj.get_kind_display())
+
+    def get_direction(self, obj):
+        current_id = self.context.get("current_work_id")
+        if obj.kind == "related":
+            return "none"
+        return "out" if obj.subject_work_id == current_id else "in"
+
+    def get_other_work(self, obj):
+        current_id = self.context.get("current_work_id")
+        work = obj.object_work if obj.subject_work_id == current_id else obj.subject_work
+        return {
+            "id": work.id,
+            "title": work.title,
+            "year": work.year,
+        }
+
+
+class WorkDetailSerializer(serializers.ModelSerializer):
+    genre_display = serializers.CharField(source="get_genre_display", read_only=True)
+    language_display = serializers.CharField(source="get_language_display", read_only=True)
+    work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    year = serializers.IntegerField(read_only=True)
+
+    cycle = CycleSerializer(read_only=True)
+    contributions = WorkAgentSerializer(many=True, read_only=True)
+    work_concepts = WorkConceptSerializer(many=True, read_only=True)
+    publications = serializers.SerializerMethodField()
+    work_catalogues = WorkCatalogueSerializer(many=True, read_only=True)
+    byline = serializers.SerializerMethodField()
+    credit = serializers.SerializerMethodField()
+    relations = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Work
+        fields = [
+            "id",
+            "title",
+            "language",
+            "language_display",
+            "genre",
+            "genre_display",
+            "work_length",
+            "work_length_display",
+            "year",
+            "description",
+            "cycle",
+            "cycle_order",
+            "contributions",
+            "work_concepts",
+            "publications",
+            "work_catalogues",
+            "relations",
+            "byline",
+            "credit",
+            "updated_at",
+        ]
+
+    def get_relations(self, obj):
+        rels = list(getattr(obj, "prefetched_rels_as_subject", [])) + list(
+            getattr(obj, "prefetched_rels_as_object", [])
+        )
+        return WorkRelationSerializer(rels, many=True, context={"current_work_id": obj.id}).data
+
+    def get_byline(self, obj):
+        return get_byline(obj.contributions.all())
+
+    def get_credit(self, obj):
+        return get_credits(obj.contributions.all())
+
+    def get_publications(self, obj):
+        manifestations = getattr(obj, "prefetched_manifestations", obj.manifestations.all())
+        if not manifestations:
+            return []
+
+        publications = [man.publication for man in manifestations]
+        pub_data_list = PublicationInWorkSerializer(publications, many=True, context=self.context).data
+
+        # Merge manifestation-specific metadata back into the serialized publication data.
+        for man, pub_data in zip(manifestations, pub_data_list, strict=True):
+            pub_data["manifestation_id"] = man.id
+            pub_data["manifestation_name"] = man.name
+            pub_data["manifestation_display_name"] = man.name if man.name else man.publication.title
+
+            man_credit = get_credits(man.contributions.all())
+            pub_credit = get_credits(man.publication.contributions.all())
+            pub_data["credit"] = man_credit + pub_credit
+
+        return pub_data_list

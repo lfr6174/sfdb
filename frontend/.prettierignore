@@ -1,0 +1,6 @@
+# Build output — never format generated/minified files (mirrors .gitignore).
+dist
+dist-ssr
+
+# Dependencies
+node_modules

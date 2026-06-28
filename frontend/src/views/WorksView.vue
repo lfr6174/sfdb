@@ -1,0 +1,935 @@
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  fetchWorks as fetchWorksApi,
+  fetchAllCatalogues as fetchAllCataloguesApi,
+} from '../api/works'
+import type { CatalogueOption } from '../api/works'
+import { fetchAllConcepts as fetchAllConceptsApi } from '../api/concepts'
+import type { Work, Concept } from '../types'
+import PaginationControls from '../components/PaginationControls.vue'
+import HoverListItem from '../components/HoverListItem.vue'
+import SortSelect from '../components/SortSelect.vue'
+import ConceptTag from '../components/ConceptTag.vue'
+import SectionTitle from '../components/SectionTitle.vue'
+import FilterChip from '../components/FilterChip.vue'
+import ConceptPickerModal from '../components/ConceptPickerModal.vue'
+import CheckboxGroup from '../components/CheckboxGroup.vue'
+import CustomCheckbox from '../components/CustomCheckbox.vue'
+import ListState from '../components/ListState.vue'
+import SkeletonList from '../components/SkeletonList.vue'
+import BaseSearchInput from '../components/BaseSearchInput.vue'
+import { useListView } from '../composables/useListView'
+import { useDocumentMeta } from '../composables/useDocumentTitle'
+import { CONCEPT_CATEGORY_MAP } from '../utils/constants'
+
+useDocumentMeta('作品列表', '')
+
+// Filter Constants
+const GENRE_OPTIONS = [
+  { value: 'novel', label: '小說' },
+  { value: 'poem', label: '詩' },
+  { value: 'comic', label: '漫畫' },
+]
+const LENGTH_OPTIONS = [
+  { value: 'long', label: '長篇' },
+  { value: 'short', label: '中短篇' },
+]
+const PROVENANCE_OPTIONS = [
+  { value: 'original', label: '原創' },
+  { value: 'licensed', label: '代理' },
+]
+const LANGUAGE_OPTIONS = [
+  { value: 'zh-hant', label: '繁體中文' },
+  { value: 'zh-hans', label: '簡體中文' },
+  { value: 'en', label: '英文' },
+  { value: 'ja', label: '日文' },
+  { value: 'other', label: '其他' },
+]
+
+const route = useRoute()
+const router = useRouter()
+
+const q0 = route.query
+
+// Filter state, initialized from the URL query so a shared or refreshed link
+// restores the same search. Search, ordering and pagination live in useListView
+// (also seeded from the URL below).
+const selectedGenres = ref<string[]>(q0.genre ? String(q0.genre).split(',') : [])
+const selectedLengths = ref<string[]>(q0.work_length ? String(q0.work_length).split(',') : [])
+const selectedProvenances = ref<string[]>(q0.provenance ? String(q0.provenance).split(',') : [])
+const selectedLanguages = ref<string[]>(q0.language ? String(q0.language).split(',') : [])
+const selectedConcepts = ref<Concept[]>([])
+const yearMin = ref<number | ''>(q0.year_min ? Number(q0.year_min) : '')
+const yearMax = ref<number | ''>(q0.year_max ? Number(q0.year_max) : '')
+const selectedPublicationId = ref((q0.publication as string) || '')
+const selectedPublicationTitle = ref((q0.publication_title as string) || '')
+const selectedPublicationSeriesId = ref((q0.publication_series as string) || '')
+const selectedPublicationSeriesTitle = ref((q0.publication_series_title as string) || '')
+const selectedPublicationName = ref((q0.publication_name as string) || '')
+const selectedPublisherId = ref((q0.publisher as string) || '')
+const selectedPublisherName = ref((q0.publisher_name as string) || '')
+const selectedCatalogueTitle = ref((q0.catalogue as string) || '')
+// Concept slugs from the URL, resolved to objects once allConcepts loads.
+const pendingConceptSlugs = ref<string[]>(q0.concept ? String(q0.concept).split(',') : [])
+
+const allConcepts = ref<Concept[]>([])
+const allCatalogues = ref<CatalogueOption[]>([])
+const isModalOpen = ref(false)
+const isAdvancedMode = ref(false)
+
+// Active filters, mapped to query params for the works endpoint.
+const filterParams = () => {
+  const params: Record<string, string | number | boolean> = {}
+  if (selectedGenres.value.length) params.genre = selectedGenres.value.join(',')
+  if (selectedLengths.value.length) params.work_length = selectedLengths.value.join(',')
+  if (selectedProvenances.value.length) params.provenance = selectedProvenances.value.join(',')
+  if (selectedLanguages.value.length) params.language = selectedLanguages.value.join(',')
+  if (selectedConcepts.value.length)
+    params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
+  if (yearMin.value) params.year_min = yearMin.value
+  if (yearMax.value) params.year_max = yearMax.value
+  if (selectedPublicationId.value) params.publication = selectedPublicationId.value
+  if (selectedPublicationSeriesId.value)
+    params.publication_series = selectedPublicationSeriesId.value
+  if (selectedPublicationName.value) params.publication_name = selectedPublicationName.value
+  if (selectedPublisherId.value) params.publisher = selectedPublisherId.value
+  if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
+  return params
+}
+
+const {
+  items: works,
+  isLoading,
+  hasError,
+  searchQuery,
+  ordering,
+  currentPage,
+  totalPages,
+  totalCount: totalWorks,
+  changePage,
+  triggerFetch,
+} = useListView<Work>(fetchWorksApi, {
+  defaultOrdering: (q0.ordering as string) || '-updated_at',
+  initialSearch: (q0.search as string) || '',
+  initialPage: q0.page ? Number(q0.page) : 1,
+  extraParams: filterParams,
+})
+
+// ── URL <-> state synchronization ──
+// The URL query mirrors the filter state. Each direction skips itself by
+// checking whether the URL already matches the state (sameQuery), so the two
+// watchers below never ping-pong.
+
+const buildQuery = (): Record<string, string> => {
+  const q: Record<string, string> = {}
+  if (searchQuery.value) q.search = searchQuery.value
+  if (ordering.value !== '-updated_at') q.ordering = ordering.value
+  if (currentPage.value > 1) q.page = String(currentPage.value)
+  if (selectedGenres.value.length) q.genre = selectedGenres.value.join(',')
+  if (selectedLengths.value.length) q.work_length = selectedLengths.value.join(',')
+  if (selectedProvenances.value.length) q.provenance = selectedProvenances.value.join(',')
+  if (selectedLanguages.value.length) q.language = selectedLanguages.value.join(',')
+  if (selectedConcepts.value.length) q.concept = selectedConcepts.value.map((c) => c.slug).join(',')
+  if (yearMin.value) q.year_min = String(yearMin.value)
+  if (yearMax.value) q.year_max = String(yearMax.value)
+  if (selectedPublicationId.value) {
+    q.publication = selectedPublicationId.value
+    if (selectedPublicationTitle.value) q.publication_title = selectedPublicationTitle.value
+  }
+  if (selectedPublicationSeriesId.value) {
+    q.publication_series = selectedPublicationSeriesId.value
+    if (selectedPublicationSeriesTitle.value)
+      q.publication_series_title = selectedPublicationSeriesTitle.value
+  }
+  if (selectedPublicationName.value) q.publication_name = selectedPublicationName.value
+  if (selectedPublisherId.value) {
+    q.publisher = selectedPublisherId.value
+    if (selectedPublisherName.value) q.publisher_name = selectedPublisherName.value
+  }
+  if (selectedCatalogueTitle.value) q.catalogue = selectedCatalogueTitle.value
+  return q
+}
+
+const sameQuery = (a: Record<string, unknown>, b: Record<string, unknown>) => {
+  const norm = (o: Record<string, unknown>) =>
+    Object.entries(o)
+      .filter(([, v]) => v != null && v !== '')
+      .map(([k, v]) => `${k}=${Array.isArray(v) ? v.join(',') : v}`)
+      .sort()
+      .join('&')
+  return norm(a) === norm(b)
+}
+
+const applyConceptSlugs = (slugs: string[]) => {
+  if (!allConcepts.value.length) {
+    pendingConceptSlugs.value = slugs
+    return
+  }
+  selectedConcepts.value = slugs
+    .map((s) => allConcepts.value.find((c) => c.slug === s))
+    .filter((c): c is Concept => !!c)
+  pendingConceptSlugs.value = []
+}
+
+const applyQueryToState = (q: typeof route.query) => {
+  searchQuery.value = (q.search as string) || ''
+  ordering.value = (q.ordering as string) || '-updated_at'
+  currentPage.value = q.page ? Number(q.page) : 1
+  selectedGenres.value = q.genre ? String(q.genre).split(',') : []
+  selectedLengths.value = q.work_length ? String(q.work_length).split(',') : []
+  selectedProvenances.value = q.provenance ? String(q.provenance).split(',') : []
+  selectedLanguages.value = q.language ? String(q.language).split(',') : []
+  yearMin.value = q.year_min ? Number(q.year_min) : ''
+  yearMax.value = q.year_max ? Number(q.year_max) : ''
+  selectedPublicationId.value = (q.publication as string) || ''
+  selectedPublicationTitle.value = (q.publication_title as string) || ''
+  selectedPublicationSeriesId.value = (q.publication_series as string) || ''
+  selectedPublicationSeriesTitle.value = (q.publication_series_title as string) || ''
+  selectedPublicationName.value = (q.publication_name as string) || ''
+  selectedPublisherId.value = (q.publisher as string) || ''
+  selectedPublisherName.value = (q.publisher_name as string) || ''
+  selectedCatalogueTitle.value = (q.catalogue as string) || ''
+  applyConceptSlugs(q.concept ? String(q.concept).split(',') : [])
+}
+
+// state -> URL
+watch(
+  () => buildQuery(),
+  (q) => {
+    if (!sameQuery(q, route.query)) router.replace({ query: q })
+  },
+  { deep: true },
+)
+
+// URL -> state (external navigation: links from other pages, back/forward)
+watch(
+  () => route.query,
+  (q) => {
+    if (sameQuery(buildQuery(), q)) return
+    applyQueryToState(q)
+  },
+)
+
+// Refetch (back to page 1) when a filter changes; search and ordering are
+// already watched inside useListView.
+watch(
+  [
+    selectedGenres,
+    selectedLengths,
+    selectedProvenances,
+    selectedLanguages,
+    selectedConcepts,
+    yearMin,
+    yearMax,
+    selectedPublicationId,
+    selectedPublicationSeriesId,
+    selectedPublicationName,
+    selectedPublisherId,
+    selectedCatalogueTitle,
+  ],
+  () => triggerFetch(),
+  { deep: true },
+)
+
+const fetchAllConcepts = async () => {
+  try {
+    const res = await fetchAllConceptsApi()
+    allConcepts.value = res.data || []
+  } catch (err) {
+    console.error('Failed to fetch concepts', err)
+  }
+}
+
+onMounted(async () => {
+  await Promise.all([
+    fetchAllConcepts(),
+    fetchAllCataloguesApi()
+      .then((res) => {
+        allCatalogues.value = res.data ?? []
+      })
+      .catch(() => {}),
+  ])
+  if (pendingConceptSlugs.value.length) {
+    applyConceptSlugs(pendingConceptSlugs.value)
+  }
+})
+
+// Catalogue grouped by type for <optgroup>
+const cataloguesByType = computed(() => {
+  const map = new Map<string, CatalogueOption[]>()
+  for (const c of allCatalogues.value) {
+    const group = map.get(c.catalogue_type_display) ?? []
+    group.push(c)
+    map.set(c.catalogue_type_display, group)
+  }
+  return map
+})
+
+// Concept Computed Properties
+const mappedConcepts = computed(() => {
+  return allConcepts.value.map((c) => ({
+    ...c,
+    mappedCategory: CONCEPT_CATEGORY_MAP[c.category] || '未分類',
+  }))
+})
+
+// Featured concepts for the left panel
+const leftPanelConcepts = computed(() => {
+  const selectedIds = new Set(selectedConcepts.value.map((c) => c.id))
+  return mappedConcepts.value
+    .filter((c) => c.is_featured && !selectedIds.has(c.id))
+    .sort((a, b) => (a.featured_order || 0) - (b.featured_order || 0))
+})
+
+// Methods
+const toggleConcept = (concept: Concept) => {
+  const index = selectedConcepts.value.findIndex((c) => c.id === concept.id)
+  if (index === -1) {
+    selectedConcepts.value.push(concept)
+  } else {
+    selectedConcepts.value.splice(index, 1)
+  }
+}
+
+const openModal = () => {
+  isModalOpen.value = true
+}
+
+// FIX: was calling undefined closeModal — now correctly closes the modal
+const closeModal = () => {
+  isModalOpen.value = false
+}
+
+const clearYearFilter = () => {
+  yearMin.value = ''
+  yearMax.value = ''
+}
+
+// Clearing state is enough; the URL and refetch follow via the watchers above.
+const clearAllFilters = () => {
+  searchQuery.value = ''
+  selectedGenres.value = []
+  selectedLengths.value = []
+  selectedProvenances.value = []
+  selectedLanguages.value = []
+  selectedConcepts.value = []
+  yearMin.value = ''
+  yearMax.value = ''
+  selectedPublicationId.value = ''
+  selectedPublicationTitle.value = ''
+  selectedPublicationSeriesId.value = ''
+  selectedPublicationSeriesTitle.value = ''
+  selectedPublicationName.value = ''
+  selectedPublisherId.value = ''
+  selectedPublisherName.value = ''
+  selectedCatalogueTitle.value = ''
+}
+
+const clearPublication = () => {
+  selectedPublicationId.value = ''
+  selectedPublicationTitle.value = ''
+  selectedPublicationSeriesId.value = ''
+  selectedPublicationSeriesTitle.value = ''
+  selectedPublicationName.value = ''
+}
+
+const clearPublisher = () => {
+  selectedPublisherId.value = ''
+  selectedPublisherName.value = ''
+}
+
+const clearCatalogue = () => {
+  selectedCatalogueTitle.value = ''
+}
+</script>
+
+<template>
+  <div>
+    <div class="mx-auto flex max-w-4xl flex-col gap-0 pb-20 lg:flex-row lg:items-start lg:gap-12">
+      <!-- Left Sidebar -->
+      <aside
+        class="lg:border-main/10 hidden shrink-0 pt-6 md:pt-10 lg:block lg:w-56 lg:border-r lg:pr-8 lg:pb-20"
+      >
+        <!-- Search (Desktop) -->
+        <div class="mb-7 hidden lg:block">
+          <BaseSearchInput
+            v-model="searchQuery"
+            placeholder="搜尋標題、作者…"
+            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
+          />
+          <div class="mt-2 flex justify-start">
+            <button
+              class="text-main/50 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-sm font-medium tracking-wide underline underline-offset-4 transition-colors"
+              @click="isAdvancedMode = !isAdvancedMode"
+            >
+              {{ isAdvancedMode ? '返回一般結果' : '進階搜索' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Genre Type -->
+        <div class="mb-6">
+          <SectionTitle class="mb-3">作品體裁</SectionTitle>
+          <CheckboxGroup
+            v-model="selectedGenres"
+            :options="GENRE_OPTIONS"
+          />
+        </div>
+
+        <!-- Work Length -->
+        <div class="mb-6">
+          <SectionTitle class="mb-3">作品篇幅</SectionTitle>
+          <CheckboxGroup
+            v-model="selectedLengths"
+            :options="LENGTH_OPTIONS"
+          />
+        </div>
+
+        <!-- Provenance -->
+        <div class="mb-6">
+          <SectionTitle class="mb-3">作品來源</SectionTitle>
+          <CheckboxGroup
+            v-model="selectedProvenances"
+            :options="PROVENANCE_OPTIONS"
+          />
+        </div>
+
+        <!-- Concept Tags -->
+        <div>
+          <SectionTitle class="mb-3">概念標籤</SectionTitle>
+
+          <!-- Selected tags -->
+          <div
+            v-if="selectedConcepts.length > 0"
+            class="mb-4"
+          >
+            <div class="flex flex-col gap-2">
+              <label
+                v-for="concept in selectedConcepts"
+                :key="concept.id"
+                class="group flex cursor-pointer items-center gap-2"
+              >
+                <CustomCheckbox
+                  name="selected-concept"
+                  :checked="true"
+                  @change="toggleConcept(concept)"
+                />
+                <span class="text-primary text-sm font-medium">{{ concept.name }}</span>
+              </label>
+            </div>
+            <div class="border-main/10 mt-3 mb-3 border-t"></div>
+          </div>
+
+          <!-- Featured concepts -->
+          <div class="space-y-4">
+            <div class="flex flex-col gap-2">
+              <label
+                v-for="concept in leftPanelConcepts"
+                :key="concept.id"
+                class="group flex cursor-pointer items-center gap-2"
+              >
+                <CustomCheckbox
+                  name="featured-concept"
+                  :checked="false"
+                  @change="toggleConcept(concept)"
+                />
+                <span class="text-main/60 group-hover:text-primary text-sm transition-colors">
+                  {{ concept.name }}
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <button
+            class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 mt-5 w-full text-left text-sm underline underline-offset-4 transition-colors"
+            @click="openModal"
+          >
+            展開所有標籤
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Panel -->
+      <main class="min-w-0 flex-1 pt-6 md:pt-10">
+        <!-- Search and Filter (Mobile) -->
+        <div class="mb-6 flex items-center gap-3 lg:hidden">
+          <div class="min-w-0 flex-1">
+            <BaseSearchInput
+              v-model="searchQuery"
+              placeholder="搜尋標題、作者…"
+              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
+            />
+          </div>
+          <button
+            :class="
+              isAdvancedMode
+                ? 'border-primary/60 text-primary bg-primary/5'
+                : 'border-main/20 text-main'
+            "
+            class="hover:border-primary/50 flex h-10 w-10 shrink-0 items-center justify-center rounded border bg-transparent transition-colors"
+            title="進階搜尋"
+            aria-label="進階搜尋"
+            :aria-pressed="isAdvancedMode"
+            @click="isAdvancedMode = !isAdvancedMode"
+          >
+            <svg
+              aria-hidden="true"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Advanced Search -->
+        <section
+          v-if="isAdvancedMode"
+          class="border-main/10 mb-8 border-b pb-10"
+        >
+          <SectionTitle class="mb-4">
+            進階搜尋
+            <template #action>
+              <button
+                class="text-main/50 border-main/10 hover:text-primary hover:border-primary/30 border px-3 py-1 text-xs transition-colors"
+                @click="isAdvancedMode = false"
+              >
+                返回結果列表
+              </button>
+            </template>
+          </SectionTitle>
+
+          <!-- Definition-list style form: each row = label (left) + content (right) -->
+          <dl class="divide-main/10 divide-y">
+            <!-- Keyword -->
+            <div class="pt-0 pb-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                關鍵字
+              </dt>
+              <dd class="flex-1">
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="標題、作者、筆名等"
+                  class="text-main placeholder:text-main/30 border-main/20 focus:border-primary/50 w-full border-b bg-transparent pb-2 text-base transition-colors outline-none"
+                />
+              </dd>
+            </div>
+
+            <!-- Year published -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                發表年份
+              </dt>
+              <dd class="flex-1">
+                <div
+                  class="search-input border-main/20 focus-within:border-primary/50 inline-flex items-center border-b transition-colors"
+                >
+                  <input
+                    v-model="yearMin"
+                    type="number"
+                    placeholder="YYYY"
+                    class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
+                  />
+                  <span class="text-main/30 px-3 font-mono">—</span>
+                  <input
+                    v-model="yearMax"
+                    type="number"
+                    placeholder="YYYY"
+                    class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
+                  />
+                </div>
+              </dd>
+            </div>
+
+            <!-- Genre -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                作品體裁
+              </dt>
+              <dd class="flex-1">
+                <CheckboxGroup
+                  v-model="selectedGenres"
+                  :options="GENRE_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
+                />
+              </dd>
+            </div>
+
+            <!-- Length -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                作品篇幅
+              </dt>
+              <dd class="flex-1">
+                <CheckboxGroup
+                  v-model="selectedLengths"
+                  :options="LENGTH_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
+                />
+              </dd>
+            </div>
+
+            <!-- Provenance -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                作品來源
+              </dt>
+              <dd class="flex-1">
+                <CheckboxGroup
+                  v-model="selectedProvenances"
+                  :options="PROVENANCE_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
+                />
+              </dd>
+            </div>
+
+            <!-- Original language -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                原始語言
+              </dt>
+              <dd class="flex-1">
+                <CheckboxGroup
+                  v-model="selectedLanguages"
+                  :options="LANGUAGE_OPTIONS"
+                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
+                />
+              </dd>
+            </div>
+
+            <!-- Catalogues / awards -->
+            <div class="py-6 md:flex md:items-baseline md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                精選／獎項
+              </dt>
+              <dd class="flex-1">
+                <div class="relative">
+                  <select
+                    v-model="selectedCatalogueTitle"
+                    class="text-main/70 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2"
+                  >
+                    <option value="">（不限）</option>
+                    <template
+                      v-for="[type, items] in cataloguesByType"
+                      :key="type"
+                    >
+                      <optgroup :label="type">
+                        <option
+                          v-for="c in items"
+                          :key="c.id"
+                          :value="c.title"
+                        >
+                          {{ c.title }}
+                        </option>
+                      </optgroup>
+                    </template>
+                  </select>
+                  <svg
+                    class="text-main/40 pointer-events-none absolute top-1/2 right-2 -translate-y-1/2"
+                    width="9"
+                    height="5"
+                    viewBox="0 0 10 6"
+                    fill="none"
+                  >
+                    <path
+                      d="M0 0l5 6 5-6z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+              </dd>
+            </div>
+
+            <!-- Concept tags -->
+            <div class="pt-6 pb-0 md:flex md:gap-6">
+              <dt
+                class="text-main/40 mb-2 shrink-0 pt-0.5 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+              >
+                概念標籤
+              </dt>
+              <dd class="flex-1">
+                <button
+                  class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-left text-base underline underline-offset-4 transition-colors"
+                  @click="openModal"
+                >
+                  + 點擊選取概念標籤
+                </button>
+                <div
+                  v-if="selectedConcepts.length > 0"
+                  class="mt-3 flex flex-wrap gap-1.5"
+                >
+                  <span
+                    v-for="concept in selectedConcepts"
+                    :key="concept.id"
+                    class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+                  >
+                    {{ concept.name }}
+                    <button
+                      class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
+                      :aria-label="`移除 ${concept.name}`"
+                      @click.stop="toggleConcept(concept)"
+                    >
+                      &times;
+                    </button>
+                  </span>
+                </div>
+              </dd>
+            </div>
+          </dl>
+
+          <!-- Footer Actions -->
+          <div class="border-main/10 mt-10 flex justify-end gap-3 border-t pt-6">
+            <button
+              class="text-main/50 hover:text-primary px-3 py-1.5 text-sm transition-colors"
+              @click="clearAllFilters"
+            >
+              清除條件
+            </button>
+            <button
+              class="bg-primary text-bg px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-85"
+              @click="isAdvancedMode = false"
+            >
+              查看結果 ({{ totalWorks }})
+            </button>
+          </div>
+        </section>
+
+        <!-- Results View -->
+        <template v-else>
+          <!-- Active Filters + Sort Bar -->
+          <div class="border-main/10 mb-1 flex flex-col gap-3 border-b pb-5">
+            <!-- Active filter chips -->
+            <div
+              v-if="
+                selectedConcepts.length ||
+                selectedGenres.length ||
+                selectedLengths.length ||
+                yearMin ||
+                yearMax ||
+                selectedPublicationId ||
+                selectedPublicationSeriesId ||
+                selectedPublicationName ||
+                selectedPublisherId ||
+                selectedCatalogueTitle
+              "
+              class="flex flex-wrap items-center gap-1.5"
+            >
+              <span class="text-main/40 mr-1 shrink-0 text-xs">作用中：</span>
+
+              <FilterChip
+                v-if="selectedPublicationId"
+                :label="`出版物：${selectedPublicationTitle}`"
+                @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedPublicationSeriesId"
+                :label="`出版物：${selectedPublicationSeriesTitle}`"
+                @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedPublicationName"
+                :label="`出版物：${selectedPublicationName}`"
+                @remove="clearPublication"
+              />
+              <FilterChip
+                v-if="selectedPublisherId"
+                :label="`出版者：${selectedPublisherName}`"
+                @remove="clearPublisher"
+              />
+              <FilterChip
+                v-if="selectedCatalogueTitle"
+                :label="`精選：${selectedCatalogueTitle}`"
+                @remove="clearCatalogue"
+              />
+              <FilterChip
+                v-for="m in selectedGenres"
+                :key="m"
+                :label="GENRE_OPTIONS.find((o) => o.value === m)?.label || ''"
+                @remove="selectedGenres = selectedGenres.filter((v) => v !== m)"
+              />
+              <FilterChip
+                v-for="l in selectedLengths"
+                :key="l"
+                :label="LENGTH_OPTIONS.find((o) => o.value === l)?.label || ''"
+                @remove="selectedLengths = selectedLengths.filter((v) => v !== l)"
+              />
+              <FilterChip
+                v-for="c in selectedConcepts"
+                :key="c.id"
+                :label="c.name"
+                @remove="toggleConcept(c)"
+              />
+              <FilterChip
+                v-if="yearMin || yearMax"
+                :label="`${yearMin || '…'}–${yearMax || '…'}`"
+                @remove="clearYearFilter"
+              />
+
+              <button
+                class="text-main/40 hover:text-primary ml-auto text-xs transition-colors"
+                @click="clearAllFilters"
+              >
+                清除全部
+              </button>
+            </div>
+
+            <!-- Count + Sort -->
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <span class="text-main/50 text-sm">
+                共
+                <span class="text-primary">{{ totalWorks }}</span>
+                部作品
+              </span>
+
+              <div class="flex items-center gap-2">
+                <SortSelect
+                  v-model="ordering"
+                  select-class="text-main/70 border-main/20 focus:border-primary/50 cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+                  :options="[
+                    { value: '-ori_date', label: '日期（新到舊）' },
+                    { value: 'ori_date', label: '日期（舊到新）' },
+                    { value: 'title', label: '標題' },
+                    { value: '-updated_at', label: '最近更新' },
+                  ]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Works List (loading / error / empty / results) -->
+          <ListState
+            :loading="isLoading"
+            :error="hasError"
+            :empty="works.length === 0"
+            empty-text="找不到符合條件的作品。"
+          >
+            <template #loading>
+              <SkeletonList />
+            </template>
+            <div class="flex flex-col">
+              <HoverListItem
+                v-for="work in works"
+                :key="work.id"
+                tag="div"
+                class="flex flex-col justify-between gap-3 py-4 md:flex-row md:items-start"
+              >
+                <!-- Left: title + meta -->
+                <div class="min-w-0 flex-1">
+                  <router-link
+                    :to="`/works/${work.id}`"
+                    class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
+                  >
+                    {{ work.title }}
+                  </router-link>
+
+                  <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
+                    <span
+                      v-if="work.byline && work.byline.length"
+                      class="flex flex-wrap items-center gap-x-0.5"
+                    >
+                      <template
+                        v-for="(agent, idx) in work.byline"
+                        :key="idx"
+                      >
+                        <router-link
+                          v-if="agent.id && agent.agent_type === 'person'"
+                          :to="`/persons/${agent.id}`"
+                          class="hover:text-primary no-underline transition-colors"
+                        >
+                          {{ agent.text }}
+                        </router-link>
+                        <span v-else>{{ agent.text }}</span>
+                        <span v-if="idx < work.byline.length - 1">、</span>
+                      </template>
+                    </span>
+                    <span v-else>佚名</span>
+
+                    <span class="text-main/20">·</span>
+                    <span>{{ work.year || '未知' }}</span>
+                    <template
+                      v-if="[work.work_length_display, work.genre_display].filter(Boolean).length"
+                    >
+                      <span class="text-main/20">·</span>
+                      <span>
+                        {{
+                          [work.work_length_display, work.genre_display].filter(Boolean).join('')
+                        }}
+                      </span>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Right: concept tags -->
+                <div
+                  v-if="work.work_concepts && work.work_concepts.length"
+                  class="flex flex-wrap gap-1.5 md:max-w-[45%] md:justify-end"
+                >
+                  <ConceptTag
+                    v-for="wc in work.work_concepts"
+                    :key="wc.concept.slug"
+                    :concept="wc.concept"
+                  />
+                </div>
+              </HoverListItem>
+            </div>
+
+            <PaginationControls
+              v-if="totalPages > 1"
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              @change-page="changePage"
+            />
+          </ListState>
+        </template>
+      </main>
+    </div>
+
+    <!-- Concept Modal -->
+    <ConceptPickerModal
+      v-model="selectedConcepts"
+      :all-concepts="allConcepts"
+      :open="isModalOpen"
+      @close="closeModal"
+    />
+  </div>
+</template>
+
+<style scoped>
+/* 移除 input number 的上下箭頭 */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* 自訂 Focus 狀態 */
+.search-input:focus-within {
+  border-color: rgba(194, 113, 78, 0.5); /* primary/50 */
+}
+</style>

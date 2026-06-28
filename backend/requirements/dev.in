@@ -1,0 +1,10 @@
+# Development dependencies.
+# Edit this file, then run:
+#   pip-compile requirements/dev.in -o requirements/dev.txt
+# to regenerate the pinned lockfile.
+
+-r base.in
+django-debug-toolbar
+pytest
+pytest-django
+pip-tools

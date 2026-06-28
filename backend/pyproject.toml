@@ -1,0 +1,50 @@
+[tool.ruff]
+line-length = 119
+
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+    "*/migrations/*",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle: indentation, spacing, blank lines
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes: unused variables, imports, undefined names
+    "I",    # isort: import ordering
+    "B",    # flake8-bugbear: common bug patterns and design smells
+    "C90",  # McCabe complexity
+    "DJ",   # flake8-django: Django-specific anti-patterns
+    "S",    # flake8-bandit: security static analysis
+    "T20",  # no print() / pprint() left in code
+    "RUF",  # Ruff-native rules
+]
+
+ignore = [
+    "B008",   # Allow function calls as default args (Django form defaults etc.)
+    "RUF001", # Full-width punctuation is fine in Chinese help_text / verbose_name
+    "RUF012", # Django Meta class attributes are intentionally mutable class vars
+]
+
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"config/settings/*.py" = ["F403", "F405"]
+"tests/**/*.py"        = ["T20", "S101"]  # assert and print() are acceptable in tests
+"**/tests.py"          = ["S101"]         # assert is the test assertion mechanism
+"**/management/commands/*.py" = ["T20"]  # print() is the output mechanism here
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true

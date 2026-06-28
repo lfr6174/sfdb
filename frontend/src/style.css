@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+/* Semantic opacity reference — target scale for consolidation:
+   primary:   100%  → text-main        (headings, primary content)
+   secondary:  70%  → text-main/70     (body text, descriptions)
+   tertiary:   45%  → text-main/45     (captions, labels, timestamps)
+   muted:      20%  → text-main/20     (dividers, decorative borders)
+   ghost:      10%  → border-main/10   (subtle separators, bg tints)
+*/
+
+@theme {
+  --color-primary: #c2714e;
+  --color-main: #2d2016;
+  --color-bg: #f8f8f6;
+  --color-hover: #f5f0e8;
+
+  --font-sans: 'IBM Plex Sans TC', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Page Transition */
+.fade-enter-active {
+  @apply transition-opacity duration-150 ease-out;
+}
+.fade-leave-active {
+  @apply transition-opacity duration-100 ease-in;
+}
+.fade-enter-from,
+.fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Global Focus Ring (A11y) */
+:focus-visible {
+  outline: 2px solid rgba(194, 113, 78, 0.5); /* primary/50 */
+  outline-offset: 2px;
+}
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: none;
+  border-color: rgba(194, 113, 78, 0.5);
+}

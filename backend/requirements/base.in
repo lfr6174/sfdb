@@ -1,0 +1,17 @@
+# Direct application dependencies.
+# Edit this file, then run:
+#   pip-compile requirements/base.in -o requirements/base.txt
+# to regenerate the pinned lockfile.
+
+Django
+djangorestframework
+django-cors-headers
+django-filter
+drf-spectacular
+python-decouple
+django-unfold
+django-axes
+django-csp
+argon2-cffi
+django-simple-history
+django-ipware

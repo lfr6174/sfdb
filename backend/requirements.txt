@@ -1,0 +1,4 @@
+# Entry point for platforms (Railway / Nixpacks) that auto-detect a top-level
+# requirements.txt. The real pinned dependencies live in requirements/.
+# Production deploys install the prod lockfile.
+-r requirements/prod.txt
