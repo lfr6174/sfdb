@@ -5,6 +5,20 @@ from .base import *
 
 DEBUG = False
 
+# WhiteNoise serves the collected static files (Django admin / Unfold / DRF
+# assets) directly from Gunicorn, so no separate static host is needed on
+# Railway. The middleware must sit immediately after SecurityMiddleware.
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+)
+
+# Compressed, hashed filenames with long-lived caching headers.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+
 # Explicitly require ADMIN_URL without a default fallback in production.
 # This prevents silent fallbacks to 'admin/' if the env variable is missing.
 ADMIN_URL = config("ADMIN_URL")

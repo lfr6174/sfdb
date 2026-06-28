@@ -170,6 +170,11 @@ REST_FRAMEWORK = {
 
 STATIC_URL = "static/"
 
+# Destination for `collectstatic`. Required in production so WhiteNoise can
+# serve the admin/Unfold/DRF assets; harmless in dev (where Django serves them
+# from each app's static/ dir via the staticfiles finders).
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 # API Spectacular settings
 SPECTACULAR_SETTINGS = {
