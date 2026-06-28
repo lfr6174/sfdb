@@ -46,13 +46,18 @@
 
 ### 1-4 部署流程
 
-`railway.json` 的 `startCommand` 會依序自動執行：
+後端用 **Dockerfile** 建置（`railway.json` 的 `builder` 設為 `DOCKERFILE`）。
+build 階段會依 `backend/Dockerfile` 安裝 `requirements/prod.txt`；容器開機時，
+Dockerfile 的 `CMD` 會依序自動執行：
 
 ```
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 60
 ```
+
+> 在 Railway 服務的 **Settings → Build** 確認 Builder 為 **Dockerfile**、
+> Root Directory 為 `backend`。環境變數設定方式與 builder 無關，照 1-3 即可。
 
 首次部署完成後，到 Railway shell 執行一次 seed：
 
