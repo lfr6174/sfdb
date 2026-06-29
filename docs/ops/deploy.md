@@ -43,7 +43,7 @@
 
 > `DATABASE_URL` **不會**自動進到後端 service。PostgreSQL 是獨立的 service，
 > 需在後端 service 的 Variables 用 Add Reference 引用它：`${{Postgres.DATABASE_URL}}`
-> （`Postgres` 換成你資料庫 service 的實際名稱）。
+> （會自動彈出提示，不用自己填）。
 >
 > `ALLOWED_HOSTS` 與 `CSRF_TRUSTED_ORIGINS` 會自動帶入 Railway 注入的
 > `RAILWAY_PUBLIC_DOMAIN`，不必手填；只有要加自訂網域時才需設定（逗號分隔多個）。
