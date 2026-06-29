@@ -1,0 +1,51 @@
+# Secrets and local DB — must never enter the image
+.env
+.env.*
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+# Python caches / artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Dev / test / tooling — never needed in the prod image.
+# dev.py is deliberately excluded: prod uses config.settings.prod, and dropping
+# dev.py turns a misconfigured DJANGO_SETTINGS_MODULE into a hard crash instead
+# of silently running with DEBUG=True in production.
+config/settings/dev.py
+**/tests.py
+**/tests/
+conftest.py
+pytest.ini
+pyproject.toml
+requirements/*.in
+requirements/dev.txt
+
+# Collected static / uploaded media (regenerated at runtime)
+staticfiles/
+media/
+
+# VCS / editor
+.git/
+.gitignore
+.idea/
+.vscode/

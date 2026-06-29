@@ -15,3 +15,4 @@ django-csp
 argon2-cffi
 django-simple-history
 django-ipware
+django-two-factor-auth

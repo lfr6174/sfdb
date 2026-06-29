@@ -17,7 +17,7 @@ const isLoading = ref(true)
 const hasError = ref(false)
 
 const searchQuery = ref('')
-const sortBy = ref('alpha')
+const sortBy = ref('count')
 
 const fetchAllConcepts = async () => {
   isLoading.value = true
@@ -88,9 +88,9 @@ const groupedConcepts = computed(() => {
           v-model="sortBy"
           select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
           :options="[
-            { value: 'alpha', label: '字母排序' },
             { value: 'count', label: '作品數排序' },
             { value: 'recent', label: '最近更新' },
+            { value: 'alpha', label: '字母排序' },
           ]"
         />
       </div>

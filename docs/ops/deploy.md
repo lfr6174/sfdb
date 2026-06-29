@@ -37,22 +37,31 @@
 |---|---|
 | `DJANGO_SETTINGS_MODULE` | `config.settings.prod` |
 | `SECRET_KEY` | 用 `python -c "from django.core.management.utils import get_random_secret_key as k; print(k())"` 產生 |
-| `ALLOWED_HOSTS` | 部署後取得的 Railway 網域，例如 `sfdb-api.up.railway.app` |
-| `CORS_ALLOWED_ORIGINS` | 前端 Vercel 網域，例如 `https://tsfdb.vercel.app` |
-| `CSRF_TRUSTED_ORIGINS` | 後端自己的網域，例如 `https://sfdb-api.up.railway.app` |
+| `DATABASE_URL` | 引用 PostgreSQL service：`${{Postgres.DATABASE_URL}}`（見下方說明） |
+| `CORS_ALLOWED_ORIGINS` | 前端 Vercel 網域，例如 `https://tsfdb.vercel.app`（**結尾不要 `/`**，否則 corsheaders 會報 E014） |
 | `ADMIN_URL` | 隨機字串，例如 `myadmin-xk29/`（結尾要有 `/`） |
 
-> `DATABASE_URL` 由 Railway PostgreSQL 外掛自動注入，不用手填。
+> `DATABASE_URL` **不會**自動進到後端 service。PostgreSQL 是獨立的 service，
+> 需在後端 service 的 Variables 用 Add Reference 引用它：`${{Postgres.DATABASE_URL}}`
+> （會自動彈出提示，不用自己填）。
+>
+> `ALLOWED_HOSTS` 與 `CSRF_TRUSTED_ORIGINS` 會自動帶入 Railway 注入的
+> `RAILWAY_PUBLIC_DOMAIN`，不必手填；只有要加自訂網域時才需設定（逗號分隔多個）。
 
 ### 1-4 部署流程
 
-`railway.json` 的 `startCommand` 會依序自動執行：
+後端用 **Dockerfile** 建置（`railway.json` 的 `builder` 設為 `DOCKERFILE`）。
+build 階段會依 `backend/Dockerfile` 安裝 `requirements/prod.txt`；容器開機時，
+Dockerfile 的 `CMD` 會依序自動執行：
 
 ```
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 60
 ```
+
+> 在 Railway 服務的 **Settings → Build** 確認 Builder 為 **Dockerfile**、
+> Root Directory 為 `backend`。環境變數設定方式與 builder 無關，照 1-3 即可。
 
 首次部署完成後，到 Railway shell 執行一次 seed：
 

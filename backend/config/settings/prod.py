@@ -1,5 +1,5 @@
 import dj_database_url
-from decouple import config
+from decouple import Csv, config
 
 from .base import *
 
@@ -23,11 +23,16 @@ STORAGES = {
 # This prevents silent fallbacks to 'admin/' if the env variable is missing.
 ADMIN_URL = config("ADMIN_URL")
 
-# Explicitly require ALLOWED_HOSTS in production environment variables
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
+# Railway injects RAILWAY_PUBLIC_DOMAIN automatically (e.g. myapp.up.railway.app),
+# so the service's own domain is trusted without manual entry. The ALLOWED_HOSTS
+# env var is optional and only needed for extra hosts such as a custom domain.
+RAILWAY_PUBLIC_DOMAIN = config("RAILWAY_PUBLIC_DOMAIN", default="")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
+if RAILWAY_PUBLIC_DOMAIN:
+    ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
 
 # Production CORS setup (Must be explicitly provided)
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(",")])
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv())
 CORS_ALLOW_CREDENTIALS = False
 CORS_ALLOW_METHODS = ["GET", "OPTIONS"]
 
@@ -38,7 +43,11 @@ X_FRAME_OPTIONS = "DENY"
 # Railway Reverse Proxy Settings
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
-CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=lambda v: [s.strip() for s in v.split(",")])
+# CSRF trusted origins follow the same pattern: the Railway domain is added
+# automatically (with scheme), the env var only adds extra/custom origins.
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
+if RAILWAY_PUBLIC_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RAILWAY_PUBLIC_DOMAIN}")
 
 # HTTPS / TLS / Cookie hardening
 SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)
@@ -60,10 +69,14 @@ SECURE_REFERRER_POLICY = "same-origin"
 
 # Content Security Policy (via django-csp v4.0)
 # Note: 'unsafe-inline' is often required by Django Admin / Unfold UI and DRF Browsable APIs.
+# 'unsafe-eval' is required by Unfold's bundled Alpine.js, which evaluates
+# directive expressions via new AsyncFunction(); without it the admin UI breaks
+# (overlays stay stuck, controls unclickable). This CSP only covers the Django
+# backend (admin + API); the public site runs on Vercel with its own stricter CSP.
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ["'self'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
+        "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         "style-src": ["'self'", "'unsafe-inline'"],
         "img-src": ["'self'", "data:"],
         "font-src": ["'self'"],
@@ -134,3 +147,9 @@ DATABASES = {
 
 # Disable DRF Browsable API in production (force JSON only) to reduce attack surface
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
+
+# Two-factor authentication (production only)
+OTP_ADMIN_HIDE_SENSITIVE_DATA = True  # never expose TOTP secrets or QR codes in admin
+TWO_FACTOR_REMEMBER_COOKIE_AGE = 5184000  # 60 days
+TWO_FACTOR_REMEMBER_COOKIE_SECURE = True
+TWO_FACTOR_REMEMBER_COOKIE_SAMESITE = "Strict"

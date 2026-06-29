@@ -26,7 +26,11 @@ django==6.0.6
     #   django-cors-headers
     #   django-csp
     #   django-filter
+    #   django-formtools
+    #   django-otp
+    #   django-phonenumber-field
     #   django-simple-history
+    #   django-two-factor-auth
     #   django-unfold
     #   djangorestframework
     #   drf-spectacular
@@ -38,9 +42,17 @@ django-csp==4.0
     # via -r requirements/base.in
 django-filter==25.2
     # via -r requirements/base.in
+django-formtools==2.6.1
+    # via django-two-factor-auth
 django-ipware==7.0.1
     # via -r requirements/base.in
+django-otp==1.7.0
+    # via django-two-factor-auth
+django-phonenumber-field==8.4.0
+    # via django-two-factor-auth
 django-simple-history==3.11.0
+    # via -r requirements/base.in
+django-two-factor-auth==1.18.1
     # via -r requirements/base.in
 django-unfold==0.98.0
     # via -r requirements/base.in
@@ -66,6 +78,8 @@ python-ipware==3.0.0
     # via django-ipware
 pyyaml==6.0.3
     # via drf-spectacular
+qrcode==8.2
+    # via django-two-factor-auth
 referencing==0.37.0
     # via
     #   jsonschema
