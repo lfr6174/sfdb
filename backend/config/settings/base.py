@@ -14,6 +14,7 @@ SECRET_KEY = config("SECRET_KEY")
 # Admin URL configuration (Falls back to 'admin/' for local development)
 ADMIN_URL = config("ADMIN_URL", default="admin/")
 
+LOGIN_URL = "two_factor:login"
 LOGIN_REDIRECT_URL = f"/{ADMIN_URL}"
 
 # Application definition
@@ -47,6 +48,11 @@ INSTALLED_APPS = [
     "axes",  # brute-force login protection
     "unfold.contrib.simple_history",  # unfold theming for the history admin
     "simple_history",  # row-level audit trail on models
+    # Two-factor authentication (OTPMiddleware must be in MIDDLEWARE too)
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "two_factor",
 ]
 
 SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD = True
@@ -59,6 +65,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",  # sets request.user
+    "django_otp.middleware.OTPMiddleware",  # must be after AuthenticationMiddleware
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",  # after auth: records failed logins

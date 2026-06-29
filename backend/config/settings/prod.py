@@ -147,3 +147,9 @@ DATABASES = {
 
 # Disable DRF Browsable API in production (force JSON only) to reduce attack surface
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
+
+# Two-factor authentication (production only)
+OTP_ADMIN_HIDE_SENSITIVE_DATA = True  # never expose TOTP secrets or QR codes in admin
+TWO_FACTOR_REMEMBER_COOKIE_AGE = 5184000  # 60 days
+TWO_FACTOR_REMEMBER_COOKIE_SECURE = True
+TWO_FACTOR_REMEMBER_COOKIE_SAMESITE = "Strict"
