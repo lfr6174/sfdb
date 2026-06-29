@@ -1,0 +1,21 @@
+{
+  // Scoped config for the Vercel Edge Functions in this folder. Vercel's
+  // function builder resolves the nearest tsconfig to each api/*.ts file and
+  // uses it to type-check the functions — separately from the Vue app build
+  // (vue-tsc -b), which does not include api/.
+  //
+  // TS 6 defaults `types` to [], so @types/node is no longer auto-injected as
+  // a global. We opt it back in here so `process.env` resolves; @types/node
+  // also supplies fetch / Request / Response / URL, so no DOM lib is needed.
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": ["**/*.ts"]
+}
