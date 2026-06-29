@@ -14,6 +14,8 @@ SECRET_KEY = config("SECRET_KEY")
 # Admin URL configuration (Falls back to 'admin/' for local development)
 ADMIN_URL = config("ADMIN_URL", default="admin/")
 
+LOGIN_REDIRECT_URL = f"/{ADMIN_URL}"
+
 # Application definition
 
 INSTALLED_APPS = [
