@@ -1,0 +1,48 @@
+{% extends "unfold/layouts/unauthenticated.html" %}
+{% comment %}
+Self-contained styling for the two_factor pages (login / 2FA setup / token).
+We reuse Unfold's unauthenticated layout only for its centered card + fonts, then
+style the (otherwise unstyled, and invisible under Tailwind preflight) form with
+one small scoped stylesheet. This deliberately does NOT depend on Unfold's form
+components or its `colors` context (which non-admin views lack) — instead the
+colour values below are Unfold's default palette (unfold/settings.py: cool-grey
+`base` + violet `primary`) inlined as literals, so the page renders correctly
+with no admin context while still matching the admin theme.
+{% endcomment %}
+{% load i18n %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    {# two_factor children put their form assets in extra_media; bridge it here. #}
+    {% block extra_media %}{% endblock %}
+    <style>
+        #page h1 { font-size: 1.25rem; font-weight: 600; color: oklch(21% .034 264.665); margin: 0 0 .25rem; }
+        #page p { color: oklch(55.1% .027 264.364); font-size: .875rem; margin: 0 0 1.25rem; }
+        #page a { color: oklch(55.8% .288 302.321); }
+        #page table { width: 100%; border-collapse: collapse; }
+        #page th { text-align: left; font-weight: 500; color: oklch(37.3% .034 259.733); font-size: .875rem; padding: 0 0 .35rem; }
+        #page td { padding: 0 0 1rem; }
+        #page input:not([type=checkbox]):not([type=radio]):not([type=hidden]), #page select {
+            width: 100%; box-sizing: border-box; padding: .55rem .75rem; font-size: .875rem;
+            color: oklch(21% .034 264.665); background: #fff;
+            border: 1px solid oklch(92.8% .006 264.531); border-radius: .375rem; appearance: auto;
+        }
+        #page input:focus, #page select:focus {
+            outline: none; border-color: oklch(55.8% .288 302.321);
+            box-shadow: 0 0 0 1px oklch(55.8% .288 302.321);
+        }
+        #page .btn {
+            display: inline-block; cursor: pointer; font-size: .875rem; font-weight: 500;
+            padding: .55rem 1.1rem; border-radius: .375rem; border: 1px solid transparent;
+            background: oklch(55.8% .288 302.321); color: #fff; margin-right: .5rem;
+        }
+        #page .btn:hover { background: oklch(49.6% .265 301.924); }
+        #page .btn[disabled] { opacity: .4; cursor: default; }
+        #page .btn-secondary, #page .btn-link {
+            background: oklch(96.7% .003 264.542); color: oklch(37.3% .034 259.733);
+            border-color: oklch(92.8% .006 264.531);
+        }
+        #page .btn-block { display: block; width: 100%; margin: .4rem 0; }
+        #page hr { border: none; border-top: 1px solid oklch(92.8% .006 264.531); margin: 1.25rem 0; }
+    </style>
+{% endblock %}
