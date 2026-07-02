@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import {
   fetchWorks as fetchWorksApi,
   fetchAllCatalogues as fetchAllCataloguesApi,
@@ -21,6 +20,7 @@ import ListState from '../components/ListState.vue'
 import SkeletonList from '../components/SkeletonList.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useListView } from '../composables/useListView'
+import { useUrlFilters } from '../composables/useUrlFilters'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { CONCEPT_CATEGORY_MAP } from '../utils/constants'
 
@@ -48,56 +48,72 @@ const LANGUAGE_OPTIONS = [
   { value: 'other', label: '其他' },
 ]
 
-const route = useRoute()
-const router = useRouter()
+// All filter state lives in the URL query (single source of truth): every
+// value below is a writable computed that parses/patches the current URL,
+// so shared links, refresh and back/forward all restore the same search.
+const filters = useUrlFilters({
+  search: { type: 'string', api: false }, // sent by useListView
+  ordering: { type: 'string', default: '-updated_at', api: false },
+  page: { type: 'number', default: 1, api: false },
+  genre: { type: 'csv' },
+  work_length: { type: 'csv' },
+  provenance: { type: 'csv' },
+  language: { type: 'csv' },
+  concept: { type: 'csv', api: false }, // slugs; mapped to concepts_in ids below
+  year_min: { type: 'number' },
+  year_max: { type: 'number' },
+  publication: { type: 'string' },
+  publication_title: { type: 'string', api: false }, // display label only
+  publication_series: { type: 'string' },
+  publication_series_title: { type: 'string', api: false },
+  publication_name: { type: 'string' },
+  publisher: { type: 'string' },
+  publisher_name: { type: 'string', api: false },
+  catalogue: { type: 'string' },
+})
 
-const q0 = route.query
-
-// Filter state, initialized from the URL query so a shared or refreshed link
-// restores the same search. Search, ordering and pagination live in useListView
-// (also seeded from the URL below).
-const selectedGenres = ref<string[]>(q0.genre ? String(q0.genre).split(',') : [])
-const selectedLengths = ref<string[]>(q0.work_length ? String(q0.work_length).split(',') : [])
-const selectedProvenances = ref<string[]>(q0.provenance ? String(q0.provenance).split(',') : [])
-const selectedLanguages = ref<string[]>(q0.language ? String(q0.language).split(',') : [])
-const selectedConcepts = ref<Concept[]>([])
-const yearMin = ref<number | ''>(q0.year_min ? Number(q0.year_min) : '')
-const yearMax = ref<number | ''>(q0.year_max ? Number(q0.year_max) : '')
-const selectedPublicationId = ref((q0.publication as string) || '')
-const selectedPublicationTitle = ref((q0.publication_title as string) || '')
-const selectedPublicationSeriesId = ref((q0.publication_series as string) || '')
-const selectedPublicationSeriesTitle = ref((q0.publication_series_title as string) || '')
-const selectedPublicationName = ref((q0.publication_name as string) || '')
-const selectedPublisherId = ref((q0.publisher as string) || '')
-const selectedPublisherName = ref((q0.publisher_name as string) || '')
-const selectedCatalogueTitle = ref((q0.catalogue as string) || '')
-// Concept slugs from the URL, resolved to objects once allConcepts loads.
-const pendingConceptSlugs = ref<string[]>(q0.concept ? String(q0.concept).split(',') : [])
+const {
+  genre: selectedGenres,
+  work_length: selectedLengths,
+  provenance: selectedProvenances,
+  language: selectedLanguages,
+  concept: selectedConceptSlugs,
+  year_min: yearMin,
+  year_max: yearMax,
+  publication: selectedPublicationId,
+  publication_title: selectedPublicationTitle,
+  publication_series: selectedPublicationSeriesId,
+  publication_series_title: selectedPublicationSeriesTitle,
+  publication_name: selectedPublicationName,
+  publisher: selectedPublisherId,
+  publisher_name: selectedPublisherName,
+  catalogue: selectedCatalogueTitle,
+} = filters.values
 
 const allConcepts = ref<Concept[]>([])
 const allCatalogues = ref<CatalogueOption[]>([])
 const isModalOpen = ref(false)
 const isAdvancedMode = ref(false)
 
-// Active filters, mapped to query params for the works endpoint.
-const filterParams = () => {
-  const params: Record<string, string | number | boolean> = {}
-  if (selectedGenres.value.length) params.genre = selectedGenres.value.join(',')
-  if (selectedLengths.value.length) params.work_length = selectedLengths.value.join(',')
-  if (selectedProvenances.value.length) params.provenance = selectedProvenances.value.join(',')
-  if (selectedLanguages.value.length) params.language = selectedLanguages.value.join(',')
+// The URL stores concept slugs; the UI needs full Concept objects. This is a
+// derived join of URL state × loaded concepts, not a second copy of state.
+const selectedConcepts = computed<Concept[]>({
+  get: () =>
+    selectedConceptSlugs.value
+      .map((slug) => allConcepts.value.find((c) => c.slug === slug))
+      .filter((c): c is Concept => !!c),
+  set: (list) => {
+    selectedConceptSlugs.value = list.map((c) => c.slug)
+  },
+})
+
+// Active filters as API query params for the works endpoint.
+const apiParams = computed(() => {
+  const params: Record<string, string> = filters.toParams()
   if (selectedConcepts.value.length)
     params.concepts_in = selectedConcepts.value.map((c) => c.id).join(',')
-  if (yearMin.value) params.year_min = yearMin.value
-  if (yearMax.value) params.year_max = yearMax.value
-  if (selectedPublicationId.value) params.publication = selectedPublicationId.value
-  if (selectedPublicationSeriesId.value)
-    params.publication_series = selectedPublicationSeriesId.value
-  if (selectedPublicationName.value) params.publication_name = selectedPublicationName.value
-  if (selectedPublisherId.value) params.publisher = selectedPublisherId.value
-  if (selectedCatalogueTitle.value) params.catalogue = selectedCatalogueTitle.value
   return params
-}
+})
 
 const {
   items: works,
@@ -111,149 +127,33 @@ const {
   changePage,
   triggerFetch,
 } = useListView<Work>(fetchWorksApi, {
-  defaultOrdering: (q0.ordering as string) || '-updated_at',
-  initialSearch: (q0.search as string) || '',
-  initialPage: q0.page ? Number(q0.page) : 1,
-  extraParams: filterParams,
+  searchQuery: filters.values.search,
+  ordering: filters.values.ordering,
+  currentPage: filters.values.page,
+  extraParams: () => apiParams.value,
 })
 
-// ── URL <-> state synchronization ──
-// The URL query mirrors the filter state. Each direction skips itself by
-// checking whether the URL already matches the state (sameQuery), so the two
-// watchers below never ping-pong.
-
-const buildQuery = (): Record<string, string> => {
-  const q: Record<string, string> = {}
-  if (searchQuery.value) q.search = searchQuery.value
-  if (ordering.value !== '-updated_at') q.ordering = ordering.value
-  if (currentPage.value > 1) q.page = String(currentPage.value)
-  if (selectedGenres.value.length) q.genre = selectedGenres.value.join(',')
-  if (selectedLengths.value.length) q.work_length = selectedLengths.value.join(',')
-  if (selectedProvenances.value.length) q.provenance = selectedProvenances.value.join(',')
-  if (selectedLanguages.value.length) q.language = selectedLanguages.value.join(',')
-  if (selectedConcepts.value.length) q.concept = selectedConcepts.value.map((c) => c.slug).join(',')
-  if (yearMin.value) q.year_min = String(yearMin.value)
-  if (yearMax.value) q.year_max = String(yearMax.value)
-  if (selectedPublicationId.value) {
-    q.publication = selectedPublicationId.value
-    if (selectedPublicationTitle.value) q.publication_title = selectedPublicationTitle.value
-  }
-  if (selectedPublicationSeriesId.value) {
-    q.publication_series = selectedPublicationSeriesId.value
-    if (selectedPublicationSeriesTitle.value)
-      q.publication_series_title = selectedPublicationSeriesTitle.value
-  }
-  if (selectedPublicationName.value) q.publication_name = selectedPublicationName.value
-  if (selectedPublisherId.value) {
-    q.publisher = selectedPublisherId.value
-    if (selectedPublisherName.value) q.publisher_name = selectedPublisherName.value
-  }
-  if (selectedCatalogueTitle.value) q.catalogue = selectedCatalogueTitle.value
-  return q
-}
-
-const sameQuery = (a: Record<string, unknown>, b: Record<string, unknown>) => {
-  const norm = (o: Record<string, unknown>) =>
-    Object.entries(o)
-      .filter(([, v]) => v != null && v !== '')
-      .map(([k, v]) => `${k}=${Array.isArray(v) ? v.join(',') : v}`)
-      .sort()
-      .join('&')
-  return norm(a) === norm(b)
-}
-
-const applyConceptSlugs = (slugs: string[]) => {
-  if (!allConcepts.value.length) {
-    pendingConceptSlugs.value = slugs
-    return
-  }
-  selectedConcepts.value = slugs
-    .map((s) => allConcepts.value.find((c) => c.slug === s))
-    .filter((c): c is Concept => !!c)
-  pendingConceptSlugs.value = []
-}
-
-const applyQueryToState = (q: typeof route.query) => {
-  searchQuery.value = (q.search as string) || ''
-  ordering.value = (q.ordering as string) || '-updated_at'
-  currentPage.value = q.page ? Number(q.page) : 1
-  selectedGenres.value = q.genre ? String(q.genre).split(',') : []
-  selectedLengths.value = q.work_length ? String(q.work_length).split(',') : []
-  selectedProvenances.value = q.provenance ? String(q.provenance).split(',') : []
-  selectedLanguages.value = q.language ? String(q.language).split(',') : []
-  yearMin.value = q.year_min ? Number(q.year_min) : ''
-  yearMax.value = q.year_max ? Number(q.year_max) : ''
-  selectedPublicationId.value = (q.publication as string) || ''
-  selectedPublicationTitle.value = (q.publication_title as string) || ''
-  selectedPublicationSeriesId.value = (q.publication_series as string) || ''
-  selectedPublicationSeriesTitle.value = (q.publication_series_title as string) || ''
-  selectedPublicationName.value = (q.publication_name as string) || ''
-  selectedPublisherId.value = (q.publisher as string) || ''
-  selectedPublisherName.value = (q.publisher_name as string) || ''
-  selectedCatalogueTitle.value = (q.catalogue as string) || ''
-  applyConceptSlugs(q.concept ? String(q.concept).split(',') : [])
-}
-
-// state -> URL
-watch(
-  () => buildQuery(),
-  (q) => {
-    if (!sameQuery(q, route.query)) router.replace({ query: q })
-  },
-  { deep: true },
-)
-
-// URL -> state (external navigation: links from other pages, back/forward)
-watch(
-  () => route.query,
-  (q) => {
-    if (sameQuery(buildQuery(), q)) return
-    applyQueryToState(q)
-  },
-)
-
-// Refetch (back to page 1) when a filter changes; search and ordering are
+// Refetch (back to page 1) when a filter changes — including via back/forward,
+// since apiParams derives from the URL. Search, ordering and page changes are
 // already watched inside useListView.
 watch(
-  [
-    selectedGenres,
-    selectedLengths,
-    selectedProvenances,
-    selectedLanguages,
-    selectedConcepts,
-    yearMin,
-    yearMax,
-    selectedPublicationId,
-    selectedPublicationSeriesId,
-    selectedPublicationName,
-    selectedPublisherId,
-    selectedCatalogueTitle,
-  ],
+  () => JSON.stringify(apiParams.value),
   () => triggerFetch(),
-  { deep: true },
 )
-
-const fetchAllConcepts = async () => {
-  try {
-    const res = await fetchAllConceptsApi()
-    allConcepts.value = res.data || []
-  } catch (err) {
-    console.error('Failed to fetch concepts', err)
-  }
-}
 
 onMounted(async () => {
   await Promise.all([
-    fetchAllConcepts(),
+    fetchAllConceptsApi()
+      .then((res) => {
+        allConcepts.value = res.data || []
+      })
+      .catch((err) => console.error('Failed to fetch concepts', err)),
     fetchAllCataloguesApi()
       .then((res) => {
         allCatalogues.value = res.data ?? []
       })
       .catch(() => {}),
   ])
-  if (pendingConceptSlugs.value.length) {
-    applyConceptSlugs(pendingConceptSlugs.value)
-  }
 })
 
 // Catalogue grouped by type for <optgroup>
@@ -285,64 +185,117 @@ const leftPanelConcepts = computed(() => {
 
 // Methods
 const toggleConcept = (concept: Concept) => {
-  const index = selectedConcepts.value.findIndex((c) => c.id === concept.id)
-  if (index === -1) {
-    selectedConcepts.value.push(concept)
-  } else {
-    selectedConcepts.value.splice(index, 1)
-  }
+  const current = selectedConcepts.value
+  selectedConcepts.value = current.some((c) => c.id === concept.id)
+    ? current.filter((c) => c.id !== concept.id)
+    : [...current, concept]
 }
 
 const openModal = () => {
   isModalOpen.value = true
 }
 
-// FIX: was calling undefined closeModal — now correctly closes the modal
 const closeModal = () => {
   isModalOpen.value = false
 }
 
-const clearYearFilter = () => {
-  yearMin.value = ''
-  yearMax.value = ''
-}
+// Clearing URL params is enough; the refetch follows via the apiParams watcher.
+const clearPublication = () =>
+  filters.clear(
+    'publication',
+    'publication_title',
+    'publication_series',
+    'publication_series_title',
+    'publication_name',
+  )
 
-// Clearing state is enough; the URL and refetch follow via the watchers above.
-const clearAllFilters = () => {
-  searchQuery.value = ''
-  selectedGenres.value = []
-  selectedLengths.value = []
-  selectedProvenances.value = []
-  selectedLanguages.value = []
-  selectedConcepts.value = []
-  yearMin.value = ''
-  yearMax.value = ''
-  selectedPublicationId.value = ''
-  selectedPublicationTitle.value = ''
-  selectedPublicationSeriesId.value = ''
-  selectedPublicationSeriesTitle.value = ''
-  selectedPublicationName.value = ''
-  selectedPublisherId.value = ''
-  selectedPublisherName.value = ''
-  selectedCatalogueTitle.value = ''
-}
+const clearPublisher = () => filters.clear('publisher', 'publisher_name')
 
-const clearPublication = () => {
-  selectedPublicationId.value = ''
-  selectedPublicationTitle.value = ''
-  selectedPublicationSeriesId.value = ''
-  selectedPublicationSeriesTitle.value = ''
-  selectedPublicationName.value = ''
-}
+const clearAllFilters = () =>
+  filters.clear(
+    'search',
+    'genre',
+    'work_length',
+    'provenance',
+    'language',
+    'concept',
+    'year_min',
+    'year_max',
+    'publication',
+    'publication_title',
+    'publication_series',
+    'publication_series_title',
+    'publication_name',
+    'publisher',
+    'publisher_name',
+    'catalogue',
+  )
 
-const clearPublisher = () => {
-  selectedPublisherId.value = ''
-  selectedPublisherName.value = ''
-}
+// The "作用中" chip row, derived from the same URL state the API params use.
+const activeChips = computed(() => {
+  const chips: { key: string; label: string; remove: () => void }[] = []
 
-const clearCatalogue = () => {
-  selectedCatalogueTitle.value = ''
-}
+  if (selectedPublicationId.value)
+    chips.push({
+      key: 'publication',
+      label: `出版物：${selectedPublicationTitle.value}`,
+      remove: clearPublication,
+    })
+  if (selectedPublicationSeriesId.value)
+    chips.push({
+      key: 'publication_series',
+      label: `出版物：${selectedPublicationSeriesTitle.value}`,
+      remove: clearPublication,
+    })
+  if (selectedPublicationName.value)
+    chips.push({
+      key: 'publication_name',
+      label: `出版物：${selectedPublicationName.value}`,
+      remove: clearPublication,
+    })
+  if (selectedPublisherId.value)
+    chips.push({
+      key: 'publisher',
+      label: `出版者：${selectedPublisherName.value}`,
+      remove: clearPublisher,
+    })
+  if (selectedCatalogueTitle.value)
+    chips.push({
+      key: 'catalogue',
+      label: `精選：${selectedCatalogueTitle.value}`,
+      remove: () => filters.clear('catalogue'),
+    })
+  for (const value of selectedGenres.value)
+    chips.push({
+      key: `genre:${value}`,
+      label: GENRE_OPTIONS.find((o) => o.value === value)?.label || '',
+      remove: () => {
+        selectedGenres.value = selectedGenres.value.filter((v) => v !== value)
+      },
+    })
+  for (const value of selectedLengths.value)
+    chips.push({
+      key: `work_length:${value}`,
+      label: LENGTH_OPTIONS.find((o) => o.value === value)?.label || '',
+      remove: () => {
+        selectedLengths.value = selectedLengths.value.filter((v) => v !== value)
+      },
+    })
+  for (const concept of selectedConcepts.value)
+    chips.push({
+      key: `concept:${concept.slug}`,
+      label: concept.name,
+      remove: () => toggleConcept(concept),
+    })
+  if (yearMin.value || yearMax.value)
+    chips.push({
+      key: 'year',
+      label: `${yearMin.value || '…'}–${yearMax.value || '…'}`,
+      remove: () => filters.clear('year_min', 'year_max'),
+    })
+
+  return chips
+})
 </script>
 
 <template>
@@ -723,69 +676,16 @@ const clearCatalogue = () => {
           <div class="border-main/10 mb-1 flex flex-col gap-3 border-b pb-5">
             <!-- Active filter chips -->
             <div
-              v-if="
-                selectedConcepts.length ||
-                selectedGenres.length ||
-                selectedLengths.length ||
-                yearMin ||
-                yearMax ||
-                selectedPublicationId ||
-                selectedPublicationSeriesId ||
-                selectedPublicationName ||
-                selectedPublisherId ||
-                selectedCatalogueTitle
-              "
+              v-if="activeChips.length"
               class="flex flex-wrap items-center gap-1.5"
             >
               <span class="text-main/40 mr-1 shrink-0 text-xs">作用中：</span>
 
               <FilterChip
-                v-if="selectedPublicationId"
-                :label="`出版物：${selectedPublicationTitle}`"
-                @remove="clearPublication"
-              />
-              <FilterChip
-                v-if="selectedPublicationSeriesId"
-                :label="`出版物：${selectedPublicationSeriesTitle}`"
-                @remove="clearPublication"
-              />
-              <FilterChip
-                v-if="selectedPublicationName"
-                :label="`出版物：${selectedPublicationName}`"
-                @remove="clearPublication"
-              />
-              <FilterChip
-                v-if="selectedPublisherId"
-                :label="`出版者：${selectedPublisherName}`"
-                @remove="clearPublisher"
-              />
-              <FilterChip
-                v-if="selectedCatalogueTitle"
-                :label="`精選：${selectedCatalogueTitle}`"
-                @remove="clearCatalogue"
-              />
-              <FilterChip
-                v-for="m in selectedGenres"
-                :key="m"
-                :label="GENRE_OPTIONS.find((o) => o.value === m)?.label || ''"
-                @remove="selectedGenres = selectedGenres.filter((v) => v !== m)"
-              />
-              <FilterChip
-                v-for="l in selectedLengths"
-                :key="l"
-                :label="LENGTH_OPTIONS.find((o) => o.value === l)?.label || ''"
-                @remove="selectedLengths = selectedLengths.filter((v) => v !== l)"
-              />
-              <FilterChip
-                v-for="c in selectedConcepts"
-                :key="c.id"
-                :label="c.name"
-                @remove="toggleConcept(c)"
-              />
-              <FilterChip
-                v-if="yearMin || yearMax"
-                :label="`${yearMin || '…'}–${yearMax || '…'}`"
-                @remove="clearYearFilter"
+                v-for="chip in activeChips"
+                :key="chip.key"
+                :label="chip.label"
+                @remove="chip.remove()"
               />
 
               <button
