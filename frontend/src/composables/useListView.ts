@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, type Ref } from 'vue'
 import { useDebounceFn } from './useDebounce'
 import { DEFAULT_PAGE_SIZE } from '../utils/constants'
 
@@ -18,14 +18,19 @@ export function useListView<T>(
     extraParams?: () => Record<string, string | number | boolean>
     initialSearch?: string
     initialPage?: number
+    // External state (e.g. URL-backed refs from useUrlFilters). When given,
+    // the caller owns the state and this composable only reads/writes it.
+    searchQuery?: Ref<string>
+    ordering?: Ref<string>
+    currentPage?: Ref<number>
   },
 ) {
   const items = ref<T[]>([]) as import('vue').Ref<T[]>
   const isLoading = ref(false)
   const hasError = ref(false)
-  const searchQuery = ref(options?.initialSearch || '')
-  const ordering = ref(options?.defaultOrdering || '-created_at')
-  const currentPage = ref(options?.initialPage || 1)
+  const searchQuery = options?.searchQuery ?? ref(options?.initialSearch || '')
+  const ordering = options?.ordering ?? ref(options?.defaultOrdering || '-created_at')
+  const currentPage = options?.currentPage ?? ref(options?.initialPage || 1)
   const totalCount = ref(0)
   const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / DEFAULT_PAGE_SIZE)))
   const hasNext = ref(false)
@@ -55,17 +60,22 @@ export function useListView<T>(
   }
 
   const triggerFetch = useDebounceFn(() => {
-    currentPage.value = 1
-    fetch()
+    if (currentPage.value !== 1) {
+      currentPage.value = 1 // the page watcher below runs the fetch
+    } else {
+      fetch()
+    }
   }, 300)
 
   watch([searchQuery, ordering], () => triggerFetch())
+  // Refetch whenever the page changes, no matter who changed it — the
+  // pagination buttons or the browser's back/forward restoring a URL.
+  watch(currentPage, fetch)
   onMounted(fetch)
 
   const changePage = (page: number) => {
     currentPage.value = page
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    fetch()
   }
 
   return {
