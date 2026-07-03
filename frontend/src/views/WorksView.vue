@@ -19,6 +19,8 @@ import CustomCheckbox from '../components/CustomCheckbox.vue'
 import ListState from '../components/ListState.vue'
 import SkeletonList from '../components/SkeletonList.vue'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
+import FormRow from '../components/FormRow.vue'
+import AgentInline from '../components/AgentInline.vue'
 import { useListView } from '../composables/useListView'
 import { useUrlFilters } from '../composables/useUrlFilters'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
@@ -462,195 +464,134 @@ const activeChips = computed(() => {
 
           <!-- Definition-list style form: each row = label (left) + content (right) -->
           <dl class="divide-main/10 divide-y">
-            <!-- Keyword -->
-            <div class="pt-0 pb-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+            <FormRow label="關鍵字">
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="標題、作者、筆名等"
+                class="text-main placeholder:text-main/30 border-main/20 focus:border-primary/50 w-full border-b bg-transparent pb-2 text-base transition-colors outline-none"
+              />
+            </FormRow>
+
+            <FormRow label="發表年份">
+              <div
+                class="search-input border-main/20 focus-within:border-primary/50 inline-flex items-center border-b transition-colors"
               >
-                關鍵字
-              </dt>
-              <dd class="flex-1">
                 <input
-                  v-model="searchQuery"
-                  type="text"
-                  placeholder="標題、作者、筆名等"
-                  class="text-main placeholder:text-main/30 border-main/20 focus:border-primary/50 w-full border-b bg-transparent pb-2 text-base transition-colors outline-none"
+                  v-model="yearMin"
+                  type="number"
+                  placeholder="YYYY"
+                  class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
                 />
-              </dd>
-            </div>
+                <span class="text-main/30 px-3 font-mono">—</span>
+                <input
+                  v-model="yearMax"
+                  type="number"
+                  placeholder="YYYY"
+                  class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
+                />
+              </div>
+            </FormRow>
 
-            <!-- Year published -->
-            <div class="py-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
-              >
-                發表年份
-              </dt>
-              <dd class="flex-1">
-                <div
-                  class="search-input border-main/20 focus-within:border-primary/50 inline-flex items-center border-b transition-colors"
+            <FormRow label="作品體裁">
+              <CheckboxGroup
+                v-model="selectedGenres"
+                :options="GENRE_OPTIONS"
+                layout-class="flex flex-wrap gap-x-6 gap-y-2"
+              />
+            </FormRow>
+
+            <FormRow label="作品篇幅">
+              <CheckboxGroup
+                v-model="selectedLengths"
+                :options="LENGTH_OPTIONS"
+                layout-class="flex flex-wrap gap-x-6 gap-y-2"
+              />
+            </FormRow>
+
+            <FormRow label="作品來源">
+              <CheckboxGroup
+                v-model="selectedProvenances"
+                :options="PROVENANCE_OPTIONS"
+                layout-class="flex flex-wrap gap-x-6 gap-y-2"
+              />
+            </FormRow>
+
+            <FormRow label="原始語言">
+              <CheckboxGroup
+                v-model="selectedLanguages"
+                :options="LANGUAGE_OPTIONS"
+                layout-class="flex flex-wrap gap-x-6 gap-y-2"
+              />
+            </FormRow>
+
+            <FormRow label="精選／獎項">
+              <div class="relative">
+                <select
+                  v-model="selectedCatalogueTitle"
+                  class="text-main/70 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2"
                 >
-                  <input
-                    v-model="yearMin"
-                    type="number"
-                    placeholder="YYYY"
-                    class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
+                  <option value="">（不限）</option>
+                  <template
+                    v-for="[type, items] in cataloguesByType"
+                    :key="type"
+                  >
+                    <optgroup :label="type">
+                      <option
+                        v-for="c in items"
+                        :key="c.id"
+                        :value="c.title"
+                      >
+                        {{ c.title }}
+                      </option>
+                    </optgroup>
+                  </template>
+                </select>
+                <svg
+                  class="text-main/40 pointer-events-none absolute top-1/2 right-2 -translate-y-1/2"
+                  width="9"
+                  height="5"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                >
+                  <path
+                    d="M0 0l5 6 5-6z"
+                    fill="currentColor"
                   />
-                  <span class="text-main/30 px-3 font-mono">—</span>
-                  <input
-                    v-model="yearMax"
-                    type="number"
-                    placeholder="YYYY"
-                    class="text-main placeholder:text-main/30 w-20 bg-transparent py-2 text-center font-mono text-base outline-none"
-                  />
-                </div>
-              </dd>
-            </div>
+                </svg>
+              </div>
+            </FormRow>
 
-            <!-- Genre -->
-            <div class="py-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+            <FormRow
+              label="概念標籤"
+              align="top"
+            >
+              <button
+                class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-left text-base underline underline-offset-4 transition-colors"
+                @click="openModal"
               >
-                作品體裁
-              </dt>
-              <dd class="flex-1">
-                <CheckboxGroup
-                  v-model="selectedGenres"
-                  :options="GENRE_OPTIONS"
-                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
-                />
-              </dd>
-            </div>
-
-            <!-- Length -->
-            <div class="py-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
+                + 點擊選取概念標籤
+              </button>
+              <div
+                v-if="selectedConcepts.length > 0"
+                class="mt-3 flex flex-wrap gap-1.5"
               >
-                作品篇幅
-              </dt>
-              <dd class="flex-1">
-                <CheckboxGroup
-                  v-model="selectedLengths"
-                  :options="LENGTH_OPTIONS"
-                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
-                />
-              </dd>
-            </div>
-
-            <!-- Provenance -->
-            <div class="py-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
-              >
-                作品來源
-              </dt>
-              <dd class="flex-1">
-                <CheckboxGroup
-                  v-model="selectedProvenances"
-                  :options="PROVENANCE_OPTIONS"
-                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
-                />
-              </dd>
-            </div>
-
-            <!-- Original language -->
-            <div class="py-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
-              >
-                原始語言
-              </dt>
-              <dd class="flex-1">
-                <CheckboxGroup
-                  v-model="selectedLanguages"
-                  :options="LANGUAGE_OPTIONS"
-                  layout-class="flex flex-wrap gap-x-6 gap-y-2"
-                />
-              </dd>
-            </div>
-
-            <!-- Catalogues / awards -->
-            <div class="py-6 md:flex md:items-baseline md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
-              >
-                精選／獎項
-              </dt>
-              <dd class="flex-1">
-                <div class="relative">
-                  <select
-                    v-model="selectedCatalogueTitle"
-                    class="text-main/70 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full cursor-pointer appearance-none border-b bg-transparent py-1 pr-6 pl-0 text-sm transition-colors outline-none focus-visible:outline-2"
-                  >
-                    <option value="">（不限）</option>
-                    <template
-                      v-for="[type, items] in cataloguesByType"
-                      :key="type"
-                    >
-                      <optgroup :label="type">
-                        <option
-                          v-for="c in items"
-                          :key="c.id"
-                          :value="c.title"
-                        >
-                          {{ c.title }}
-                        </option>
-                      </optgroup>
-                    </template>
-                  </select>
-                  <svg
-                    class="text-main/40 pointer-events-none absolute top-1/2 right-2 -translate-y-1/2"
-                    width="9"
-                    height="5"
-                    viewBox="0 0 10 6"
-                    fill="none"
-                  >
-                    <path
-                      d="M0 0l5 6 5-6z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
-              </dd>
-            </div>
-
-            <!-- Concept tags -->
-            <div class="pt-6 pb-0 md:flex md:gap-6">
-              <dt
-                class="text-main/40 mb-2 shrink-0 pt-0.5 text-sm font-medium tracking-widest uppercase md:mb-0 md:w-28"
-              >
-                概念標籤
-              </dt>
-              <dd class="flex-1">
-                <button
-                  class="text-main/70 hover:text-primary decoration-main/20 hover:decoration-primary/50 text-left text-base underline underline-offset-4 transition-colors"
-                  @click="openModal"
+                <span
+                  v-for="concept in selectedConcepts"
+                  :key="concept.id"
+                  class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
                 >
-                  + 點擊選取概念標籤
-                </button>
-                <div
-                  v-if="selectedConcepts.length > 0"
-                  class="mt-3 flex flex-wrap gap-1.5"
-                >
-                  <span
-                    v-for="concept in selectedConcepts"
-                    :key="concept.id"
-                    class="text-primary bg-primary/5 border-primary/15 inline-flex items-center gap-1 border px-2.5 py-1 text-xs"
+                  {{ concept.name }}
+                  <button
+                    class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
+                    :aria-label="`移除 ${concept.name}`"
+                    @click.stop="toggleConcept(concept)"
                   >
-                    {{ concept.name }}
-                    <button
-                      class="hover:text-primary/60 ml-0.5 text-sm leading-none transition-colors"
-                      :aria-label="`移除 ${concept.name}`"
-                      @click.stop="toggleConcept(concept)"
-                    >
-                      &times;
-                    </button>
-                  </span>
-                </div>
-              </dd>
-            </div>
+                    &times;
+                  </button>
+                </span>
+              </div>
+            </FormRow>
           </dl>
 
           <!-- Footer Actions -->
@@ -750,20 +691,7 @@ const activeChips = computed(() => {
                       v-if="work.byline && work.byline.length"
                       class="flex flex-wrap items-center gap-x-0.5"
                     >
-                      <template
-                        v-for="(agent, idx) in work.byline"
-                        :key="idx"
-                      >
-                        <router-link
-                          v-if="agent.id && agent.agent_type === 'person'"
-                          :to="`/persons/${agent.id}`"
-                          class="hover:text-primary no-underline transition-colors"
-                        >
-                          {{ agent.text }}
-                        </router-link>
-                        <span v-else>{{ agent.text }}</span>
-                        <span v-if="idx < work.byline.length - 1">、</span>
-                      </template>
+                      <AgentInline :agents="work.byline" />
                     </span>
                     <span v-else>佚名</span>
 

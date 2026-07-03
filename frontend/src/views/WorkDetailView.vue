@@ -6,6 +6,7 @@ import SectionTitle from '../components/SectionTitle.vue'
 import SidebarRow from '../components/SidebarRow.vue'
 import ListState from '../components/ListState.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
+import AgentInline from '../components/AgentInline.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchWorkDetail } from '../api/works'
 import { useApiDetail } from '../composables/useApiDetail'
@@ -121,25 +122,7 @@ const visiblePublications = computed(() => {
                   v-for="(group, gIdx) in work.credit"
                   :key="gIdx"
                 >
-                  <template
-                    v-for="(agent, aIdx) in group.agents"
-                    :key="aIdx"
-                  >
-                    <router-link
-                      v-if="agent.id && agent.agent_type === 'person'"
-                      :to="`/persons/${agent.id}`"
-                      class="text-primary transition-opacity hover:opacity-70"
-                    >
-                      {{ agent.text }}
-                    </router-link>
-                    <span
-                      v-else
-                      class="text-main/80"
-                    >
-                      {{ agent.text }}
-                    </span>
-                    <span v-if="aIdx < group.agents.length - 1">、</span>
-                  </template>
+                  <AgentInline :agents="group.agents" />
                   <span
                     v-if="group.role"
                     class="text-main/40 ml-0.5"
@@ -260,13 +243,10 @@ const visiblePublications = computed(() => {
                       v-for="(group, gIdx) in pub.credit"
                       :key="gIdx"
                     >
-                      <template
-                        v-for="(agent, aIdx) in group.agents"
-                        :key="aIdx"
-                      >
-                        {{ agent.text }}
-                        <span v-if="aIdx < group.agents.length - 1">、</span>
-                      </template>
+                      <AgentInline
+                        :agents="group.agents"
+                        :linked="false"
+                      />
                       <span v-if="group.role">{{ group.role }}</span>
                       <span v-if="gIdx < pub.credit.length - 1">；</span>
                     </template>

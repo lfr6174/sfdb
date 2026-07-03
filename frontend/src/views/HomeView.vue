@@ -14,6 +14,7 @@ import { formatDate } from '../utils/formatters'
 import SectionTitle from '../components/SectionTitle.vue'
 import ConceptTag from '../components/ConceptTag.vue'
 import HoverListItem from '../components/HoverListItem.vue'
+import AgentInline from '../components/AgentInline.vue'
 import Icon from '../components/Icon.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 
@@ -190,15 +191,11 @@ onMounted(async () => {
             <!-- Author + Meta -->
             <div class="shrink-0 text-right">
               <span class="text-main/50 text-sm">
-                <template v-if="work.byline && work.byline.length">
-                  <template
-                    v-for="(agent, idx) in work.byline"
-                    :key="idx"
-                  >
-                    <span>{{ agent.text }}</span>
-                    <span v-if="idx < work.byline.length - 1">、</span>
-                  </template>
-                </template>
+                <AgentInline
+                  v-if="work.byline && work.byline.length"
+                  :agents="work.byline"
+                  :linked="false"
+                />
                 <span v-else>佚名</span>
               </span>
               <span
