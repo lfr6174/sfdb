@@ -26,6 +26,10 @@ export RCLONE_CONFIG_R2_PROVIDER=Cloudflare
 export RCLONE_CONFIG_R2_ENDPOINT="$R2_ENDPOINT"
 export RCLONE_CONFIG_R2_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
 export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
+# The API token is scoped to one pre-created bucket and cannot list or create
+# buckets, so rclone's default existence check misjudges and falls through to
+# a CreateBucket call that R2 rejects with 403. The bucket always exists; skip.
+export RCLONE_CONFIG_R2_NO_CHECK_BUCKET=true
 
 STAMP="$(date -u +%Y%m%d)"
 NAME="tsfdb-${STAMP}.dump.age"
