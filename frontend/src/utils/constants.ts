@@ -9,3 +9,26 @@ export const categoryOrder = (label: string) => {
   const i = CONCEPT_CATEGORY_ORDER.indexOf(label)
   return i === -1 ? CONCEPT_CATEGORY_ORDER.length : i
 }
+
+// Work filter options. NOTE: values and labels mirror the backend TextChoices
+// in backend/apps/work/models.py — when a choice changes there, update here.
+export const GENRE_OPTIONS = [
+  { value: 'novel', label: '小說' },
+  { value: 'poem', label: '詩' },
+  { value: 'comic', label: '漫畫' },
+]
+export const LENGTH_OPTIONS = [
+  { value: 'long', label: '長篇' },
+  { value: 'short', label: '中短篇' },
+]
+export const PROVENANCE_OPTIONS = [
+  { value: 'original', label: '原創' },
+  { value: 'licensed', label: '代理' },
+]
+export const LANGUAGE_OPTIONS = [
+  { value: 'zh-hant', label: '繁體中文' },
+  { value: 'zh-hans', label: '簡體中文' },
+  { value: 'en', label: '英文' },
+  { value: 'ja', label: '日文' },
+  { value: 'other', label: '其他' },
+]
