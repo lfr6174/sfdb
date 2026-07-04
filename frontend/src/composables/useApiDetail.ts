@@ -1,4 +1,4 @@
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AxiosError } from 'axios'
 
@@ -38,16 +38,9 @@ export function useApiDetail<T>(
     }
   }
 
+  // No route watcher needed: App.vue keys the router-view by $route.path, so
+  // every path change remounts the view and onMounted refetches.
   onMounted(fetch)
-
-  watch(
-    () => route.path,
-    (newPath, oldPath) => {
-      if (newPath !== oldPath) {
-        fetch()
-      }
-    },
-  )
 
   return { data, isLoading, hasError, refetch: fetch }
 }
