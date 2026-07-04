@@ -8,9 +8,18 @@ import SkeletonList from '../components/SkeletonList.vue'
 import SortSelect from '../components/SortSelect.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { useListView } from '../composables/useListView'
+import { useUrlFilters } from '../composables/useUrlFilters'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 
 useDocumentMeta('人物列表', '')
+
+// List state lives in the URL query (like WorksView), so back/forward and
+// refresh restore the same page, search and ordering.
+const filters = useUrlFilters({
+  search: { type: 'string', api: false }, // sent by useListView
+  ordering: { type: 'string', default: 'name', api: false },
+  page: { type: 'number', default: 1, api: false },
+})
 
 const {
   items: persons,
@@ -22,7 +31,11 @@ const {
   totalPages,
   changePage,
   totalCount,
-} = useListView<Person>(fetchPersonsApi, { defaultOrdering: 'name' })
+} = useListView<Person>(fetchPersonsApi, {
+  searchQuery: filters.values.search,
+  ordering: filters.values.ordering,
+  currentPage: filters.values.page,
+})
 </script>
 
 <template>
