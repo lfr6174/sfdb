@@ -1,13 +1,6 @@
-import { ref, computed, watch, onMounted, type Ref } from 'vue'
+import { ref, watch, onMounted, type Ref } from 'vue'
 import { useDebounceFn } from './useDebounce'
-import { DEFAULT_PAGE_SIZE } from '../utils/constants'
-
-export interface PaginatedResponse<T> {
-  count: number
-  next: string | null
-  previous: string | null
-  results: T[]
-}
+import type { PaginatedResponse } from '../types'
 
 export function useListView<T>(
   fetchFn: (
@@ -32,7 +25,7 @@ export function useListView<T>(
   const ordering = options?.ordering ?? ref(options?.defaultOrdering || '-created_at')
   const currentPage = options?.currentPage ?? ref(options?.initialPage || 1)
   const totalCount = ref(0)
-  const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / DEFAULT_PAGE_SIZE)))
+  const totalPages = ref(1)
   const hasNext = ref(false)
   const hasPrev = ref(false)
 
@@ -49,6 +42,7 @@ export function useListView<T>(
       const res = await fetchFn(params)
       items.value = res.data.results || []
       totalCount.value = res.data.count || 0
+      totalPages.value = res.data.total_pages || 1
       hasNext.value = !!res.data.next
       hasPrev.value = !!res.data.previous
     } catch (err) {

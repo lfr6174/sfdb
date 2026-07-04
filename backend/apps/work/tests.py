@@ -145,3 +145,13 @@ def test_search_long_input_returns_200(api_client):
 def test_concepts_in_large_list_returns_200(api_client):
     response = api_client.get(reverse("work:work-list"), {"concepts_in": ",".join(str(i) for i in range(100))})
     assert response.status_code == 200
+
+
+# Prevents: frontend deriving total pages from a hardcoded page size (drifts when PAGE_SIZE changes)
+@pytest.mark.django_db
+def test_paginated_response_includes_total_pages(api_client):
+    Work.objects.bulk_create([Work(title=f"W{i}") for i in range(21)])  # one past a full page of 20
+
+    data = api_client.get(reverse("work:work-list")).json()
+    assert data["count"] == 21
+    assert data["total_pages"] == 2
