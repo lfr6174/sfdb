@@ -24,7 +24,6 @@ import AgentInline from '../components/AgentInline.vue'
 import { useListView } from '../composables/useListView'
 import { useUrlFilters } from '../composables/useUrlFilters'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
-import { CONCEPT_CATEGORY_MAP } from '../utils/constants'
 
 useDocumentMeta('作品列表', '')
 
@@ -169,18 +168,10 @@ const cataloguesByType = computed(() => {
   return map
 })
 
-// Concept Computed Properties
-const mappedConcepts = computed(() => {
-  return allConcepts.value.map((c) => ({
-    ...c,
-    mappedCategory: CONCEPT_CATEGORY_MAP[c.category] || '未分類',
-  }))
-})
-
 // Featured concepts for the left panel
 const leftPanelConcepts = computed(() => {
   const selectedIds = new Set(selectedConcepts.value.map((c) => c.id))
-  return mappedConcepts.value
+  return allConcepts.value
     .filter((c) => c.is_featured && !selectedIds.has(c.id))
     .sort((a, b) => (a.featured_order || 0) - (b.featured_order || 0))
 })

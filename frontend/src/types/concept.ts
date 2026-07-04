@@ -27,6 +27,7 @@ export interface Concept {
   name: string
   slug: string
   category: 'novum' | 'narrative' | 'theme'
+  category_display: string
 
   // Optional/Detail fields
   is_featured?: boolean
