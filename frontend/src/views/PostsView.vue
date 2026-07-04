@@ -10,8 +10,17 @@ import { formatDate } from '../utils/formatters'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import BaseSearchInput from '../components/BaseSearchInput.vue'
 import { useListView } from '../composables/useListView'
+import { useUrlFilters } from '../composables/useUrlFilters'
 
 useDocumentMeta('最新資訊', '')
+
+// List state lives in the URL query (like WorksView), so back/forward and
+// refresh restore the same page, search and ordering.
+const filters = useUrlFilters({
+  search: { type: 'string', api: false }, // sent by useListView
+  ordering: { type: 'string', default: '-created_at', api: false },
+  page: { type: 'number', default: 1, api: false },
+})
 
 const {
   items: posts,
@@ -23,7 +32,11 @@ const {
   totalPages,
   changePage,
   totalCount: totalPosts,
-} = useListView<Post>(fetchPostsApi, { defaultOrdering: '-created_at' })
+} = useListView<Post>(fetchPostsApi, {
+  searchQuery: filters.values.search,
+  ordering: filters.values.ordering,
+  currentPage: filters.values.page,
+})
 </script>
 
 <template>
