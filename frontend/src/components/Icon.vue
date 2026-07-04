@@ -15,6 +15,10 @@ const ICONS = {
   // Circular arrows — "shuffle / refresh"
   refresh:
     'M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99',
+  // X — close / dismiss
+  close: 'M18 6 6 18M6 6l12 12',
+  // Chevron pointing up — "back to top"
+  'chevron-up': 'm18 15-6-6-6 6',
 } as const
 
 withDefaults(

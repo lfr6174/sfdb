@@ -73,3 +73,13 @@ def test_concept_detail_exposes_aliases_in_order(api_client):
 
     data = api_client.get(reverse("concept:concept-detail", kwargs={"slug": c.slug})).json()
     assert [a["name"] for a in data["aliases"]] == ["First", "Second"]
+
+
+# Prevents: frontend keeping its own category-value → label map (drifts when
+# backend adds or renames a category); group headers come from category_display
+@pytest.mark.django_db
+def test_concept_list_exposes_category_display(api_client):
+    Concept.objects.create(name="Cyberpunk", slug="cp", category=ConceptCategory.NOVUM)
+
+    data = api_client.get(reverse("concept:concept-list")).json()
+    assert data["results"][0]["category_display"] == "新異 Novum"

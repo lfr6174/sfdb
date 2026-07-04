@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import Navbar from './components/Navbar.vue'
+import Icon from './components/Icon.vue'
 import api from './api/axios'
 
 // Control banner visibility
@@ -70,19 +71,11 @@ onMounted(async () => {
         aria-label="Close announcement"
         @click="showBanner = false"
       >
-        <!-- Close Icon (X) -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
+        <Icon
+          name="close"
           class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-            clip-rule="evenodd"
-          />
-        </svg>
+          :stroke-width="2"
+        />
       </button>
     </div>
 
@@ -164,19 +157,11 @@ onMounted(async () => {
       class="bg-main/10 text-main/50 hover:bg-primary hover:text-bg fixed right-8 bottom-8 z-40 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all duration-200"
       @click="scrollToTop"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="m18 15-6-6-6 6" />
-      </svg>
+      <Icon
+        name="chevron-up"
+        class="h-5 w-5"
+        :stroke-width="2"
+      />
     </button>
   </div>
 </template>

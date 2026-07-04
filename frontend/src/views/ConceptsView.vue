@@ -8,7 +8,7 @@ import ConceptTag from '../components/ConceptTag.vue'
 import ListState from '../components/ListState.vue'
 import SkeletonList from '../components/SkeletonList.vue'
 import SortSelect from '../components/SortSelect.vue'
-import { CONCEPT_CATEGORY_MAP, CONCEPT_CATEGORY_ORDER } from '../utils/constants'
+import { categoryOrder } from '../utils/constants'
 
 useDocumentMeta('概念探索', '')
 
@@ -45,31 +45,29 @@ const groupedConcepts = computed(() => {
     filtered = filtered.filter((c) => c.name.toLowerCase().includes(q))
   }
 
-  // Inter-group sorting
+  // Group by the API's category_display: whatever categories arrive get a
+  // group, so a future backend category shows up without frontend changes.
   const groups: Record<string, Concept[]> = {}
-  CONCEPT_CATEGORY_ORDER.forEach((cat) => {
-    groups[cat] = []
-  })
-
   filtered.forEach((c) => {
-    const rawCat = c.category || '未分類'
-    const cat = CONCEPT_CATEGORY_MAP[rawCat] || '未分類'
-    groups[cat].push(c)
+    if (!groups[c.category_display]) groups[c.category_display] = []
+    groups[c.category_display].push(c)
   })
 
   // Inner-group sorting
-  CONCEPT_CATEGORY_ORDER.forEach((cat) => {
-    groups[cat].sort((a, b) => {
+  for (const concepts of Object.values(groups)) {
+    concepts.sort((a, b) => {
       if (sortBy.value === 'alpha') return a.name.localeCompare(b.name)
       if (sortBy.value === 'count') return (b.works_count || 0) - (a.works_count || 0)
       if (sortBy.value === 'recent')
         return new Date(b.updated_at || 0).getTime() - new Date(a.updated_at || 0).getTime()
       return 0
     })
-  })
+  }
 
-  // Skip empty groups
-  return Object.fromEntries(Object.entries(groups).filter(([, concepts]) => concepts.length > 0))
+  // Known categories in fixed order, unknown ones last
+  return Object.fromEntries(
+    Object.entries(groups).sort(([a], [b]) => categoryOrder(a) - categoryOrder(b)),
+  )
 })
 </script>
 <template>
@@ -80,7 +78,6 @@ const groupedConcepts = computed(() => {
         <BaseSearchInput
           v-model="searchQuery"
           placeholder="搜尋概念名稱…"
-          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-1.5 pr-8 pl-6 text-sm transition-colors outline-none focus-visible:outline-2"
         />
       </div>
       <div class="relative w-28 shrink-0">

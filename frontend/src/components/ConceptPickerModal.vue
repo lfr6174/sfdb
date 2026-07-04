@@ -7,7 +7,7 @@ import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
 import SectionTitle from './SectionTitle.vue'
 import BaseSearchInput from './BaseSearchInput.vue'
 import CustomCheckbox from './CustomCheckbox.vue'
-import { CONCEPT_CATEGORY_ORDER, CONCEPT_CATEGORY_MAP } from '../utils/constants'
+import { categoryOrder } from '../utils/constants'
 import type { Concept } from '../types'
 
 const props = defineProps<{
@@ -46,30 +46,26 @@ onUnmounted(() => {
   document.body.style.overflow = '' // Safety cleanup
 })
 
-const mappedConcepts = computed(() => {
-  return props.allConcepts.map((c) => ({
-    ...c,
-    mappedCategory: CONCEPT_CATEGORY_MAP[c.category] || '未分類',
-  }))
-})
-
 const modalGroupedConcepts = computed(() => {
   const query = modalSearchQuery.value.toLowerCase()
-  const filtered = mappedConcepts.value.filter((c) => c.name.toLowerCase().includes(query))
+  const filtered = props.allConcepts.filter((c) => c.name.toLowerCase().includes(query))
 
-  const grouped: Record<string, (Concept & { mappedCategory: string })[]> = {}
-  CONCEPT_CATEGORY_ORDER.forEach((cat) => (grouped[cat] = []))
-
+  // Group by the API's category_display: whatever categories arrive get a
+  // group, so a future backend category shows up without frontend changes.
+  const grouped: Record<string, Concept[]> = {}
   filtered.forEach((c) => {
-    if (grouped[c.mappedCategory]) {
-      grouped[c.mappedCategory].push(c)
-    }
+    if (!grouped[c.category_display]) grouped[c.category_display] = []
+    grouped[c.category_display].push(c)
   })
 
-  for (const cat in grouped) {
-    grouped[cat].sort((a, b) => a.name.localeCompare(b.name))
+  for (const concepts of Object.values(grouped)) {
+    concepts.sort((a, b) => a.name.localeCompare(b.name))
   }
-  return grouped
+
+  // Known categories in fixed order, unknown ones last
+  return Object.fromEntries(
+    Object.entries(grouped).sort(([a], [b]) => categoryOrder(a) - categoryOrder(b)),
+  )
 })
 
 const toggleTempConcept = (concept: Concept) => {
@@ -120,8 +116,8 @@ const apply = () => {
         <BaseSearchInput
           ref="searchInputRef"
           v-model="modalSearchQuery"
+          size="lg"
           placeholder="搜尋標籤…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
           @escape="$emit('close')"
         />
 
@@ -156,14 +152,14 @@ const apply = () => {
       <div class="flex-1 overflow-y-auto px-6 py-5">
         <div class="space-y-8">
           <div
-            v-for="cat in CONCEPT_CATEGORY_ORDER"
+            v-for="(concepts, cat) in modalGroupedConcepts"
             :key="cat"
           >
-            <template v-if="modalGroupedConcepts[cat]?.length > 0">
+            <template v-if="concepts.length > 0">
               <SectionTitle class="mb-4">{{ cat }}</SectionTitle>
               <div class="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2 md:grid-cols-3">
                 <label
-                  v-for="concept in modalGroupedConcepts[cat]"
+                  v-for="concept in concepts"
                   :key="concept.id"
                   class="group hover:bg-primary/5 flex cursor-pointer items-center gap-2 px-2 py-1.5 transition-colors"
                 >

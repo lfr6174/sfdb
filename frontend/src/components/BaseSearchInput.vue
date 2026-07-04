@@ -5,8 +5,18 @@
  */
 import { ref } from 'vue'
 
+const { size = 'sm' } = defineProps<{
+  /** sm: compact list-page style; lg: prominent style (works filters, modal) */
+  size?: 'sm' | 'lg'
+}>()
+
 const model = defineModel<string>({ default: '' })
 const inputRef = ref<HTMLInputElement | null>(null)
+
+const sizeClasses = {
+  sm: 'placeholder:text-main/35 focus:border-main/50 py-1.5 text-sm',
+  lg: 'placeholder:text-main/40 focus:border-primary/50 py-2 text-base',
+}
 
 const emit = defineEmits<{ escape: [] }>()
 
@@ -54,6 +64,8 @@ export default {
       v-model="model"
       type="text"
       name="search"
+      class="text-main border-main/20 focus-visible:outline-primary/50 w-full border-b bg-transparent pr-8 pl-6 transition-colors outline-none focus-visible:outline-2"
+      :class="sizeClasses[size]"
       v-bind="$attrs"
       @keydown.esc.stop="handleEscape"
     />

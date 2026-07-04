@@ -16,25 +16,16 @@ class ConceptLinkSerializer(serializers.ModelSerializer):
 
 
 class ConceptMinimalSerializer(serializers.ModelSerializer):
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
+
     class Meta:
         model = Concept
-        fields = ["id", "name", "slug", "category"]
+        fields = ["id", "name", "slug", "category", "category_display"]
 
 
 class ConceptListSerializer(serializers.ModelSerializer):
     works_count = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Concept
-        fields = ["id", "name", "slug", "category", "works_count", "updated_at", "is_featured", "featured_order"]
-
-
-class ConceptDetailSerializer(serializers.ModelSerializer):
-    aliases = ConceptAliasSerializer(many=True, read_only=True)
-    links = ConceptLinkSerializer(many=True, read_only=True)
-    related_concepts = ConceptMinimalSerializer(many=True, read_only=True)
-    works_count = serializers.IntegerField(read_only=True)
-    work_concepts = serializers.SerializerMethodField()
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
 
     class Meta:
         model = Concept
@@ -43,6 +34,30 @@ class ConceptDetailSerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "category",
+            "category_display",
+            "works_count",
+            "updated_at",
+            "is_featured",
+            "featured_order",
+        ]
+
+
+class ConceptDetailSerializer(serializers.ModelSerializer):
+    aliases = ConceptAliasSerializer(many=True, read_only=True)
+    links = ConceptLinkSerializer(many=True, read_only=True)
+    related_concepts = ConceptMinimalSerializer(many=True, read_only=True)
+    works_count = serializers.IntegerField(read_only=True)
+    work_concepts = serializers.SerializerMethodField()
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
+
+    class Meta:
+        model = Concept
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "category",
+            "category_display",
             "description",
             "aliases",
             "related_concepts",
