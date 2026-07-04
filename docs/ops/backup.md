@@ -58,6 +58,36 @@ Cloudflare R2 的免費方案提供 10 GB 儲存容量，而且也不收取 Egre
 2. 到 R2 確認 `daily/` 下有該檔案且大小合理
 3. 依 log 中 dump 的實際大小，把 `MIN_DUMP_BYTES` 調到約其一半
 
+# 還原演練
+1. 安裝工具解密以及資料庫客戶端工具
+  ```bash
+  sudo apt install age
+  sudo apt install postgresql-common
+  sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+  sudo apt install postgresql-client-18
+  ```
+2. 下載備份檔
+  Cloudflare dashboard → R2物件儲存 → `tsfdb-backups` → `daily/` →
+下載最新的 `tsfdb-<日期>.dump.age`（不需要 rclone）。
+
+3. 解密
+  從密碼管理器複製私鑰貼成新檔案，確認密碼管理器存放的內容正確。
+
+  ```bash
+  # restored-key.txt 內容為 AGE-SECRET-KEY-1 開頭那一行
+  age -d -i restored-key.txt -o db.dump daily_tsfdb-<日期>.dump.age
+  ```
+4. 建立臨時資料庫
+  在 Railway 新增 PostgreSQL，抄下 `DATABASE_PUBLIC_URL`
+
+5. 還原資料與驗收
+  還原資料要花一段時間，完成後要到 Railway 檢查資料是否順利載入。
+  ```bash
+  pg_restore --clean --if-exists --no-owner --no-privileges -d "<DATABASE_PUBLIC_URL>" db.dump
+  ```
+6. 清理
+  移除臨時的資料庫，刪除暫存的密鑰檔和 dump 資料。
+
 
 # 還原流程
 
