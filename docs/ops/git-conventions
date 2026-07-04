@@ -21,10 +21,11 @@ type(scope): subject
 
 ## scope
 work, concept, agent 等 app 的修改寫進 subject。開發時，若能分層修改，則盡可能按 scope 拆分 commits。若無法拆分或是無關部署結果，則不用設定 scope。
-  
+
 - backend：影響後端平台部署的修改。
 - frontend：影響前端平台部署的修改。
 - admin：影響管理員後台的修改。
+- backup：影響資料庫備份服務部署的修改。
 
 
 ## body
