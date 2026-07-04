@@ -120,8 +120,8 @@ const apply = () => {
         <BaseSearchInput
           ref="searchInputRef"
           v-model="modalSearchQuery"
+          size="lg"
           placeholder="搜尋標籤…"
-          class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
           @escape="$emit('close')"
         />
 

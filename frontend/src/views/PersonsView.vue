@@ -46,7 +46,6 @@ const {
         <BaseSearchInput
           v-model="searchQuery"
           placeholder="搜尋姓名、別名或簡介…"
-          class="text-main placeholder:text-main/35 border-main/20 focus:border-main/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-1.5 pr-8 pl-6 text-sm transition-colors outline-none focus-visible:outline-2"
         />
       </div>
       <div class="relative w-28 shrink-0">

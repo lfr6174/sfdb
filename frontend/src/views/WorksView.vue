@@ -311,8 +311,8 @@ const activeChips = computed(() => {
         <div class="mb-7 hidden lg:block">
           <BaseSearchInput
             v-model="searchQuery"
+            size="lg"
             placeholder="搜尋標題、作者…"
-            class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
           />
           <div class="mt-2 flex justify-start">
             <button
@@ -413,8 +413,8 @@ const activeChips = computed(() => {
           <div class="min-w-0 flex-1">
             <BaseSearchInput
               v-model="searchQuery"
+              size="lg"
               placeholder="搜尋標題、作者…"
-              class="text-main placeholder:text-main/40 border-main/20 focus:border-primary/50 focus-visible:outline-primary/50 w-full border-b bg-transparent py-2 pr-8 pl-6 text-base transition-colors outline-none focus-visible:outline-2"
             />
           </div>
           <button
