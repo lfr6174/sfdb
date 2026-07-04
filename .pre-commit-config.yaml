@@ -46,3 +46,10 @@ repos:
         language: system
         files: ^frontend/.*\.(ts|vue)$
         pass_filenames: false
+
+      - id: frontend-vitest
+        name: vitest (frontend)
+        entry: bash -c 'cd frontend && npm test'
+        language: system
+        files: ^frontend/.*\.(ts|vue)$
+        pass_filenames: false
