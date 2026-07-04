@@ -5,9 +5,11 @@ from apps.core.models import TimeStampedModel
 
 
 class ConceptCategory(models.TextChoices):
-    NOVUM = "novum", "新異 (Novum)"
-    NARRATIVE = "narrative", "敘事 (Narrative)"
-    THEME = "theme", "主題 (Theme)"
+    # Labels are shown as-is on the public site (category_display); keep them
+    # in the same format the frontend group headers use.
+    NOVUM = "novum", "新異 Novum"
+    NARRATIVE = "narrative", "敘事 Narrative"
+    THEME = "theme", "主題 Theme"
 
 
 class Concept(TimeStampedModel):
