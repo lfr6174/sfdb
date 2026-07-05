@@ -229,14 +229,14 @@ const visiblePublications = computed(() => {
                   v-if="
                     pub.manifestation_display_name && pub.manifestation_display_name !== pub.title
                   "
-                  class="text-primary/70 mt-0.5 text-xs"
+                  class="text-primary/70 mt-0.5 text-xs leading-5"
                 >
                   ↳ {{ pub.manifestation_display_name }}
                 </div>
 
                 <div
                   v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
-                  class="text-main/50 mt-0.5 flex flex-wrap gap-x-1 text-xs"
+                  class="text-main/50 mt-1 flex flex-wrap gap-x-1 text-xs leading-5"
                 >
                   <template v-if="pub.credit && pub.credit.length">
                     <template
@@ -271,11 +271,25 @@ const visiblePublications = computed(() => {
                 </div>
 
                 <div
-                  v-if="pub.isbn || pub.binding_display"
-                  class="text-main/40 selection:bg-primary/20 mt-1.5 font-mono text-xs"
+                  v-if="pub.isbn || pub.binding_display || pub.note"
+                  class="text-main/40 selection:bg-primary/20 mt-1 text-xs leading-5"
                 >
-                  <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
-                  <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
+                  <span
+                    v-if="pub.isbn || pub.binding_display"
+                    class="font-mono"
+                  >
+                    <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
+                    <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
+                  </span>
+                  <template v-if="pub.note">
+                    <span
+                      v-if="pub.isbn || pub.binding_display"
+                      class="mx-1"
+                    >
+                      ;
+                    </span>
+                    {{ pub.note }}
+                  </template>
                 </div>
               </SidebarRow>
 
