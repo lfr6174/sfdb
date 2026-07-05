@@ -9,7 +9,7 @@ import type { RouterScrollBehavior } from 'vue-router'
 // in the meantime — yanking the page from under them is worse than
 // landing at the wrong spot.
 function waitToRestore(position: { top: number; left: number }) {
-  return new Promise<typeof position | Record<string, never>>((resolve) => {
+  return new Promise<typeof position | false>((resolve) => {
     const deadline = performance.now() + 3000
     let cancelled = false
     const cancel = () => {
@@ -24,7 +24,7 @@ function waitToRestore(position: { top: number; left: number }) {
     const check = () => {
       if (cancelled) {
         cleanup()
-        resolve({}) // empty position = don't scroll at all
+        resolve(false) // don't scroll at all
         return
       }
       const reachable = document.documentElement.scrollHeight - window.innerHeight >= position.top
@@ -55,10 +55,14 @@ export function resolveScroll(
   if (savedPosition) {
     return waitToRestore(savedPosition)
   }
-  // Same path = a query-only navigation (filters syncing to the URL),
-  // not a page change — leave the scroll position alone.
+  // Same path = a query-only navigation (list state syncing to the URL).
+  // Pagination should land at the top of the new page; filter tweaks must
+  // not move the scroll at all. "No scroll" must be `false`, not `{}`:
+  // vue-router treats any truthy return as a scroll command (an empty one
+  // scrolls to the current position), and issuing it aborts any smooth
+  // scroll already in flight.
   if (to.path === from.path) {
-    return {}
+    return to.query.page !== from.query.page ? { top: 0 } : false
   }
   return { top: 0 }
 }
