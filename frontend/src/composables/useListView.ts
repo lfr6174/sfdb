@@ -67,9 +67,11 @@ export function useListView<T>(
   watch(currentPage, fetch)
   onMounted(fetch)
 
+  // Scrolling to the top is the router's job (see router/scrollBehavior.ts):
+  // the page change navigates, and the scroll policy reacts to the page
+  // param changing. A manual scrollTo here would race that policy.
   const changePage = (page: number) => {
     currentPage.value = page
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return {
