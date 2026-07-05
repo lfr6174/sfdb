@@ -14,6 +14,8 @@ from apps.core.models import TimeStampedModel
 class Language(models.TextChoices):
     ZH_HANT = "zh-hant", "繁體中文"
     ZH_HANS = "zh-hans", "簡體中文"
+    NAN = "nan", "台語"
+    HAK = "hak", "客語"
     EN = "en", "英文"
     JA = "ja", "日文"
     OTHER = "other", "其他"
@@ -116,7 +118,7 @@ class Work(TimeStampedModel):
         choices=Language.choices,
         default=Language.ZH_HANT,
         verbose_name="原始語言",
-        help_text="作品最初發表時使用的語言。若作者採雙語發表，則各語系獨立登載。",
+        help_text="作品最初發表時使用的語言。若作者採雙語發表，則各語系獨立登載。混用多語的作品以敘事主文的語言為準，混用情形可標記「混語書寫」概念標籤。",
     )
     ori_date = models.DateField(
         null=True,
@@ -523,7 +525,7 @@ class Publication(TimeStampedModel):
         choices=Language.choices,
         default=Language.ZH_HANT,
         verbose_name="出版語言",
-        help_text="此出版品使用的語言，通常是讀者實際閱讀的語言。",
+        help_text="此出版品使用的語言，通常是讀者實際閱讀的語言。混用多語時以主文語言為準，混用情形寫在備註。",
     )
     source = models.CharField(max_length=20, choices=PublicationSource.choices, verbose_name="出版形式")
     media = models.CharField(
