@@ -3,6 +3,7 @@ import datetime
 from django import forms
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from import_export.admin import ImportMixin
 from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.contrib.filters.admin import (
@@ -11,6 +12,8 @@ from unfold.contrib.filters.admin import (
     RangeNumericFilter,
     RelatedDropdownFilter,
 )
+
+from apps.core.admin import RestrictedImportMixin, SizeLimitedImportForm
 
 from .models import (
     Catalogue,
@@ -28,6 +31,7 @@ from .models import (
     WorkConcept,
     WorkRelation,
 )
+from .resources import PublicationResource, WorkResource
 
 # --- Partial-date widget / field / forms ---
 
@@ -339,7 +343,9 @@ class SeriesAdmin(SimpleHistoryAdmin, ModelAdmin):
 
 
 @admin.register(Work)
-class WorkAdmin(SimpleHistoryAdmin, ModelAdmin):
+class WorkAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdmin):
+    resource_classes = [WorkResource]
+    import_form_class = SizeLimitedImportForm
     form = WorkForm
     list_display = (
         "title",
@@ -391,7 +397,9 @@ class WorkAdmin(SimpleHistoryAdmin, ModelAdmin):
 
 
 @admin.register(Publication)
-class PublicationAdmin(SimpleHistoryAdmin, ModelAdmin):
+class PublicationAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdmin):
+    resource_classes = [PublicationResource]
+    import_form_class = SizeLimitedImportForm
     form = PublicationForm
     list_display = (
         "title",
