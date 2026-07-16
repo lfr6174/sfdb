@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     # override the admin templates. Order matters here.
     "unfold",
     "unfold.contrib.filters",
+    "unfold.contrib.import_export",
     # Django built-ins
     "django.contrib.admin",
     "django.contrib.auth",
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     "django_filters",  # query-param filtering for DRF
     "corsheaders",  # cross-origin requests from the frontend
     "drf_spectacular",  # OpenAPI schema generation
+    "import_export",  # bulk CSV import in the admin (see apps/agent/admin.py)
     # Local apps (one per bounded context)
     "apps.core",
     "apps.agent",
@@ -202,6 +204,10 @@ UNFOLD = {
     "SITE_HEADER": "TSFDB管理",
     "SITE_TITLE": "TSFDB管理",
 }
+
+
+# django-import-export: default permission check only requires staff login; require add too.
+IMPORT_EXPORT_IMPORT_PERMISSION_CODE = "add"
 
 
 # AXES (Brute Force Protection) Settings

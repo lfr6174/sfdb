@@ -10,6 +10,7 @@ django-filter
 drf-spectacular
 python-decouple
 django-unfold
+django-import-export
 django-axes
 django-csp
 argon2-cffi

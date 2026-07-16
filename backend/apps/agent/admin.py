@@ -1,8 +1,12 @@
 from django.contrib import admin
+from import_export.admin import ImportMixin
 from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin, TabularInline
 
+from apps.core.admin import RestrictedImportMixin, SizeLimitedImportForm
+
 from .models import Agent, AgentAlias, AgentLink
+from .resources import AgentResource
 
 
 class AgentAliasInline(TabularInline):
@@ -18,7 +22,9 @@ class AgentLinkInline(TabularInline):
 
 
 @admin.register(Agent)
-class AgentAdmin(SimpleHistoryAdmin, ModelAdmin):
+class AgentAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdmin):
+    resource_classes = [AgentResource]
+    import_form_class = SizeLimitedImportForm
     list_display = ("name", "agent_type", "short_about", "created_at", "updated_at")
     search_fields = ("name",)
     list_filter = ["agent_type", ("about", admin.EmptyFieldListFilter)]
