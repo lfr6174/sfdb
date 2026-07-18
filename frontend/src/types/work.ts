@@ -98,5 +98,6 @@ export interface Work {
   work_catalogues?: WorkCatalogue[]
   relations?: WorkRelation[]
   credit?: CreditGroup[]
+  encoding_level?: string
   updated_at?: string
 }

@@ -7,9 +7,11 @@ import SidebarRow from '../components/SidebarRow.vue'
 import ListState from '../components/ListState.vue'
 import ExpandableTagList from '../components/ExpandableTagList.vue'
 import AgentInline from '../components/AgentInline.vue'
+import EncodingLevelRing from '../components/EncodingLevelRing.vue'
 import { useDocumentMeta } from '../composables/useDocumentTitle'
 import { fetchWorkDetail } from '../api/works'
 import { useApiDetail } from '../composables/useApiDetail'
+import { ENCODING_LEVEL_OPTIONS } from '../utils/constants'
 
 const {
   data: work,
@@ -22,6 +24,17 @@ useDocumentMeta(
 )
 
 const { isSpoilerProtected, revealedSpoilers, revealSpoiler } = useSpoiler()
+
+// Encoding level (record metadata, not work content): the ring pictogram is
+// the only visible value, so the hover hint leads with the current level.
+const encodingLevelOption = computed(() =>
+  ENCODING_LEVEL_OPTIONS.find((o) => o.value === work.value?.encoding_level),
+)
+const encodingLevelHint = computed(() =>
+  encodingLevelOption.value
+    ? `${encodingLevelOption.value.description}——二手資料：僅依網頁、書目索引等二手資料著錄；部分著錄：已取得原始資料核對，但尚有欄位未填；完整著錄：適用欄位皆已依原始資料核對`
+    : '',
+)
 
 // Map relational objects to simple concept objects for the tag list component
 const plainConcepts = computed(() => {
@@ -95,15 +108,27 @@ const visiblePublications = computed(() => {
         <!-- Main Column -->
         <div class="flex w-full flex-col md:w-7/12 lg:w-8/12">
           <section>
-            <!-- Media type pill (gray filled badge, not a tag) -->
+            <!-- Media type pill (gray filled) + encoding level (unframed = record metadata) -->
             <div
-              v-if="work.work_length_display || work.genre_display"
-              class="mb-4"
+              v-if="work.work_length_display || work.genre_display || encodingLevelOption"
+              class="mb-4 flex flex-wrap items-center gap-3"
             >
               <span
+                v-if="work.work_length_display || work.genre_display"
                 class="text-main/50 bg-main/5 inline-block px-2 py-1 font-mono text-xs tracking-wider uppercase"
               >
                 {{ work.work_length_display || '' }}{{ work.genre_display || '' }}
+              </span>
+              <span
+                v-if="encodingLevelOption"
+                class="text-main/45 inline-flex cursor-help items-center gap-1.5 font-mono text-xs tracking-wider"
+                :title="encodingLevelHint"
+              >
+                著錄層次
+                <EncodingLevelRing
+                  :level="encodingLevelOption.level"
+                  class="h-3.5 w-3.5"
+                />
               </span>
             </div>
 

@@ -230,6 +230,7 @@ class WorkDetailSerializer(serializers.ModelSerializer):
             "relations",
             "byline",
             "credit",
+            "encoding_level",
             "updated_at",
         ]
 

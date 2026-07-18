@@ -134,6 +134,7 @@ class WorkForm(forms.ModelForm):
             "work_length",
             "language",
             "provenance",
+            "encoding_level",
             "description",
             "cycle",
             "cycle_order",
@@ -354,6 +355,7 @@ class WorkAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdm
         "work_length",
         "provenance",
         "language",
+        "encoding_level",
         "get_date_display",
         "cycle",
     )
@@ -363,6 +365,7 @@ class WorkAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdm
         ("work_length", ChoicesDropdownFilter),
         ("provenance", ChoicesDropdownFilter),
         ("language", ChoicesDropdownFilter),
+        ("encoding_level", ChoicesDropdownFilter),
         ("ori_date", RangeDateFilter),
     )
     search_fields = ("title", "description", "contributions__agent__name", "contributions__agent__aliases__name")

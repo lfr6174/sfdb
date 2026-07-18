@@ -9,11 +9,13 @@ import type { Concept } from '../types'
 import SectionTitle from './SectionTitle.vue'
 import FormRow from './FormRow.vue'
 import CheckboxGroup from './CheckboxGroup.vue'
+import EncodingLevelRing from './EncodingLevelRing.vue'
 import {
   GENRE_OPTIONS,
   LENGTH_OPTIONS,
   PROVENANCE_OPTIONS,
   LANGUAGE_OPTIONS,
+  ENCODING_LEVEL_OPTIONS,
 } from '../utils/constants'
 
 defineProps<{
@@ -33,9 +35,13 @@ const selectedGenres = defineModel<string[]>('genres', { required: true })
 const selectedLengths = defineModel<string[]>('lengths', { required: true })
 const selectedProvenances = defineModel<string[]>('provenances', { required: true })
 const selectedLanguages = defineModel<string[]>('languages', { required: true })
+const selectedEncodingLevels = defineModel<string[]>('encodingLevels', { required: true })
 const selectedCatalogueTitle = defineModel<string>('catalogueTitle', { required: true })
 
 defineEmits<{ toggleConcept: [concept: Concept]; openModal: []; clearAll: [] }>()
+
+/** Full option entry (level + description) for an encoding level value. */
+const encodingOption = (value: string) => ENCODING_LEVEL_OPTIONS.find((o) => o.value === value)
 </script>
 
 <template>
@@ -113,6 +119,27 @@ defineEmits<{ toggleConcept: [concept: Concept]; openModal: []; clearAll: [] }>(
           :options="LANGUAGE_OPTIONS"
           layout-class="flex flex-wrap gap-x-6 gap-y-2"
         />
+      </FormRow>
+
+      <FormRow label="著錄層次">
+        <CheckboxGroup
+          v-model="selectedEncodingLevels"
+          :options="ENCODING_LEVEL_OPTIONS"
+          layout-class="flex flex-wrap gap-x-6 gap-y-2"
+        >
+          <template #label="{ option }">
+            <span
+              class="inline-flex items-center gap-1.5"
+              :title="encodingOption(option.value)?.description"
+            >
+              <EncodingLevelRing
+                :level="encodingOption(option.value)?.level ?? 0"
+                class="h-3.5 w-3.5"
+              />
+              {{ option.label }}
+            </span>
+          </template>
+        </CheckboxGroup>
       </FormRow>
 
       <FormRow label="精選／獎項">

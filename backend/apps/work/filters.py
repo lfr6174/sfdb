@@ -19,6 +19,7 @@ class WorkFilter(django_filters.FilterSet):
     work_length = CharInFilter(lookup_expr="in")
     provenance = CharInFilter(lookup_expr="in")
     language = CharInFilter(lookup_expr="in")
+    encoding_level = CharInFilter(lookup_expr="in")
     publication = django_filters.NumberFilter(
         field_name="manifestations__publication__id", lookup_expr="exact", distinct=True
     )
