@@ -176,7 +176,7 @@ const personAwards = computed(() => {
             <div class="flex flex-col">
               <div
                 v-for="pub in person.participated_publications"
-                :key="pub.id"
+                :key="pub.ids[0]"
                 class="border-main/10 flex items-baseline gap-4 border-b py-3 last:border-0"
               >
                 <span class="text-main/50 w-10 shrink-0 text-sm">
@@ -187,12 +187,18 @@ const personAwards = computed(() => {
                   <router-link
                     :to="{
                       path: '/works',
-                      query: { publication: pub.id, publication_title: pub.title },
+                      query: { publication: pub.ids.join(','), publication_title: pub.title },
                     }"
                     class="text-main/80 hover:text-primary text-base font-medium no-underline transition-colors"
                   >
                     {{ pub.title }}
                   </router-link>
+                  <span
+                    v-if="pub.media.length"
+                    class="text-main/40 text-xs"
+                  >
+                    {{ pub.media.join('・') }}
+                  </span>
                 </div>
                 <div>
                   <span
