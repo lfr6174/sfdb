@@ -83,6 +83,8 @@ export interface Work {
   byline: BylineEntry[]
   genre_display: string
   work_length_display: string
+  encoding_level: string
+  encoding_level_display: string
   work_concepts: WorkConcept[]
 
   // Detail fields (optional for list views)

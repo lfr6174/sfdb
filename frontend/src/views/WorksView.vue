@@ -35,6 +35,7 @@ const filters = useUrlFilters({
   work_length: { type: 'csv' },
   provenance: { type: 'csv' },
   language: { type: 'csv' },
+  encoding_level: { type: 'csv' },
   concept: { type: 'csv', api: false }, // slugs; mapped to concepts_in ids below
   year_min: { type: 'number' },
   year_max: { type: 'number' },
@@ -53,6 +54,7 @@ const {
   work_length: selectedLengths,
   provenance: selectedProvenances,
   language: selectedLanguages,
+  encoding_level: selectedEncodingLevels,
   concept: selectedConceptSlugs,
   year_min: yearMin,
   year_max: yearMax,
@@ -186,6 +188,7 @@ const clearAllFilters = () =>
     'work_length',
     'provenance',
     'language',
+    'encoding_level',
     'concept',
     'year_min',
     'year_max',
@@ -332,6 +335,7 @@ const activeChips = computed(() => {
           v-model:lengths="selectedLengths"
           v-model:provenances="selectedProvenances"
           v-model:languages="selectedLanguages"
+          v-model:encoding-levels="selectedEncodingLevels"
           v-model:catalogue-title="selectedCatalogueTitle"
           :catalogues-by-type="cataloguesByType"
           :selected-concepts="selectedConcepts"

@@ -42,7 +42,13 @@ defineEmits<{ 'update:modelValue': [val: string[]] }>()
       <span
         class="text-main/60 group-hover:text-main peer-checked:text-main text-sm transition-colors peer-checked:font-medium"
       >
-        {{ opt.label }}
+        <!-- Scoped slot lets callers decorate a label (e.g. add an icon); defaults to plain text -->
+        <slot
+          name="label"
+          :option="opt"
+        >
+          {{ opt.label }}
+        </slot>
       </span>
     </label>
   </div>
