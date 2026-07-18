@@ -28,7 +28,7 @@ defineProps<{ work: Work }>()
       <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
         <span
           v-if="work.byline && work.byline.length"
-          class="flex flex-wrap items-center gap-x-0.5"
+          class="flex flex-wrap items-center"
         >
           <AgentInline :agents="work.byline" />
         </span>

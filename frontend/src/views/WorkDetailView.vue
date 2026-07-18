@@ -141,7 +141,7 @@ const visiblePublications = computed(() => {
             <div class="text-main/70 mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-base">
               <span
                 v-if="work.credit && work.credit.length"
-                class="flex flex-wrap items-center gap-x-0.5"
+                class="flex flex-wrap items-center"
               >
                 <template
                   v-for="(group, gIdx) in work.credit"
@@ -261,7 +261,7 @@ const visiblePublications = computed(() => {
 
                 <div
                   v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
-                  class="text-main/50 mt-1 flex flex-wrap gap-x-1 text-xs leading-5"
+                  class="text-main/50 mt-1 flex flex-wrap text-xs leading-5"
                 >
                   <template v-if="pub.credit && pub.credit.length">
                     <template
@@ -272,7 +272,12 @@ const visiblePublications = computed(() => {
                         :agents="group.agents"
                         :linked="false"
                       />
-                      <span v-if="group.role">{{ group.role }}</span>
+                      <span
+                        v-if="group.role"
+                        class="ml-0.5"
+                      >
+                        {{ group.role }}
+                      </span>
                       <span v-if="gIdx < pub.credit.length - 1">；</span>
                     </template>
                     <span
