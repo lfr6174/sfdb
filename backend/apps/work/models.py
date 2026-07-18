@@ -37,6 +37,12 @@ class WorkProvenance(models.TextChoices):
     LICENSED = "licensed", "代理"
 
 
+class EncodingLevel(models.TextChoices):
+    SECONDARY = "secondary", "依二手資料著錄"
+    PARTIAL = "partial", "依著作本身部分著錄"
+    FULL = "full", "依著作本身完整著錄"
+
+
 class DatePrecision(models.TextChoices):
     YEAR = "year", "年"
     MONTH = "month", "月"
@@ -134,6 +140,18 @@ class Work(TimeStampedModel):
     )
     description = models.TextField(
         blank=True, verbose_name="作品簡介", help_text="簡要介紹作品，例如 logline 或 synopsis。可留空"
+    )
+    encoding_level = models.CharField(
+        max_length=20,
+        choices=EncodingLevel.choices,
+        default=EncodingLevel.SECONDARY,
+        verbose_name="著錄等級",
+        help_text=(
+            "此筆資料的著錄依據與完整度。"
+            "「二手資料」指僅依網頁、書目索引等間接來源著錄；"
+            "「部分」指已取得著作本身核對，但尚有欄位或關聯未填；"
+            "「完整」指標題、創作者、概念、出版紀錄等適用欄位皆已依著作本身核對（不適用欄位可留空）。"
+        ),
     )
 
     cycle = models.ForeignKey(
