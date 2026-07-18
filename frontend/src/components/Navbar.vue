@@ -21,7 +21,7 @@ watch(
       <div class="flex h-full items-center gap-8">
         <router-link
           to="/"
-          class="text-main hover:text-primary text-lg font-bold transition-colors"
+          class="text-main hover:text-primary text-lg font-medium transition-colors"
         >
           臺灣科幻概念資料庫
         </router-link>
