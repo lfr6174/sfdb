@@ -129,7 +129,7 @@ const personAwards = computed(() => {
 
                 <div class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2 gap-y-1">
                   <span
-                    class="text-main group-hover:text-primary text-base font-medium transition-colors"
+                    class="text-main/80 group-hover:text-primary text-base font-medium transition-colors"
                   >
                     {{ work.title }}
                   </span>
@@ -189,7 +189,7 @@ const personAwards = computed(() => {
                       path: '/works',
                       query: { publication: pub.id, publication_title: pub.title },
                     }"
-                    class="text-main hover:text-primary text-base font-medium no-underline transition-colors"
+                    class="text-main/80 hover:text-primary text-base font-medium no-underline transition-colors"
                   >
                     {{ pub.title }}
                   </router-link>

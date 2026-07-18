@@ -20,7 +20,7 @@ defineProps<{ work: Work }>()
     <div class="min-w-0 flex-1">
       <router-link
         :to="`/works/${work.id}`"
-        class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
+        class="text-main/80 group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
       >
         {{ work.title }}
       </router-link>
@@ -28,7 +28,7 @@ defineProps<{ work: Work }>()
       <div class="text-main/50 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm">
         <span
           v-if="work.byline && work.byline.length"
-          class="flex flex-wrap items-center gap-x-0.5"
+          class="flex flex-wrap items-center"
         >
           <AgentInline :agents="work.byline" />
         </span>

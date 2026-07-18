@@ -92,7 +92,7 @@ const {
             {{ formatDate(post.created_at) }}
           </span>
           <span
-            class="text-main group-hover:text-primary block text-lg font-medium transition-colors"
+            class="text-main/80 group-hover:text-primary block text-lg font-medium transition-colors"
           >
             {{ post.title }}
           </span>
