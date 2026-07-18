@@ -154,12 +154,7 @@ const visiblePublications = computed(() => {
                   >
                     {{ group.role }}
                   </span>
-                  <span
-                    v-if="gIdx < work.credit.length - 1"
-                    class="mr-0.5 ml-1"
-                  >
-                    ；
-                  </span>
+                  <span v-if="gIdx < work.credit.length - 1">；</span>
                 </template>
               </span>
               <span
