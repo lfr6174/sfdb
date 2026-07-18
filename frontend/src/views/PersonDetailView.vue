@@ -24,8 +24,23 @@ const totalWorksCount = computed(() => {
   return person.value?.participated_works?.length || 0
 })
 
+const totalPublicationsCount = computed(() => {
+  return person.value?.participated_publications?.length || 0
+})
+
+// Publication-only participants (e.g. cover illustrators) get their publication
+// count instead of a misleading zero works count
+const participationStat = computed(() =>
+  totalWorksCount.value > 0 || totalPublicationsCount.value === 0
+    ? { label: '作品總數', value: totalWorksCount.value }
+    : { label: '出版參與', value: totalPublicationsCount.value },
+)
+
 const activeYears = computed(() => {
-  const range = getYearRange(person.value?.participated_works || [])
+  const range = getYearRange([
+    ...(person.value?.participated_works || []),
+    ...(person.value?.participated_publications || []),
+  ])
   if (range.min === null) return '—'
   return range.min === range.max ? `${range.min}` : `${range.min} — ${range.max}`
 })
@@ -109,8 +124,11 @@ const personAwards = computed(() => {
             </div>
           </section>
 
-          <!-- Participated Works -->
-          <section class="mt-12">
+          <!-- Participated Works (hidden for publication-only participants) -->
+          <section
+            v-if="totalWorksCount > 0 || totalPublicationsCount === 0"
+            class="mt-12"
+          >
             <SectionTitle class="mb-4">歷年作品</SectionTitle>
 
             <div
@@ -220,10 +238,10 @@ const personAwards = computed(() => {
         <aside
           class="mt-6 flex w-full shrink-0 flex-col gap-8 md:sticky md:top-24 md:mt-0 md:w-5/12 lg:w-4/12"
         >
-          <!-- Work count -->
+          <!-- Participation count -->
           <div>
-            <SectionTitle class="mb-3">作品總數</SectionTitle>
-            <span class="text-main text-xl">{{ totalWorksCount }}</span>
+            <SectionTitle class="mb-3">{{ participationStat.label }}</SectionTitle>
+            <span class="text-main text-xl">{{ participationStat.value }}</span>
           </div>
 
           <!-- Active years -->
