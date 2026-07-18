@@ -150,7 +150,7 @@ const visiblePublications = computed(() => {
                   <AgentInline :agents="group.agents" />
                   <span
                     v-if="group.role"
-                    class="text-main/40 ml-0.5"
+                    class="text-main/40 ml-1"
                   >
                     {{ group.role }}
                   </span>
@@ -269,7 +269,7 @@ const visiblePublications = computed(() => {
                       />
                       <span
                         v-if="group.role"
-                        class="ml-0.5"
+                        class="ml-1"
                       >
                         {{ group.role }}
                       </span>
