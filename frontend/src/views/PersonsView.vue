@@ -84,7 +84,7 @@ const {
           v-for="person in persons"
           :key="person.id"
           :to="`/persons/${person.id}`"
-          class="block cursor-pointer py-4"
+          class="block cursor-pointer py-3"
         >
           <!-- Name row -->
           <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-3">
@@ -104,7 +104,7 @@ const {
           </div>
 
           <!-- Bio -->
-          <p class="text-main/70 mb-3.5 line-clamp-2 text-base leading-relaxed">
+          <p class="text-main/70 line-clamp-2 text-base leading-relaxed">
             {{ person.about || '暫無簡歷提供。' }}
           </p>
         </HoverListItem>
