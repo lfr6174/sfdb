@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db.models import Count, Prefetch, Q
 
 from apps.concept.models import Concept
@@ -63,8 +65,33 @@ def get_agent_works(agent):
     ]
 
 
+def _group_publications(publications):
+    """Fold per-media rows of the same edition (title, subtitle, publisher, source) into one entry."""
+    groups = {}
+    for p in publications:
+        groups.setdefault((p.title, p.subtitle, p.publisher_id, p.source), []).append(p)
+
+    entries = []
+    for members in groups.values():
+        members.sort(key=lambda p: p.pub_date or date.max)  # earliest edition first, undated last
+        first = members[0]
+        entries.append(
+            {
+                "ids": [p.id for p in members],
+                "title": first.title,
+                "year": first.year,
+                "media": list(dict.fromkeys(p.composite_media_display for p in members)),
+                "publisher": first.publisher.name if first.publisher else "",
+                "roles": sorted({c.role.noun for p in members for c in p.agent_contributions}),
+            }
+        )
+
+    entries.sort(key=lambda e: e["year"] or 0, reverse=True)  # newest first, undated last
+    return entries
+
+
 def get_agent_publications(agent):
-    """Return publications the agent has participated in"""
+    """Return publications the agent has participated in, media variants folded together"""
 
     publications = (
         Publication.objects.filter(agents=agent)
@@ -80,17 +107,4 @@ def get_agent_publications(agent):
         .order_by("-pub_date")
     )
 
-    return [
-        {
-            "id": p.id,
-            "title": p.title,
-            "year": p.year,
-            "source": p.get_source_display(),
-            "media": p.composite_media_display,
-            "publisher": p.publisher.name if p.publisher else "",
-            "isbn": p.isbn,
-            "note": p.note,
-            "roles": sorted({c.role.noun for c in p.agent_contributions}),
-        }
-        for p in publications
-    ]
+    return _group_publications(publications)

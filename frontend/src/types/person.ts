@@ -27,14 +27,11 @@ export interface ParticipatedWork {
 }
 
 export interface ParticipatedPublication {
-  id: number
+  ids: number[]
   title: string
   year: number | null
-  source: string
-  media: string
+  media: string[]
   publisher: string
-  isbn: string
-  note: string
   roles: string[]
 }
 
