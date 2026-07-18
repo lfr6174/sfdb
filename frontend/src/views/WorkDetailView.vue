@@ -245,7 +245,7 @@ const visiblePublications = computed(() => {
               >
                 <router-link
                   :to="pubLink(pub)"
-                  class="text-main hover:text-primary block text-base font-medium no-underline transition-colors"
+                  class="text-main/80 hover:text-primary block text-base font-medium no-underline transition-colors"
                 >
                   {{ pub.title }}
                 </router-link>
@@ -355,7 +355,7 @@ const visiblePublications = computed(() => {
               >
                 <router-link
                   :to="{ path: '/works', query: { catalogue: entry.catalogue.title } }"
-                  class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
+                  class="text-main/80 hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
                 >
                   {{ entry.catalogue.title }}
                 </router-link>
@@ -392,7 +392,7 @@ const visiblePublications = computed(() => {
                 :to="`/works/${rel.other_work.id}`"
               >
                 <span
-                  class="text-main group-hover:text-primary text-base font-medium transition-colors"
+                  class="text-main/80 group-hover:text-primary text-base font-medium transition-colors"
                 >
                   {{ rel.other_work.title }}
                 </span>

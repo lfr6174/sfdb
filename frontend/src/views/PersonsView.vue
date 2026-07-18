@@ -90,7 +90,7 @@ const {
           <div class="mb-1.5 flex flex-wrap items-baseline justify-between gap-3">
             <div class="flex flex-wrap items-baseline gap-2.5">
               <span
-                class="text-main group-hover:text-primary text-xl font-medium transition-colors"
+                class="text-main/80 group-hover:text-primary text-xl font-medium transition-colors"
               >
                 {{ person.name }}
               </span>
