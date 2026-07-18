@@ -91,6 +91,24 @@ def test_filter_works_by_publication_and_catalogue(api_client):
     assert cat_data["count"] == 1 and cat_data["results"][0]["title"] == "W2"
 
 
+# Prevents: person-page merged rows (?publication=1,2) missing works,
+# or a work collected in both listed editions appearing twice
+@pytest.mark.django_db
+def test_filter_works_by_multiple_publications_returns_distinct_union(api_client):
+    novel = Work.objects.create(title="Novel")
+    other = Work.objects.create(title="Other")
+    print_ed = Publication.objects.create(title="Novel", media="print")
+    digital_ed = Publication.objects.create(title="Novel", media="digital")
+
+    Manifestation.objects.create(work=novel, publication=print_ed)
+    Manifestation.objects.create(work=novel, publication=digital_ed)
+    Manifestation.objects.create(work=other, publication=Publication.objects.create(title="Other"))
+
+    data = api_client.get(reverse("work:work-list"), {"publication": f"{print_ed.id},{digital_ed.id}"}).json()
+    assert data["count"] == 1
+    assert data["results"][0]["title"] == "Novel"
+
+
 # Prevents: Multiple categories of the same work in a single catalogue
 # (or multiple catalogues with same title) causing duplicate works in API response
 @pytest.mark.django_db

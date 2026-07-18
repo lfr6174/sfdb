@@ -8,6 +8,10 @@ class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
 
 
+class NumberInFilter(django_filters.BaseInFilter, django_filters.NumberFilter):
+    pass
+
+
 class WorkFilter(django_filters.FilterSet):
     """Advanced Faceted Search Filter for Work. Supports exact matches and year ranges."""
 
@@ -20,9 +24,7 @@ class WorkFilter(django_filters.FilterSet):
     provenance = CharInFilter(lookup_expr="in")
     language = CharInFilter(lookup_expr="in")
     encoding_level = CharInFilter(lookup_expr="in")
-    publication = django_filters.NumberFilter(
-        field_name="manifestations__publication__id", lookup_expr="exact", distinct=True
-    )
+    publication = NumberInFilter(field_name="manifestations__publication__id", lookup_expr="in", distinct=True)
     publication_name = django_filters.CharFilter(
         field_name="manifestations__publication__title", lookup_expr="icontains", distinct=True
     )
