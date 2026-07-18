@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
 /* Semantic opacity reference — target scale for consolidation:
-   primary:   100%  → text-main        (headings, primary content)
+   primary:   100%  → text-main        (page headings)
+   content:    80%  → text-main/80     (list/entry titles, emphasized body)
    secondary:  70%  → text-main/70     (body text, descriptions)
    tertiary:   45%  → text-main/45     (captions, labels, timestamps)
    muted:      20%  → text-main/20     (dividers, decorative borders)

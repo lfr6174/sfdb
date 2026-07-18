@@ -136,7 +136,7 @@ const yearRange = computed(() => getYearRange(concept.value?.work_concepts || []
                   <div class="flex items-baseline gap-2">
                     <router-link
                       :to="`/works/${item.work}`"
-                      class="text-main hover:text-primary text-sm font-medium no-underline transition-colors"
+                      class="text-main/80 hover:text-primary text-sm font-medium no-underline transition-colors"
                     >
                       {{ item.work_title || '未知作品' }}
                     </router-link>

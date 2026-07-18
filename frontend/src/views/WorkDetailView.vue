@@ -150,16 +150,11 @@ const visiblePublications = computed(() => {
                   <AgentInline :agents="group.agents" />
                   <span
                     v-if="group.role"
-                    class="text-main/40 ml-0.5"
+                    class="text-main/40 ml-1"
                   >
                     {{ group.role }}
                   </span>
-                  <span
-                    v-if="gIdx < work.credit.length - 1"
-                    class="mr-0.5 ml-1"
-                  >
-                    ；
-                  </span>
+                  <span v-if="gIdx < work.credit.length - 1">；</span>
                 </template>
               </span>
               <span
@@ -245,7 +240,7 @@ const visiblePublications = computed(() => {
               >
                 <router-link
                   :to="pubLink(pub)"
-                  class="text-main hover:text-primary block text-base font-medium no-underline transition-colors"
+                  class="text-main/80 hover:text-primary block text-base font-medium no-underline transition-colors"
                 >
                   {{ pub.title }}
                 </router-link>
@@ -274,7 +269,7 @@ const visiblePublications = computed(() => {
                       />
                       <span
                         v-if="group.role"
-                        class="ml-0.5"
+                        class="ml-1"
                       >
                         {{ group.role }}
                       </span>
@@ -355,7 +350,7 @@ const visiblePublications = computed(() => {
               >
                 <router-link
                   :to="{ path: '/works', query: { catalogue: entry.catalogue.title } }"
-                  class="text-main hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
+                  class="text-main/80 hover:text-primary mb-0.5 block text-base font-medium no-underline transition-colors"
                 >
                   {{ entry.catalogue.title }}
                 </router-link>
@@ -392,7 +387,7 @@ const visiblePublications = computed(() => {
                 :to="`/works/${rel.other_work.id}`"
               >
                 <span
-                  class="text-main group-hover:text-primary text-base font-medium transition-colors"
+                  class="text-main/80 group-hover:text-primary text-base font-medium transition-colors"
                 >
                   {{ rel.other_work.title }}
                 </span>
