@@ -96,6 +96,20 @@ onMounted(async () => {
       </router-view>
     </main>
 
+    <!-- Scroll-to-top Button: sticky, so it rests above the footer instead of covering it -->
+    <button
+      v-show="showScrollTop"
+      aria-label="回到頂部"
+      class="bg-main/10 text-main/50 hover:bg-primary hover:text-bg sticky bottom-8 z-40 mr-8 mb-4 flex h-10 w-10 items-center justify-center self-end rounded-full shadow-sm transition-all duration-200"
+      @click="scrollToTop"
+    >
+      <Icon
+        name="chevron-up"
+        class="h-5 w-5"
+        :stroke-width="2"
+      />
+    </button>
+
     <!-- Footer -->
     <footer class="border-main/10 mt-auto border-t py-8">
       <div
@@ -149,19 +163,5 @@ onMounted(async () => {
         </div>
       </div>
     </footer>
-
-    <!-- Scroll-to-top Button -->
-    <button
-      v-show="showScrollTop"
-      aria-label="回到頂部"
-      class="bg-main/10 text-main/50 hover:bg-primary hover:text-bg fixed right-8 bottom-8 z-40 flex h-10 w-10 items-center justify-center rounded-full shadow-sm transition-all duration-200"
-      @click="scrollToTop"
-    >
-      <Icon
-        name="chevron-up"
-        class="h-5 w-5"
-        :stroke-width="2"
-      />
-    </button>
   </div>
 </template>
