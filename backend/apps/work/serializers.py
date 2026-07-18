@@ -136,6 +136,7 @@ class WorkListSerializer(serializers.ModelSerializer):
     byline = serializers.SerializerMethodField()
     genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    encoding_level_display = serializers.CharField(source="get_encoding_level_display", read_only=True)
     year = serializers.IntegerField(read_only=True)
     work_concepts = WorkConceptListSerializer(many=True, read_only=True)
 
@@ -148,6 +149,8 @@ class WorkListSerializer(serializers.ModelSerializer):
             "byline",
             "genre_display",
             "work_length_display",
+            "encoding_level",
+            "encoding_level_display",
             "work_concepts",
         ]
 
@@ -197,6 +200,7 @@ class WorkDetailSerializer(serializers.ModelSerializer):
     genre_display = serializers.CharField(source="get_genre_display", read_only=True)
     language_display = serializers.CharField(source="get_language_display", read_only=True)
     work_length_display = serializers.CharField(source="get_work_length_display", read_only=True)
+    encoding_level_display = serializers.CharField(source="get_encoding_level_display", read_only=True)
     year = serializers.IntegerField(read_only=True)
 
     cycle = CycleSerializer(read_only=True)
@@ -230,6 +234,8 @@ class WorkDetailSerializer(serializers.ModelSerializer):
             "relations",
             "byline",
             "credit",
+            "encoding_level",
+            "encoding_level_display",
             "updated_at",
         ]
 
