@@ -47,17 +47,7 @@ def test_work_list_api_contract(api_client):
     WorkAgent.objects.create(work=w, agent=a, role=Role.objects.create(code="r", noun="n", verb="v"))
 
     data = api_client.get(reverse("work:work-list")).json()["results"][0]
-    expected = {
-        "id",
-        "title",
-        "year",
-        "byline",
-        "genre_display",
-        "work_length_display",
-        "encoding_level",
-        "encoding_level_display",
-        "work_concepts",
-    }
+    expected = {"id", "title", "year", "byline", "genre_display", "work_length_display", "work_concepts"}
     assert set(data.keys()) == expected and data["byline"][0]["text"] == "A"
 
 
