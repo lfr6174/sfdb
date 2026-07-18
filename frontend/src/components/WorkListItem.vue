@@ -20,7 +20,7 @@ defineProps<{ work: Work }>()
     <div class="min-w-0 flex-1">
       <router-link
         :to="`/works/${work.id}`"
-        class="text-main group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
+        class="text-main/80 group-hover:text-primary mb-1.5 block text-base font-medium no-underline transition-colors"
       >
         {{ work.title }}
       </router-link>
