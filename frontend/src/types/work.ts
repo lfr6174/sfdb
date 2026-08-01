@@ -49,7 +49,7 @@ export interface Publication {
   binding_display: string
   note: string
   publisher: AgentMinimal | null
-  series?: { id: number; title: string } | null
+  series?: { id: number; title: string; code: string }[]
   contributions: {
     id: number
     agent: AgentMinimal
