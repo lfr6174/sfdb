@@ -256,7 +256,9 @@ const visiblePublications = computed(() => {
                 </div>
 
                 <div
-                  v-if="(pub.credit && pub.credit.length) || pub.publisher?.name"
+                  v-if="
+                    (pub.credit && pub.credit.length) || pub.publisher?.name || pub.series?.length
+                  "
                   class="text-main/50 mt-1 flex flex-wrap text-xs leading-5"
                 >
                   <template v-if="pub.credit && pub.credit.length">
@@ -277,7 +279,7 @@ const visiblePublications = computed(() => {
                       <span v-if="gIdx < pub.credit.length - 1">；</span>
                     </template>
                     <span
-                      v-if="pub.publisher?.name"
+                      v-if="pub.publisher?.name || pub.series?.length"
                       class="text-main/20 px-0.5"
                     >
                       /
@@ -294,6 +296,29 @@ const visiblePublications = computed(() => {
                     {{ pub.publisher.name }}
                   </router-link>
                   <span v-else-if="pub.publisher?.name">{{ pub.publisher.name }}</span>
+                  <span
+                    v-if="pub.publisher?.name && pub.series?.length"
+                    class="text-main/20"
+                  >
+                    ：
+                  </span>
+                  <template v-if="pub.series?.length">
+                    <template
+                      v-for="(s, sIdx) in pub.series"
+                      :key="s.id"
+                    >
+                      <router-link
+                        :to="{
+                          path: '/works',
+                          query: { publication_series: s.id, publication_series_title: s.title },
+                        }"
+                        class="hover:text-primary transition-colors"
+                      >
+                        {{ s.title }}
+                      </router-link>
+                      <span v-if="sIdx < pub.series.length - 1">、</span>
+                    </template>
+                  </template>
                 </div>
 
                 <div
