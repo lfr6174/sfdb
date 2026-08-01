@@ -1,3 +1,4 @@
+from datetime import date
 from types import SimpleNamespace
 
 import pytest
@@ -189,6 +190,19 @@ def test_paginated_response_includes_total_pages(api_client):
     data = api_client.get(reverse("work:work-list")).json()
     assert data["count"] == 21
     assert data["total_pages"] == 2
+
+
+# Prevents: works with no date heading the list. Both directions are checked because
+# Postgres and SQLite default NULLs to opposite ends, so each one only breaks one way.
+@pytest.mark.django_db
+@pytest.mark.parametrize("ordering", ["ori_date", "-ori_date"])
+def test_undated_works_sort_last(api_client, ordering):
+    Work.objects.create(title="Undated")
+    Work.objects.create(title="Early", ori_date=date(1979, 9, 1))
+    Work.objects.create(title="Late", ori_date=date(2025, 12, 1))
+
+    data = api_client.get(reverse("work:work-list"), {"ordering": ordering}).json()
+    assert [r["title"] for r in data["results"]][-1] == "Undated"
 
 
 # Prevents: a publication silently losing membership in one of its series (the point of the M2M

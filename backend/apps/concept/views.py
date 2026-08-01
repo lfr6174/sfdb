@@ -1,4 +1,4 @@
-from django.db.models import Count, Prefetch
+from django.db.models import Count, F, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.decorators import action
@@ -35,7 +35,9 @@ class ConceptViewSet(viewsets.ReadOnlyModelViewSet):
                 "related_concepts",
                 Prefetch(
                     "work_concepts",
-                    queryset=WorkConcept.objects.select_related("work").order_by("-work__ori_date"),
+                    queryset=WorkConcept.objects.select_related("work").order_by(
+                        F("work__ori_date").desc(nulls_last=True)
+                    ),
                     to_attr="prefetched_work_concepts",
                 ),
             )

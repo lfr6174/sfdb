@@ -1,6 +1,6 @@
 from datetime import date
 
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, F, Prefetch, Q
 
 from apps.concept.models import Concept
 from apps.work.models import Publication, PublicationAgent, Work, WorkAgent, WorkCatalogue
@@ -38,7 +38,7 @@ def get_agent_works(agent):
             ),
         )
         .distinct()
-        .order_by("-ori_date")
+        .order_by(F("ori_date").desc(nulls_last=True))
     )
 
     return [
