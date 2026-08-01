@@ -25,13 +25,14 @@ export const PROVENANCE_OPTIONS = [
   { value: 'original', label: '原創' },
   { value: 'licensed', label: '代理' },
 ]
-// Encoding level: `level` drives the ring pictogram (lit segments of 3),
+// Encoding level: `level` drives the ring pictogram (lit segments of 4),
 // `description` is the full wording shown in tooltips. Short labels only —
 // the backend TextChoices keep the descriptive admin wording.
 export const ENCODING_LEVEL_OPTIONS = [
-  { value: 'secondary', label: '二手資料', level: 1, description: '基於二手資料著錄' },
-  { value: 'partial', label: '部分著錄', level: 2, description: '依原始資料部分著錄' },
-  { value: 'full', label: '完整著錄', level: 3, description: '依原始資料完整著錄' },
+  { value: 'minimal', label: '簡略著錄', level: 1, description: '僅登錄作品名等識別資訊' },
+  { value: 'secondary', label: '間接著錄', level: 2, description: '依二手資料著錄' },
+  { value: 'partial', label: '部分核校', level: 3, description: '已核對原始資料但部分欄位未填' },
+  { value: 'full', label: '完整核校', level: 4, description: '已核對原始資料並填寫全數欄位' },
 ]
 export const LANGUAGE_OPTIONS = [
   { value: 'zh-hant', label: '繁體中文' },
