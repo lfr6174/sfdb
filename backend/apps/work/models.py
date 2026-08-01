@@ -155,6 +155,11 @@ class Work(TimeStampedModel):
             "完整核校：已取得並讀畢作品，補充出版紀錄、親撰故事梗概、添加概念詳述、紀錄作品關聯。"
         ),
     )
+    note = models.TextField(
+        blank=True,
+        verbose_name="內部備註",
+        help_text="編目或行政用途，僅後台可見，不會顯示在網站上。可留空。",
+    )
 
     cycle = models.ForeignKey(
         Cycle,
@@ -582,8 +587,16 @@ class Publication(TimeStampedModel):
         verbose_name="ISBN",
         help_text="書籍的 ISBN 編號，不含連字號。非書籍或不知道可留空。",
     )
-    note = models.CharField(
-        max_length=200, blank=True, verbose_name="備註", help_text="補充說明，例如「此版本有刪節」等。可留空。"
+    edition_statement = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="版本說明",
+        help_text="說明此版本的特殊之處，例如「限量親簽版」、「修訂新版新增後記」、「此版有刪節」等。可留空。",
+    )
+    note = models.TextField(
+        blank=True,
+        verbose_name="內部備註",
+        help_text="編目或行政用途，僅後台可見，不會顯示在網站上。可留空。",
     )
 
     agents = models.ManyToManyField(

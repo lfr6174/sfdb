@@ -139,6 +139,7 @@ class WorkForm(forms.ModelForm):
             "description",
             "cycle",
             "cycle_order",
+            "note",
         )
 
     def __init__(self, *args, **kwargs):
@@ -178,6 +179,7 @@ class PublicationForm(forms.ModelForm):
             "language",
             "isbn",
             "subtitle",
+            "edition_statement",
             "note",
         )
 

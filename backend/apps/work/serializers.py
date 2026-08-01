@@ -97,7 +97,7 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
             "language_display",
             "year",
             "isbn",
-            "note",
+            "edition_statement",
             "publisher",
             "contributions",
             "series",
