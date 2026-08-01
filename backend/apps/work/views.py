@@ -1,8 +1,8 @@
-from django.db.models import Prefetch
+from django.db.models import F, Prefetch
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
+from rest_framework import viewsets
 
-from apps.core.filters import LimitedSearchFilter
+from apps.core.filters import LimitedSearchFilter, NullsLastOrderingFilter
 
 from .filters import WorkFilter
 from .models import Catalogue, Manifestation, Work, WorkCatalogue, WorkRelation
@@ -21,7 +21,7 @@ class CatalogueViewSet(viewsets.ReadOnlyModelViewSet):
 
 class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = WorkDetailSerializer
-    filter_backends = [DjangoFilterBackend, LimitedSearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, LimitedSearchFilter, NullsLastOrderingFilter]
     filterset_class = WorkFilter
     search_fields = [
         "title",
@@ -32,7 +32,7 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ["ori_date", "title", "created_at", "updated_at"]
 
     def get_queryset(self):
-        qs = Work.objects.select_related("cycle").order_by("-ori_date", "title").distinct()
+        qs = Work.objects.select_related("cycle").order_by(F("ori_date").desc(nulls_last=True), "title").distinct()
 
         if self.action == "list":
             return qs.prefetch_related("contributions__agent", "contributions__role", "work_concepts__concept")
