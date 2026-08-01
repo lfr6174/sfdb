@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin
 from unfold.contrib.filters.admin import ChoicesDropdownFilter
@@ -12,6 +13,13 @@ class ContributorAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_filter = ("is_anonymous",)
     search_fields = ("name", "about")
     readonly_fields = ("created_at", "updated_at")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(_commit_count=Count("commits"))
+
+    @admin.display(description="貢獻筆數", ordering="_commit_count")
+    def commit_count(self, obj):
+        return obj._commit_count
 
 
 @admin.register(Commit)
