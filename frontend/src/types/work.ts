@@ -47,7 +47,7 @@ export interface Publication {
   year: number | null
   isbn: string
   binding_display: string
-  note: string
+  edition_statement: string
   publisher: AgentMinimal | null
   series?: { id: number; title: string; code: string }[]
   contributions: {

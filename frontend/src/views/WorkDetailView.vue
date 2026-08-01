@@ -322,7 +322,7 @@ const visiblePublications = computed(() => {
                 </div>
 
                 <div
-                  v-if="pub.isbn || pub.binding_display || pub.note"
+                  v-if="pub.isbn || pub.binding_display || pub.edition_statement"
                   class="text-main/40 selection:bg-primary/20 mt-1 text-xs leading-5"
                 >
                   <span
@@ -332,14 +332,14 @@ const visiblePublications = computed(() => {
                     <template v-if="pub.isbn">ISBN {{ pub.isbn }}</template>
                     <template v-if="pub.binding_display">({{ pub.binding_display }})</template>
                   </span>
-                  <template v-if="pub.note">
+                  <template v-if="pub.edition_statement">
                     <span
                       v-if="pub.isbn || pub.binding_display"
                       class="mx-1"
                     >
                       ;
                     </span>
-                    {{ pub.note }}
+                    {{ pub.edition_statement }}
                   </template>
                 </div>
               </SidebarRow>
