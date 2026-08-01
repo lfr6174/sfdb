@@ -534,22 +534,13 @@ class Publication(TimeStampedModel):
         verbose_name="副標題",
         help_text="例如《第五號屠宰場》的「兒童十字軍」；也能填寫雜誌名稱未包含的期號資訊。可留空。",
     )
-    series = models.ForeignKey(
+    series = models.ManyToManyField(
         Series,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
+        through="SeriesPublication",
         related_name="publications",
+        blank=True,
         verbose_name="所屬叢書/刊物",
         help_text="出版品可隸屬於特定書系、叢書、類書等無序集合，或是期刊、報紙與雜誌等有序集合。",
-    )
-    series_order = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name="叢書/刊物順序",
-        help_text="出版品在刊物內的順序，例如雜誌的總期數或是書籍的編號。",
     )
     language = models.CharField(
         max_length=20,
@@ -647,8 +638,6 @@ class Publication(TimeStampedModel):
         super().clean()
         if self.source == PublicationSource.WEBSITE and self.media != PublicationMediaType.DIGITAL:
             raise ValidationError({"media": "網站的出版媒介只能設定為「電子」。"})
-        if self.series_order is not None and self.series_id is None:
-            raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
         if self.binding and self.media != PublicationMediaType.PRINT:
             raise ValidationError({"binding": "裝訂方式僅適用於紙本出版品。"})
 

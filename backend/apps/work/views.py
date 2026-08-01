@@ -53,9 +53,8 @@ class WorkViewSet(viewsets.ReadOnlyModelViewSet):
             ),
             Prefetch(
                 "manifestations",
-                queryset=Manifestation.objects.select_related(
-                    "publication__publisher", "publication__series"
-                ).prefetch_related(
+                queryset=Manifestation.objects.select_related("publication__publisher").prefetch_related(
+                    "publication__series_publications__series",
                     "publication__contributions__agent",
                     "publication__contributions__role",
                     "contributions__agent",

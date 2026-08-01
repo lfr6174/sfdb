@@ -25,6 +25,7 @@ from .models import (
     PublicationAgent,
     Role,
     Series,
+    SeriesPublication,
     Work,
     WorkAgent,
     WorkCatalogue,
@@ -177,8 +178,6 @@ class PublicationForm(forms.ModelForm):
             "language",
             "isbn",
             "subtitle",
-            "series",
-            "series_order",
             "note",
         )
 
@@ -256,6 +255,22 @@ class PublicationAgentInline(TabularInline):
     classes = ["collapse"]
     ordering_field = "order"
     hide_ordering_field = True
+
+
+class SeriesPublicationInlineForSeries(TabularInline):
+    model = SeriesPublication
+    extra = 0
+    fields = ("publication", "code")
+    autocomplete_fields = ("publication",)
+    classes = ["collapse"]
+
+
+class SeriesPublicationInlineForPublication(TabularInline):
+    model = SeriesPublication
+    extra = 0
+    fields = ("series", "code")
+    autocomplete_fields = ("series",)
+    classes = ["collapse"]
 
 
 class ManifestationAgentInline(TabularInline):
@@ -338,9 +353,15 @@ class CycleAdmin(SimpleHistoryAdmin, ModelAdmin):
 
 @admin.register(Series)
 class SeriesAdmin(SimpleHistoryAdmin, ModelAdmin):
-    list_display = ("title", "created_at", "updated_at")
-    search_fields = ("title",)
+    list_display = ("title", "publisher", "created_at", "updated_at")
+    list_filter = (("publisher", RelatedDropdownFilter),)
+    search_fields = ("title", "publisher__name")
+    autocomplete_fields = ("publisher",)
+    inlines = [SeriesPublicationInlineForSeries]
     readonly_fields = ("created_at", "updated_at")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("publisher")
 
 
 @admin.register(Work)
@@ -411,7 +432,7 @@ class PublicationAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, M
         "source",
         "media",
         "isbn",
-        "series",
+        "get_series_display",
     )
     list_filter = (
         ("language", ChoicesDropdownFilter),
@@ -431,13 +452,18 @@ class PublicationAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, M
         "contributions__agent__aliases__name",
         "series__title",
     )
-    autocomplete_fields = ("publisher", "series")
-    inlines = [ManifestationInlineForPublication, PublicationAgentInline]
+    autocomplete_fields = ("publisher",)
+    inlines = [ManifestationInlineForPublication, PublicationAgentInline, SeriesPublicationInlineForPublication]
     readonly_fields = ("created_at", "updated_at")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.select_related("publisher", "series").prefetch_related("contributions__agent", "contributions__role")
+        return qs.select_related("publisher").prefetch_related("series", "contributions__agent", "contributions__role")
+
+    def get_series_display(self, obj):
+        return "；".join(s.title for s in obj.series.all()) or "—"
+
+    get_series_display.short_description = "所屬叢書"
 
     def get_date_display(self, obj):
         return _format_partial_date(obj.pub_date, obj.pub_date_precision)
