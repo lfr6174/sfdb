@@ -65,13 +65,14 @@ function pubLink(pub: {
   id: number
   title: string
   source?: string
-  series?: { id: number; title: string } | null
+  series?: { id: number; title: string; code: string }[]
 }) {
   if (SERIAL_SOURCES.has(pub.source ?? '')) {
-    if (pub.series) {
+    const series = pub.series?.[0]
+    if (series) {
       return {
         path: '/works',
-        query: { publication_series: pub.series.id, publication_series_title: pub.series.title },
+        query: { publication_series: series.id, publication_series_title: series.title },
       }
     }
     return { path: '/works', query: { publication_name: pub.title } }

@@ -487,6 +487,15 @@ class Series(TimeStampedModel):
     """A collection of publications, like a book series or magazine"""
 
     title = models.CharField(max_length=300, verbose_name="叢書名稱")
+    publisher = models.ForeignKey(
+        "agent.Agent",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="published_series",
+        verbose_name="出版商",
+        help_text="發行此叢書的人物/組織，不確定可留空。",
+    )
     note = models.TextField(blank=True, verbose_name="備註")
     history = HistoricalRecords()
 
@@ -496,6 +505,8 @@ class Series(TimeStampedModel):
         verbose_name_plural = "叢書"
 
     def __str__(self):
+        if self.publisher_id:
+            return f"{self.title}（{self.publisher.name}）"
         return self.title
 
 
@@ -523,22 +534,13 @@ class Publication(TimeStampedModel):
         verbose_name="副標題",
         help_text="例如《第五號屠宰場》的「兒童十字軍」；也能填寫雜誌名稱未包含的期號資訊。可留空。",
     )
-    series = models.ForeignKey(
+    series = models.ManyToManyField(
         Series,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
+        through="SeriesPublication",
         related_name="publications",
+        blank=True,
         verbose_name="所屬叢書/刊物",
         help_text="出版品可隸屬於特定書系、叢書、類書等無序集合，或是期刊、報紙與雜誌等有序集合。",
-    )
-    series_order = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        verbose_name="叢書/刊物順序",
-        help_text="出版品在刊物內的順序，例如雜誌的總期數或是書籍的編號。",
     )
     language = models.CharField(
         max_length=20,
@@ -636,8 +638,6 @@ class Publication(TimeStampedModel):
         super().clean()
         if self.source == PublicationSource.WEBSITE and self.media != PublicationMediaType.DIGITAL:
             raise ValidationError({"media": "網站的出版媒介只能設定為「電子」。"})
-        if self.series_order is not None and self.series_id is None:
-            raise ValidationError({"series_order": "請先填寫叢書/刊物，再登記出版物的順序。"})
         if self.binding and self.media != PublicationMediaType.PRINT:
             raise ValidationError({"binding": "裝訂方式僅適用於紙本出版品。"})
 
@@ -649,6 +649,41 @@ class Publication(TimeStampedModel):
         if self.isbn:
             self.isbn = self.isbn.replace("-", "").replace(" ", "").upper()
         super().save(*args, **kwargs)
+
+
+class SeriesPublication(models.Model):
+    """Membership of a publication in a series, with the series' own coding."""
+
+    series = models.ForeignKey(
+        Series, on_delete=models.CASCADE, related_name="series_publications", verbose_name="叢書/刊物"
+    )
+    publication = models.ForeignKey(
+        Publication, on_delete=models.CASCADE, related_name="series_publications", verbose_name="出版品"
+    )
+    code = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name="叢書編號",
+        help_text="出版品在此叢書內的編號，例如「7」「E010」「第 245 期」，可留空。",
+    )
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["series", "publication"], name="unique_series_publication")]
+        ordering = ["series__title"]
+        verbose_name = "叢書收錄"
+        verbose_name_plural = "叢書收錄"
+
+    def __str__(self):
+        return f"{self.series.title} - {self.publication.title}"
+
+    def clean(self):
+        super().clean()
+        if not self.series_id or not self.publication_id:
+            return
+        series_publisher_id = self.series.publisher_id
+        pub_publisher_id = self.publication.publisher_id
+        if series_publisher_id and pub_publisher_id and series_publisher_id != pub_publisher_id:
+            raise ValidationError("此叢書的出版商與出版品的出版商不一致，請確認是否選錯叢書。")
 
 
 class PublicationAgent(models.Model):

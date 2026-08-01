@@ -104,9 +104,9 @@ class PublicationInWorkSerializer(serializers.ModelSerializer):
         ]
 
     def get_series(self, obj):
-        if obj.series_id:
-            return {"id": obj.series_id, "title": obj.series.title}
-        return None
+        return [
+            {"id": sp.series_id, "title": sp.series.title, "code": sp.code} for sp in obj.series_publications.all()
+        ]
 
 
 # --- Catalogue entry (nested in work) ---
