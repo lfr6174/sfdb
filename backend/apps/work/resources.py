@@ -37,7 +37,7 @@ class PublicationResource(ModelResource):
             "pub_date",
             "pub_date_precision",
             "isbn",
-            "note",
+            "edition_statement",
         )
         force_init_instance = True
         clean_model_instances = True  # runs full_clean(): rejects bad ISBNs and source/media/binding combos

@@ -27,6 +27,11 @@ class Concept(TimeStampedModel):
     featured_order = models.PositiveIntegerField(default=0, verbose_name="側欄排序")
 
     description = models.TextField(blank=True, verbose_name="描述", help_text="解釋這個概念的定義或背景。可留空。")
+    note = models.TextField(
+        blank=True,
+        verbose_name="內部備註",
+        help_text="編目或行政用途，僅後台可見，不會顯示在網站上。可留空。",
+    )
     history = HistoricalRecords()
 
     related_concepts = models.ManyToManyField("self", blank=True, symmetrical=True, verbose_name="相關概念")
