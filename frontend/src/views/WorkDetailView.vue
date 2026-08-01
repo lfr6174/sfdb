@@ -32,7 +32,7 @@ const encodingLevelOption = computed(() =>
 )
 const encodingLevelHint = computed(() =>
   encodingLevelOption.value
-    ? `${encodingLevelOption.value.description}——二手資料：僅依網頁、書目索引等二手資料著錄；部分著錄：已取得原始資料核對，但尚有欄位未填；完整著錄：適用欄位皆已依原始資料核對`
+    ? `${encodingLevelOption.value.description}——簡略著錄：僅登錄作品名等識別資訊；間接著錄：依網頁、書目索引等二手資料著錄；部分核校：已核對原始資料但部分欄位未填；完整核校：已核對原始資料並填寫全數欄位`
     : '',
 )
 

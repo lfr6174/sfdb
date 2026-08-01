@@ -9,6 +9,7 @@ from apps.work.models import (
     Catalogue,
     CatalogueType,
     Category,
+    EncodingLevel,
     Manifestation,
     Publication,
     RelationKind,
@@ -134,6 +135,18 @@ def test_filter_by_catalogue_duplicate_entries_returns_distinct(api_client):
 @pytest.mark.parametrize("method, expected", [("get", 200), ("post", 403), ("put", 403), ("delete", 403)])
 def test_work_api_unauth_surface(api_client, method, expected):
     assert getattr(api_client, method)(reverse("work:work-list")).status_code == expected
+
+
+# Prevents: encoding_level facet filter breaking silently on the new four-level enum
+@pytest.mark.django_db
+def test_filter_works_by_encoding_level(api_client):
+    Work.objects.create(title="Minimal", encoding_level=EncodingLevel.MINIMAL)
+    Work.objects.create(title="Secondary", encoding_level=EncodingLevel.SECONDARY)
+    partial = Work.objects.create(title="Partial", encoding_level=EncodingLevel.PARTIAL)
+    full = Work.objects.create(title="Full", encoding_level=EncodingLevel.FULL)
+
+    data = api_client.get(reverse("work:work-list"), {"encoding_level": "partial,full"}).json()
+    assert {r["title"] for r in data["results"]} == {partial.title, full.title}
 
 
 # Prevents: Unnormalized undirected relations bypassing the database unique constraint
