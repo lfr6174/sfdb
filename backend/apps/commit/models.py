@@ -19,10 +19,6 @@ class Contributor(TimeStampedModel):
     def __str__(self):
         return self.name
 
-    @property
-    def commit_count(self):
-        return self.commits.count()
-
 
 class CommitType(models.TextChoices):
     ADD = "add", "新增"

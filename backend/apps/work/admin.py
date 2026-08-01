@@ -405,7 +405,8 @@ class WorkAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdm
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("contributions__agent", "contributions__role")
+        # cycle is nullable: without naming it, admin's automatic select_related skips it.
+        return qs.select_related("cycle").prefetch_related("contributions__agent", "contributions__role")
 
     def get_contributions_display(self, obj):
         contributions = obj.contributions.all()
@@ -537,3 +538,7 @@ class WorkCatalogueAdmin(ModelAdmin):
     )
     search_fields = ("work__title", "catalogue__title")
     autocomplete_fields = ("catalogue", "work", "category")
+
+    def get_queryset(self, request):
+        # category is nullable, and Category.__str__ reads catalogue.title in turn.
+        return super().get_queryset(request).select_related("catalogue", "work", "category__catalogue")
