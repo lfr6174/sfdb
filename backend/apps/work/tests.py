@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from apps.agent.models import Agent
@@ -14,6 +15,8 @@ from apps.work.models import (
     Publication,
     RelationKind,
     Role,
+    Series,
+    SeriesPublication,
     Work,
     WorkAgent,
     WorkCatalogue,
@@ -186,3 +189,44 @@ def test_paginated_response_includes_total_pages(api_client):
     data = api_client.get(reverse("work:work-list")).json()
     assert data["count"] == 21
     assert data["total_pages"] == 2
+
+
+# Prevents: a publication silently losing membership in one of its series (the point of the M2M
+# switch), and API shape drift breaking WorkDetailView's pubLink (frontend reads series[0])
+@pytest.mark.django_db
+def test_publication_in_multiple_series(api_client):
+    work = Work.objects.create(title="W")
+    pub = Publication.objects.create(title="Pub")
+    Manifestation.objects.create(work=work, publication=pub)
+    collected_works = Series.objects.create(title="作品集")
+    imprint = Series.objects.create(title="叢書")
+    SeriesPublication.objects.create(series=collected_works, publication=pub, code="7")
+    SeriesPublication.objects.create(series=imprint, publication=pub, code="E010")
+
+    data = api_client.get(reverse("work:work-detail", kwargs={"pk": work.id})).json()
+    series_data = data["publications"][0]["series"]
+    assert {(s["id"], s["title"], s["code"]) for s in series_data} == {
+        (collected_works.id, "作品集", "7"),
+        (imprint.id, "叢書", "E010"),
+    }
+
+    for series in (collected_works, imprint):
+        filtered = api_client.get(reverse("work:work-list"), {"publication_series": series.id}).json()
+        assert filtered["count"] == 1 and filtered["results"][0]["title"] == "W"
+
+
+# Prevents: cross-publisher series mix-ups (e.g. picking the wrong "文學森林") going unnoticed,
+# while still allowing legitimate entries where either side's publisher is unset
+@pytest.mark.django_db
+def test_series_publisher_mismatch_rejected():
+    sanmin = Agent.objects.create(name="三民", agent_type="organization")
+    new_experience = Agent.objects.create(name="新經典文化", agent_type="organization")
+    series = Series.objects.create(title="文學森林", publisher=sanmin)
+    pub = Publication.objects.create(title="Pub", publisher=new_experience)
+
+    with pytest.raises(ValidationError):
+        SeriesPublication(series=series, publication=pub).full_clean()
+
+    # Either side left blank must not be blocked by the consistency check.
+    pub_no_publisher = Publication.objects.create(title="Pub2")
+    SeriesPublication(series=series, publication=pub_no_publisher).full_clean()
