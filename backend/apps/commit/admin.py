@@ -32,3 +32,7 @@ class CommitAdmin(SimpleHistoryAdmin, ModelAdmin):
     search_fields = ("title", "body", "contributor__name")
     autocomplete_fields = ("contributor",)
     readonly_fields = ("created_at", "updated_at")
+
+    def get_queryset(self, request):
+        # contributor is nullable: without naming it, admin's automatic select_related skips it.
+        return super().get_queryset(request).select_related("contributor")

@@ -13,6 +13,10 @@ class PostAdmin(SimpleHistoryAdmin, ModelAdmin):
     list_filter = (("post_type", ChoicesDropdownFilter), "is_pinned")
     readonly_fields = ("created_at", "updated_at")
 
+    def get_queryset(self, request):
+        # author is nullable: without naming it, admin's automatic select_related skips it.
+        return super().get_queryset(request).select_related("author")
+
     def save_model(self, request, obj, form, change):
         if not obj.author_id:
             obj.author = request.user
