@@ -10,19 +10,21 @@ const emit = defineEmits<{
   changePage: [page: number]
 }>()
 
+const SIBLINGS = 2 // how many page numbers to show on each side of currentPage
+
 const pages = computed<(number | '...')[]>(() => {
   const { currentPage: cur, totalPages: total } = props
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
 
   const result: (number | '...')[] = [1]
 
-  if (cur > 3) result.push('...')
+  if (cur > SIBLINGS + 2) result.push('...')
 
-  const start = Math.max(2, cur - 1)
-  const end = Math.min(total - 1, cur + 1)
+  const start = Math.max(2, cur - SIBLINGS)
+  const end = Math.min(total - 1, cur + SIBLINGS)
   for (let i = start; i <= end; i++) result.push(i)
 
-  if (cur < total - 2) result.push('...')
+  if (cur < total - SIBLINGS - 1) result.push('...')
 
   result.push(total)
   return result
