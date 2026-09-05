@@ -396,10 +396,10 @@ class WorkAdmin(RestrictedImportMixin, SimpleHistoryAdmin, ImportMixin, ModelAdm
     inlines = [
         WorkAgentInline,
         WorkConceptInline,
-        OutgoingRelationInline,
-        IncomingRelationInline,
         ManifestationInlineForWork,
         WorkCatalogueInlineForWork,
+        OutgoingRelationInline,
+        IncomingRelationInline,
     ]
     readonly_fields = ("created_at", "updated_at")
 
