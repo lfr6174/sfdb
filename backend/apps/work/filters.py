@@ -37,10 +37,11 @@ class WorkFilter(django_filters.FilterSet):
     catalogue = django_filters.CharFilter(
         field_name="work_catalogues__catalogue__title", lookup_expr="exact", distinct=True
     )
+    cycle = django_filters.NumberFilter()
 
     class Meta:
         model = Work
-        fields = ["cycle"]
+        fields = []
 
     def filter_concepts_include(self, queryset, _name, value):
         """

@@ -11,6 +11,7 @@ from apps.work.models import (
     Catalogue,
     CatalogueType,
     Category,
+    Cycle,
     EncodingLevel,
     Manifestation,
     Publication,
@@ -94,6 +95,22 @@ def test_filter_works_by_publication_and_catalogue(api_client):
     # Test catalogue filter
     cat_data = api_client.get(reverse("work:work-list"), {"catalogue": cat.title}).json()
     assert cat_data["count"] == 1 and cat_data["results"][0]["title"] == "W2"
+
+
+# Prevents: an invalid cycle id silently falling back to the unfiltered list
+# (django-filter's default ModelChoiceFilter validates the id exists before
+# filtering; the explicit NumberFilter override must not)
+@pytest.mark.django_db
+def test_filter_works_by_cycle(api_client):
+    cycle = Cycle.objects.create(title="Foundation Series")
+    in_cycle = Work.objects.create(title="In Cycle", cycle=cycle)
+    Work.objects.create(title="No Cycle")
+
+    data = api_client.get(reverse("work:work-list"), {"cycle": cycle.id}).json()
+    assert data["count"] == 1 and data["results"][0]["title"] == in_cycle.title
+
+    data = api_client.get(reverse("work:work-list"), {"cycle": cycle.id + 1000}).json()
+    assert data["count"] == 0
 
 
 # Prevents: person-page merged rows (?publication=1,2) missing works,
