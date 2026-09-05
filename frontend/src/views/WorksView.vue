@@ -47,6 +47,8 @@ const filters = useUrlFilters({
   publisher: { type: 'string' },
   publisher_name: { type: 'string', api: false },
   catalogue: { type: 'string' },
+  cycle: { type: 'string' },
+  cycle_title: { type: 'string', api: false },
 })
 
 const {
@@ -66,6 +68,8 @@ const {
   publisher: selectedPublisherId,
   publisher_name: selectedPublisherName,
   catalogue: selectedCatalogueTitle,
+  cycle: selectedCycleId,
+  cycle_title: selectedCycleTitle,
 } = filters.values
 
 const allConcepts = ref<Concept[]>([])
@@ -200,6 +204,8 @@ const clearAllFilters = () =>
     'publisher',
     'publisher_name',
     'catalogue',
+    'cycle',
+    'cycle_title',
   )
 
 // The "作用中" chip row, derived from the same URL state the API params use.
@@ -235,6 +241,12 @@ const activeChips = computed(() => {
       key: 'catalogue',
       label: `精選：${selectedCatalogueTitle.value}`,
       remove: () => filters.clear('catalogue'),
+    })
+  if (selectedCycleId.value)
+    chips.push({
+      key: 'cycle',
+      label: `系列：${selectedCycleTitle.value}`,
+      remove: () => filters.clear('cycle', 'cycle_title'),
     })
   for (const value of selectedGenres.value)
     chips.push({

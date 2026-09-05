@@ -170,7 +170,15 @@ const visiblePublications = computed(() => {
 
               <template v-if="work.cycle">
                 <span class="text-main/20">·</span>
-                <span>{{ work.cycle.title }}</span>
+                <router-link
+                  :to="{
+                    path: '/works',
+                    query: { cycle: work.cycle.id, cycle_title: work.cycle.title },
+                  }"
+                  class="hover:text-primary transition-colors"
+                >
+                  {{ work.cycle.title }}
+                </router-link>
               </template>
             </div>
 
