@@ -27,6 +27,11 @@ class Agent(TimeStampedModel):
     about = models.TextField(
         blank=True, verbose_name="簡介", help_text="關於此人物或組織的生平、經歷與背景介紹。可留空。"
     )
+    note = models.TextField(
+        blank=True,
+        verbose_name="內部備註",
+        help_text="編目或行政用途，僅後台可見，不會顯示在網站上。可留空。",
+    )
     history = HistoricalRecords()
 
     class Meta:
