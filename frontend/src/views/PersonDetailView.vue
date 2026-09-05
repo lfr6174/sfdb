@@ -272,10 +272,11 @@ const personAwards = computed(() => {
           <div v-if="personAwards.length > 0">
             <SectionTitle class="mb-3">相關獎項</SectionTitle>
             <div class="flex flex-wrap gap-1.5">
-              <span
+              <router-link
                 v-for="award in personAwards"
                 :key="award.id"
-                class="text-main/60 border-main/15 inline-flex cursor-default items-center gap-1.5 border px-2.5 py-1 text-xs whitespace-nowrap"
+                :to="{ path: '/works', query: { catalogue: award.title } }"
+                class="text-main/60 border-main/15 hover:border-primary/40 hover:text-primary inline-flex items-center gap-1.5 border px-2.5 py-1 text-xs whitespace-nowrap no-underline transition-colors"
               >
                 <span>{{ award.title }}</span>
                 <span
@@ -284,7 +285,7 @@ const personAwards = computed(() => {
                 >
                   {{ award.count }}
                 </span>
-              </span>
+              </router-link>
             </div>
           </div>
         </aside>
