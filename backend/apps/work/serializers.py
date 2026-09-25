@@ -8,6 +8,7 @@ from .models import (
     Cycle,
     Publication,
     PublicationAgent,
+    Role,
     Work,
     WorkAgent,
     WorkCatalogue,
@@ -118,6 +119,12 @@ class CatalogueBriefSerializer(serializers.ModelSerializer):
     class Meta:
         model = Catalogue
         fields = ["id", "title", "catalogue_type_display"]
+
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ["code", "noun"]
 
 
 class WorkCatalogueSerializer(serializers.ModelSerializer):
