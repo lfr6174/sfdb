@@ -5,6 +5,7 @@ from apps.core.filters import LimitedSearchFilter
 
 from .models import Agent
 from .serializers import AgentDetailSerializer, AgentListSerializer
+from .services import agents_with_role
 
 
 class AgentViewSet(viewsets.ReadOnlyModelViewSet):
@@ -19,6 +20,9 @@ class AgentViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.prefetch_related("aliases", "links")
+        role = self.request.query_params.get("role")
+        if role:
+            qs = qs.filter(agents_with_role(role))
         return qs
 
     def get_serializer_class(self):

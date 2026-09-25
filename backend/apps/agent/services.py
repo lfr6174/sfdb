@@ -3,7 +3,16 @@ from datetime import date
 from django.db.models import Count, F, Prefetch, Q
 
 from apps.concept.models import Concept
-from apps.work.models import Publication, PublicationAgent, Work, WorkAgent, WorkCatalogue
+from apps.work.models import ManifestationAgent, Publication, PublicationAgent, Work, WorkAgent, WorkCatalogue
+
+
+def agents_with_role(code):
+    """Q matching agents credited with the role in any contribution table."""
+    # One subquery per table: OR-ing joins across three relations multiplies rows per agent.
+    q = Q()
+    for model in (WorkAgent, PublicationAgent, ManifestationAgent):
+        q |= Q(id__in=model.objects.filter(role__code=code).values("agent_id"))
+    return q
 
 
 def get_agent_concepts(agent):

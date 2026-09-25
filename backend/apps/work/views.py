@@ -5,9 +5,10 @@ from rest_framework import viewsets
 from apps.core.filters import LimitedSearchFilter, NullsLastOrderingFilter
 
 from .filters import WorkFilter
-from .models import Catalogue, Manifestation, Work, WorkCatalogue, WorkRelation
+from .models import Catalogue, Manifestation, Role, Work, WorkCatalogue, WorkRelation
 from .serializers import (
     CatalogueBriefSerializer,
+    RoleSerializer,
     WorkDetailSerializer,
     WorkListSerializer,
 )
@@ -16,6 +17,12 @@ from .serializers import (
 class CatalogueViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Catalogue.objects.order_by("catalogue_type", "title")
     serializer_class = CatalogueBriefSerializer
+    pagination_class = None
+
+
+class RoleViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
     pagination_class = None
 
 

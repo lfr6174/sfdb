@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * SortSelect — Dropdown for sorting TSFDB query results (Works, Concepts, Agents).
- * Maps directly to backend ordering fields (e.g., -ori_date, title).
+ * SortSelect — Generic single-value dropdown for list controls: sort ordering
+ * (e.g., -ori_date, title) or a single filter (e.g., role on PersonsView).
  */
 defineProps<{
   modelValue: string

@@ -6,7 +6,15 @@ from django.urls import reverse
 
 from apps.agent.models import Agent
 from apps.agent.services import _group_publications, get_agent_publications
-from apps.work.models import Publication, PublicationAgent, Role
+from apps.work.models import (
+    Manifestation,
+    ManifestationAgent,
+    Publication,
+    PublicationAgent,
+    Role,
+    Work,
+    WorkAgent,
+)
 
 
 # Prevents: PersonsView.vue receiving organizations (should only list AgentType.PERSON)
@@ -20,6 +28,35 @@ def test_list_only_persons(api_client):
 
     assert "pkd" in names
     assert "scp fundation" not in names
+
+
+# Prevents: the role filter only checking WorkAgent, missing publication editors and anthology translators
+@pytest.mark.django_db
+def test_list_filters_by_role_across_contribution_tables(api_client):
+    author = Role.objects.create(code="author", verb="著", noun="作者")
+    editor = Role.objects.create(code="editor", verb="編", noun="編輯")
+    translator = Role.objects.create(code="translator", verb="譯", noun="譯者")
+
+    writer = Agent.objects.create(name="writer", agent_type="person")
+    ed = Agent.objects.create(name="ed", agent_type="person")
+    tr = Agent.objects.create(name="tr", agent_type="person")
+
+    work = Work.objects.create(title="Story")
+    anthology = Publication.objects.create(title="Anthology")
+    WorkAgent.objects.create(work=work, agent=writer, role=author)
+    PublicationAgent.objects.create(publication=anthology, agent=ed, role=editor)
+    ManifestationAgent.objects.create(
+        manifestation=Manifestation.objects.create(work=work, publication=anthology), agent=tr, role=translator
+    )
+
+    def names(code):
+        data = api_client.get(reverse("agent:person-list"), {"role": code}).json()
+        return [item["name"] for item in data["results"]]
+
+    assert names("author") == ["writer"]
+    assert names("editor") == ["ed"]
+    assert names("translator") == ["tr"]
+    assert names("") == ["ed", "tr", "writer"]  # empty param means no filter
 
 
 def _pub(pk, media_label, pub_date, title="Book", subtitle="", publisher=None, source="book", roles=("繪師",)):
