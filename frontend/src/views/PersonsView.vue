@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
 import { fetchPersons as fetchPersonsApi } from '../api/persons'
+import { fetchRoles, type RoleOption } from '../api/works'
 import type { Person } from '../types'
 import PaginationControls from '../components/PaginationControls.vue'
 import HoverListItem from '../components/HoverListItem.vue'
@@ -19,7 +21,16 @@ const filters = useUrlFilters({
   search: { type: 'string', api: false }, // sent by useListView
   ordering: { type: 'string', default: 'name', api: false },
   page: { type: 'number', default: 1, api: false },
+  role: { type: 'string' },
 })
+
+// Template refs only auto-unwrap at the top level, so v-model needs this alias.
+const roleFilter = filters.values.role
+const roles = ref<RoleOption[]>([])
+const roleOptions = computed(() => [
+  { value: '', label: '全部角色' },
+  ...roles.value.map((r) => ({ value: r.code, label: r.noun })),
+])
 
 const {
   items: persons,
@@ -31,10 +42,23 @@ const {
   totalPages,
   changePage,
   totalCount,
+  triggerFetch,
 } = useListView<Person>(fetchPersonsApi, {
   searchQuery: filters.values.search,
   ordering: filters.values.ordering,
   currentPage: filters.values.page,
+  extraParams: () => filters.toParams(),
+})
+
+// useListView only watches search/ordering/page; refetch from page 1 on role change.
+watch(roleFilter, () => triggerFetch())
+
+onMounted(() => {
+  fetchRoles()
+    .then((res) => {
+      roles.value = res.data
+    })
+    .catch((err) => console.error('Failed to fetch roles', err))
 })
 </script>
 
@@ -48,7 +72,12 @@ const {
           placeholder="搜尋姓名、別名或簡介…"
         />
       </div>
-      <div class="relative w-28 shrink-0">
+      <div class="flex shrink-0 gap-4">
+        <SortSelect
+          v-model="roleFilter"
+          select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"
+          :options="roleOptions"
+        />
         <SortSelect
           v-model="sortBy"
           select-class="text-main/60 border-main/20 focus:border-main/50 w-28 cursor-pointer appearance-none border-b bg-transparent py-1.5 pr-6 pl-1 text-sm transition-colors outline-none focus-visible:outline-2 focus-visible:outline-primary/50"

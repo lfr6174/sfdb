@@ -18,3 +18,12 @@ export interface CatalogueOption {
 export function fetchAllCatalogues() {
   return api.get<CatalogueOption[]>('/catalogues/')
 }
+
+export interface RoleOption {
+  code: string
+  noun: string
+}
+
+export function fetchRoles() {
+  return api.get<RoleOption[]>('/roles/')
+}
